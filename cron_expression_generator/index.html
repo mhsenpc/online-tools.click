@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Expression Generator - Online Tools</title>
+    <meta name="description" content="Free, client-side CRON expression generator and explainer. Build, parse, and understand cron schedules visually.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #3b82f6;
+            --accent-bg: rgba(59, 130, 246, 0.1);
+            --accent-border: rgba(59, 130, 246, 0.5);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --success: #22c55e;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .expression-section {
+            margin-bottom: 20px;
+        }
+
+        .expression-bar {
+            display: flex;
+            align-items: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 4px 4px 4px 16px;
+            transition: border-color 0.2s;
+        }
+
+        .expression-bar:focus-within {
+            border-color: var(--border-focus);
+        }
+
+        .expression-bar.has-error {
+            border-color: var(--error);
+        }
+
+        .expression-label {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        #expression-input {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 500;
+            padding: 10px 4px;
+            min-width: 0;
+            letter-spacing: 0.02em;
+        }
+
+        #expression-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            border-color: var(--border-focus);
+            color: var(--text);
+        }
+
+        .copy-btn.copied {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .error-bar {
+            background: var(--error-bg);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--radius-sm);
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: #fca5a5;
+            display: none;
+        }
+
+        .error-bar.visible {
+            display: block;
+        }
+
+        .presets-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preset-btn {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--border-focus);
+            color: var(--text);
+            background: var(--bg-elevated);
+        }
+
+        .preset-btn.active {
+            border-color: var(--accent-border);
+            color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .panel-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .builder-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .builder-field {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+
+        .builder-field:last-child {
+            border-bottom: none;
+        }
+
+        .field-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            width: 110px;
+            flex-shrink: 0;
+        }
+
+        .field-type-select {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            padding: 6px 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            cursor: pointer;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        .field-type-select:focus {
+            border-color: var(--border-focus);
+        }
+
+        .field-inputs {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .field-inputs input,
+        .field-inputs select {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            padding: 6px 10px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            outline: none;
+            min-width: 0;
+        }
+
+        .field-inputs input:focus,
+        .field-inputs select:focus {
+            border-color: var(--border-focus);
+        }
+
+        .field-inputs input.full-width {
+            flex: 1;
+        }
+
+        .field-inputs .range-sep {
+            color: var(--text-muted);
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .field-inputs .step-prefix {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .field-preview {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--accent);
+            margin-left: auto;
+            flex-shrink: 0;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .every-label {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .results-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .description-section {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .description-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .description-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .description-text.empty {
+            color: var(--text-muted);
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .next-runs-section {
+            padding: 16px 20px 20px;
+        }
+
+        .next-runs-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .next-runs-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .tz-select {
+            font-family: var(--font-sans);
+            font-size: 12px;
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            outline: none;
+            max-width: 200px;
+        }
+
+        .tz-select:focus {
+            border-color: var(--border-focus);
+        }
+
+        .next-runs-list {
+            list-style: none;
+        }
+
+        .next-run-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 12px;
+        }
+
+        .next-run-item:last-child {
+            border-bottom: none;
+        }
+
+        .next-run-index {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .next-run-time {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .next-run-relative {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .next-runs-empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .cheat-sheet {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 24px 24px 80px;
+        }
+
+        .cheat-toggle {
+            width: 100%;
+            padding: 16px 24px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cheat-toggle:hover {
+            border-color: var(--border-focus);
+            color: var(--text);
+        }
+
+        .cheat-toggle-arrow {
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+
+        .cheat-toggle.open .cheat-toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .cheat-content {
+            display: none;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-md) var(--radius-md);
+            background: var(--bg-input);
+            padding: 24px;
+        }
+
+        .cheat-content.open {
+            display: block;
+        }
+
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .cheat-category h3 {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cheat-table td {
+            padding: 5px 8px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: top;
+        }
+
+        .cheat-table td:first-child {
+            font-family: var(--font-mono);
+            color: var(--accent);
+            white-space: nowrap;
+            font-size: 12px;
+            width: 100px;
+        }
+
+        .cheat-table td:last-child {
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 20px 16px;
+            }
+
+            main {
+                padding: 16px;
+            }
+
+            .cheat-sheet {
+                padding: 16px 16px 64px;
+            }
+
+            .expression-label {
+                display: none;
+            }
+
+            #expression-input {
+                font-size: 15px;
+            }
+
+            .presets-row {
+                gap: 6px;
+            }
+
+            .preset-btn {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+
+            .builder-field {
+                flex-wrap: wrap;
+                padding: 10px 12px;
+            }
+
+            .field-label {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+
+            .field-preview {
+                display: none;
+            }
+
+            .panels {
+                gap: 16px;
+            }
+
+            .cheat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .next-run-relative {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="logo">Online Tools<span class="logo-sep"> / </span><span class="logo-sub">Cron Generator</span></div>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="expression-section">
+            <div class="expression-bar" id="expression-bar">
+                <span class="expression-label">Cron</span>
+                <input type="text" id="expression-input" value="*/5 * * * *" placeholder="* * * * *" spellcheck="false" autocomplete="off">
+                <button class="copy-btn" id="copy-btn">Copy</button>
+            </div>
+        </div>
+
+        <div class="error-bar" id="error-bar"></div>
+
+        <div class="presets-row" id="presets-row"></div>
+
+        <div class="panels">
+            <div class="panel">
+                <div class="panel-label">Visual Builder</div>
+                <div class="builder-card" id="builder-card"></div>
+            </div>
+            <div class="panel">
+                <div class="panel-label">Results</div>
+                <div class="results-card">
+                    <div class="description-section">
+                        <div class="description-label">Human-Readable</div>
+                        <div class="description-text" id="description"></div>
+                    </div>
+                    <div class="next-runs-section">
+                        <div class="next-runs-header">
+                            <span class="next-runs-label">Next 10 Runs</span>
+                            <select class="tz-select" id="tz-select"></select>
+                        </div>
+                        <div id="next-runs-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section class="cheat-sheet">
+        <button class="cheat-toggle" id="cheat-toggle">
+            Cron Syntax Reference
+            <span class="cheat-toggle-arrow">&#9660;</span>
+        </button>
+        <div class="cheat-content" id="cheat-content">
+            <div class="cheat-grid">
+                <div class="cheat-category">
+                    <h3>Field Order</h3>
+                    <table class="cheat-table">
+                        <tr><td>┌────────</td><td>Minute (0-59)</td></tr>
+                        <tr><td>│ ┌──────</td><td>Hour (0-23)</td></tr>
+                        <tr><td>│ │ ┌────</td><td>Day of Month (1-31)</td></tr>
+                        <tr><td>│ │ │ ┌──</td><td>Month (1-12)</td></tr>
+                        <tr><td>│ │ │ │ ┌</td><td>Day of Week (0-6, Sun=0)</td></tr>
+                        <tr><td>* * * * *</td><td>Standard 5-field format</td></tr>
+                    </table>
+                </div>
+                <div class="cheat-category">
+                    <h3>Special Characters</h3>
+                    <table class="cheat-table">
+                        <tr><td>*</td><td>Any value (every)</td></tr>
+                        <tr><td>,</td><td>Value list separator</td></tr>
+                        <tr><td>-</td><td>Range of values</td></tr>
+                        <tr><td>/</td><td>Step values</td></tr>
+                    </table>
+                </div>
+                <div class="cheat-category">
+                    <h3>Examples</h3>
+                    <table class="cheat-table">
+                        <tr><td>*/5 * * * *</td><td>Every 5 minutes</td></tr>
+                        <tr><td>0 * * * *</td><td>Every hour</td></tr>
+                        <tr><td>0 0 * * *</td><td>Daily at midnight</td></tr>
+                        <tr><td>0 0 * * 1</td><td>Every Monday at midnight</td></tr>
+                        <tr><td>0 0 1 * *</td><td>Monthly on the 1st</td></tr>
+                        <tr><td>0 9 * * 1-5</td><td>Weekdays at 9 AM</td></tr>
+                        <tr><td>30 4 * * 0</td><td>Every Sunday at 4:30 AM</td></tr>
+                    </table>
+                </div>
+                <div class="cheat-category">
+                    <h3>Step Examples</h3>
+                    <table class="cheat-table">
+                        <tr><td>*/10 * * * *</td><td>Every 10 minutes</td></tr>
+                        <tr><td>0 */2 * * *</td><td>Every 2 hours</td></tr>
+                        <tr><td>0 0 */3 * *</td><td>Every 3 days</td></tr>
+                        <tr><td>0 9 * * 1-5/2</td><td>Every 2nd weekday at 9 AM</td></tr>
+                    </table>
+                </div>
+                <div class="cheat-category">
+                    <h3>Shorthand</h3>
+                    <table class="cheat-table">
+                        <tr><td>@yearly</td><td>0 0 1 1 *</td></tr>
+                        <tr><td>@monthly</td><td>0 0 1 * *</td></tr>
+                        <tr><td>@weekly</td><td>0 0 * * 0</td></tr>
+                        <tr><td>@daily</td><td>0 0 * * *</td></tr>
+                        <tr><td>@hourly</td><td>0 * * * *</td></tr>
+                    </table>
+                </div>
+                <div class="cheat-category">
+                    <h3>Month Names</h3>
+                    <table class="cheat-table">
+                        <tr><td>JAN - DEC</td><td>1 - 12</td></tr>
+                        <tr><td>SUN - SAT</td><td>0 - 6 (Day of week)</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+        const FIELDS = [
+            { key: 'minute', label: 'Minute', min: 0, max: 59 },
+            { key: 'hour', label: 'Hour', min: 0, max: 23 },
+            { key: 'dom', label: 'Day of Month', min: 1, max: 31 },
+            { key: 'month', label: 'Month', min: 1, max: 12 },
+            { key: 'dow', label: 'Day of Week', min: 0, max: 6 }
+        ];
+
+        const PRESETS = [
+            { label: 'Every minute', expr: '* * * * *' },
+            { label: 'Every 5 min', expr: '*/5 * * * *' },
+            { label: 'Every 15 min', expr: '*/15 * * * *' },
+            { label: 'Every 30 min', expr: '*/30 * * * *' },
+            { label: 'Hourly', expr: '0 * * * *' },
+            { label: 'Every 2 hours', expr: '0 */2 * * *' },
+            { label: 'Every 6 hours', expr: '0 */6 * * *' },
+            { label: 'Daily midnight', expr: '0 0 * * *' },
+            { label: 'Daily 9 AM', expr: '0 9 * * *' },
+            { label: 'Weekdays 9 AM', expr: '0 9 * * 1-5' },
+            { label: 'Weekly Sunday', expr: '0 0 * * 0' },
+            { label: 'Monthly 1st', expr: '0 0 1 * *' },
+            { label: 'Yearly Jan 1', expr: '0 0 1 1 *' }
+        ];
+
+        const SHORTHAND = {
+            '@yearly': '0 0 1 1 *',
+            '@annually': '0 0 1 1 *',
+            '@monthly': '0 0 1 * *',
+            '@weekly': '0 0 * * 0',
+            '@daily': '0 0 * * *',
+            '@midnight': '0 0 * * *',
+            '@hourly': '0 * * * *'
+        };
+
+        const TIMEZONES = [
+            { value: 'UTC', label: 'UTC' },
+            { value: 'America/New_York', label: 'US/Eastern' },
+            { value: 'America/Chicago', label: 'US/Central' },
+            { value: 'America/Denver', label: 'US/Mountain' },
+            { value: 'America/Los_Angeles', label: 'US/Pacific' },
+            { value: 'America/Sao_Paulo', label: 'São Paulo' },
+            { value: 'Europe/London', label: 'London' },
+            { value: 'Europe/Paris', label: 'Paris' },
+            { value: 'Europe/Berlin', label: 'Berlin' },
+            { value: 'Europe/Moscow', label: 'Moscow' },
+            { value: 'Asia/Dubai', label: 'Dubai' },
+            { value: 'Asia/Kolkata', label: 'India (IST)' },
+            { value: 'Asia/Bangkok', label: 'Bangkok' },
+            { value: 'Asia/Shanghai', label: 'Shanghai' },
+            { value: 'Asia/Tokyo', label: 'Tokyo' },
+            { value: 'Asia/Seoul', label: 'Seoul' },
+            { value: 'Australia/Sydney', label: 'Sydney' },
+            { value: 'Pacific/Auckland', label: 'Auckland' }
+        ];
+
+        let builderState = {
+            minute: { type: 'every', value: '' },
+            hour: { type: 'every', value: '' },
+            dom: { type: 'every', value: '' },
+            month: { type: 'every', value: '' },
+            dow: { type: 'every', value: '' }
+        };
+
+        let syncing = false;
+
+        const expressionInput = document.getElementById('expression-input');
+        const expressionBar = document.getElementById('expression-bar');
+        const errorBar = document.getElementById('error-bar');
+        const descriptionEl = document.getElementById('description');
+        const nextRunsList = document.getElementById('next-runs-list');
+        const copyBtn = document.getElementById('copy-btn');
+        const toast = document.getElementById('toast');
+        const cheatToggle = document.getElementById('cheat-toggle');
+        const cheatContent = document.getElementById('cheat-content');
+        const tzSelect = document.getElementById('tz-select');
+        const builderCard = document.getElementById('builder-card');
+        const presetsRow = document.getElementById('presets-row');
+
+        function escapeHTML(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 1500);
+        }
+
+        function replaceMonthNames(field) {
+            let s = field.toUpperCase();
+            MONTH_ABBR.forEach((name, i) => {
+                s = s.replace(new RegExp(name, 'g'), String(i + 1));
+            });
+            return s;
+        }
+
+        function replaceDowNames(field) {
+            let s = field.toUpperCase();
+            DAY_ABBR.forEach((name, i) => {
+                s = s.replace(new RegExp(name, 'g'), String(i));
+            });
+            return s;
+        }
+
+        function expandField(field, min, max) {
+            const values = new Set();
+            const parts = field.split(',');
+            for (const part of parts) {
+                let rangePart = part;
+                let step = 1;
+                if (part.includes('/')) {
+                    const rp = part.split('/');
+                    rangePart = rp[0];
+                    step = parseInt(rp[1]);
+                    if (isNaN(step) || step <= 0) continue;
+                }
+                let start, end;
+                if (rangePart === '*') {
+                    start = min;
+                    end = max;
+                } else if (rangePart.includes('-')) {
+                    const [a, b] = rangePart.split('-').map(Number);
+                    if (isNaN(a) || isNaN(b)) continue;
+                    start = a;
+                    end = b;
+                } else {
+                    const v = parseInt(rangePart);
+                    if (isNaN(v)) continue;
+                    start = v;
+                    end = v;
+                }
+                if (step === 1 && rangePart !== '*' && !rangePart.includes('-') && !part.includes('/')) {
+                    values.add(start);
+                } else {
+                    for (let i = start; i <= end; i += step) {
+                        values.add(i);
+                    }
+                }
+            }
+            return values;
+        }
+
+        function parseExpression(expr) {
+            let e = expr.trim().toLowerCase();
+            if (SHORTHAND[e]) e = SHORTHAND[e];
+            const parts = e.split(/\s+/);
+            if (parts.length !== 5) return { error: 'Expression must have exactly 5 fields', fields: null };
+
+            const fieldDefs = [
+                { key: 'minute', min: 0, max: 59 },
+                { key: 'hour', min: 0, max: 23 },
+                { key: 'dom', min: 1, max: 31 },
+                { key: 'month', min: 1, max: 12, preprocess: replaceMonthNames },
+                { key: 'dow', min: 0, max: 6, preprocess: replaceDowNames }
+            ];
+
+            const parsed = {};
+            for (let i = 0; i < 5; i++) {
+                const def = fieldDefs[i];
+                let raw = parts[i];
+                if (def.preprocess) raw = def.preprocess(raw);
+                const values = expandField(raw, def.min, def.max);
+                if (values.size === 0) {
+                    return { error: `Invalid value for ${FIELDS[i].label}: "${parts[i]}"`, fields: null };
+                }
+                for (const v of values) {
+                    if (v < def.min || v > def.max) {
+                        return { error: `${FIELDS[i].label} value ${v} is out of range (${def.min}-${def.max})`, fields: null };
+                    }
+                }
+                const isWild = raw === '*' || (values.size === (def.max - def.min + 1) && [...values].every(v => v >= def.min && v <= def.max));
+                parsed[def.key] = { values, isWild, raw: parts[i] };
+            }
+
+            return { error: null, fields: parsed };
+        }
+
+        function daysInMonth(month, year) {
+            return new Date(year, month, 0).getDate();
+        }
+
+        function getDayOfWeek(year, month, day) {
+            return new Date(year, month - 1, day).getDay();
+        }
+
+        function getNowInTz(tz) {
+            const now = new Date();
+            try {
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: tz, year: 'numeric', month: 'numeric', day: 'numeric',
+                    hour: 'numeric', minute: 'numeric', hour12: false
+                }).formatToParts(now);
+                const get = (type) => {
+                    const p = parts.find(p => p.type === type);
+                    return p ? parseInt(p.value) : 0;
+                };
+                let hour = get('hour');
+                if (hour === 24) hour = 0;
+                return { year: get('year'), month: get('month'), day: get('day'), hour, minute: get('minute') };
+            } catch {
+                const d = new Date();
+                return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate(), hour: d.getHours(), minute: d.getMinutes() };
+            }
+        }
+
+        function findNext(parsed, start) {
+            const c = { ...start };
+            c.minute++;
+            if (c.minute > 59) { c.minute = 0; c.hour++; }
+            if (c.hour > 23) { c.hour = 0; c.day++; }
+            if (c.day > daysInMonth(c.month, c.year)) { c.day = 1; c.month++; }
+            if (c.month > 12) { c.month = 1; c.year++; }
+
+            const maxYear = start.year + 5;
+
+            for (let safety = 0; safety < 600000; safety++) {
+                if (c.year > maxYear) return null;
+
+                if (!parsed.month.values.has(c.month)) {
+                    const sorted = [...parsed.month.values].sort((a, b) => a - b);
+                    const next = sorted.find(v => v > c.month);
+                    if (next) {
+                        c.month = next;
+                    } else {
+                        c.year++;
+                        c.month = sorted[0];
+                    }
+                    c.day = 1; c.hour = 0; c.minute = 0;
+                    continue;
+                }
+
+                const dim = daysInMonth(c.month, c.year);
+                if (c.day > dim) {
+                    c.day = 1; c.month++; c.hour = 0; c.minute = 0;
+                    if (c.month > 12) { c.month = 1; c.year++; }
+                    continue;
+                }
+
+                const domMatch = parsed.dom.values.has(c.day);
+                const dow = getDayOfWeek(c.year, c.month, c.day);
+                const dowMatch = parsed.dow.values.has(dow);
+                const dayOk = (parsed.dom.isWild && parsed.dow.isWild) ? true :
+                              (parsed.dom.isWild) ? dowMatch :
+                              (parsed.dow.isWild) ? domMatch :
+                              domMatch || dowMatch;
+
+                if (!dayOk) {
+                    c.day++; c.hour = 0; c.minute = 0;
+                    continue;
+                }
+
+                if (!parsed.hour.values.has(c.hour)) {
+                    const sorted = [...parsed.hour.values].sort((a, b) => a - b);
+                    const next = sorted.find(v => v > c.hour);
+                    if (next) {
+                        c.hour = next;
+                    } else {
+                        c.day++; c.hour = 0;
+                    }
+                    c.minute = 0;
+                    continue;
+                }
+
+                if (!parsed.minute.values.has(c.minute)) {
+                    const sorted = [...parsed.minute.values].sort((a, b) => a - b);
+                    const next = sorted.find(v => v > c.minute);
+                    if (next) {
+                        c.minute = next;
+                    } else {
+                        c.hour++; c.minute = 0;
+                    }
+                    continue;
+                }
+
+                return { ...c };
+            }
+
+            return null;
+        }
+
+        function getNextRuns(parsed, count, tz) {
+            const results = [];
+            const now = getNowInTz(tz);
+            let current = { ...now };
+
+            for (let i = 0; i < count; i++) {
+                const next = findNext(parsed, current);
+                if (!next) break;
+                results.push(next);
+                current = next;
+            }
+
+            return results;
+        }
+
+        function formatHourMin(hour, minute) {
+            const h = String(hour).padStart(2, '0');
+            const m = String(minute).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        function formatTime12(hour, minute) {
+            const period = hour >= 12 ? 'PM' : 'AM';
+            const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+            return `${h12}:${String(minute).padStart(2, '0')} ${period}`;
+        }
+
+        function formatRunTime(run) {
+            const dayName = DAY_ABBR[getDayOfWeek(run.year, run.month, run.day)];
+            const monthName = MONTH_ABBR[run.month - 1];
+            return `${dayName}, ${monthName} ${run.day}, ${run.year} at ${formatTime12(run.hour, run.minute)}`;
+        }
+
+        function timeAgo(run, now) {
+            const diffMins = (run.year - now.year) * 525600 +
+                (run.month - now.month) * 43800 +
+                (run.day - now.day) * 1440 +
+                (run.hour - now.hour) * 60 +
+                (run.minute - now.minute);
+            if (diffMins < 60) return `in ${diffMins}m`;
+            if (diffMins < 1440) return `in ${Math.floor(diffMins / 60)}h ${diffMins % 60}m`;
+            if (diffMins < 10080) return `in ${Math.floor(diffMins / 1440)}d`;
+            return `in ${Math.floor(diffMins / 10080)}w`;
+        }
+
+        function describeExpression(expr) {
+            let e = expr.trim().toLowerCase();
+            const originalShorthand = e.startsWith('@') ? e : null;
+            if (SHORTHAND[e]) e = SHORTHAND[e];
+            const parts = e.split(/\s+/);
+            if (parts.length !== 5) return '';
+
+            const [minF, hrF, domF, monF, dowF] = parts;
+
+            const isStar = (f) => f === '*';
+            const isStep = (f) => f.includes('/');
+            const isRange = (f) => f.includes('-') && !f.includes('/');
+            const isList = (f) => f.includes(',') && !f.includes('/') && !f.includes('-');
+            const getStep = (f) => parseInt(f.split('/')[1]);
+            const getRange = (f) => f.split('-').map(Number);
+
+            if (originalShorthand) {
+                const descs = {
+                    '@yearly': 'Runs once a year on January 1 at midnight',
+                    '@annually': 'Runs once a year on January 1 at midnight',
+                    '@monthly': 'Runs once a month on the 1st at midnight',
+                    '@weekly': 'Runs once a week on Sunday at midnight',
+                    '@daily': 'Runs once a day at midnight',
+                    '@midnight': 'Runs once a day at midnight',
+                    '@hourly': 'Runs once an hour, on the hour'
+                };
+                return descs[originalShorthand] || '';
+            }
+
+            if (isStar(minF) && isStar(hrF) && isStar(domF) && isStar(monF) && isStar(dowF)) {
+                return 'Every minute';
+            }
+
+            if (isStep(minF) && isStar(hrF) && isStar(domF) && isStar(monF) && isStar(dowF)) {
+                return `Every ${getStep(minF)} minutes`;
+            }
+
+            if (isStep(hrF) && isStar(domF) && isStar(monF) && isStar(dowF) && (minF === '0' || isStar(minF))) {
+                const step = getStep(hrF);
+                return `Every ${step} hour${step > 1 ? 's' : ''}, on the hour`;
+            }
+
+            if (isStep(minF) && isStep(hrF) && isStar(domF) && isStar(monF) && isStar(dowF)) {
+                return `Every ${getStep(hrF)} hours, at minute ${getStep(minF) === 0 ? 0 : '*/' + minF}`;
+            }
+
+            const timeParts = [];
+            const dateParts = [];
+
+            if (isStar(hrF) && isStar(minF)) {
+                timeParts.push('every minute');
+            } else if (isStar(hrF)) {
+                if (isStep(minF)) {
+                    timeParts.push(`every ${getStep(minF)} minutes`);
+                } else {
+                    timeParts.push(`at ${formatHourMin(parseInt(minF), 0)}`);
+                }
+            } else {
+                const hour = parseInt(hrF);
+                const minute = parseInt(minF);
+                if (!isNaN(hour) && !isNaN(minute)) {
+                    timeParts.push(`at ${formatTime12(hour, minute)}`);
+                } else if (!isNaN(hour)) {
+                    timeParts.push(`at hour ${hour}`);
+                }
+            }
+
+            if (!isStar(monF)) {
+                if (isList(monF)) {
+                    const months = monF.split(',').map(m => MONTH_ABBR[parseInt(m) - 1] || m).join(', ');
+                    dateParts.push(`in ${months}`);
+                } else if (isRange(monF)) {
+                    const [a, b] = getRange(monF);
+                    dateParts.push(`from ${MONTH_ABBR[a - 1]} to ${MONTH_ABBR[b - 1]}`);
+                } else if (isStep(monF)) {
+                    const step = getStep(monF);
+                    dateParts.push(`every ${step} months`);
+                } else {
+                    const m = parseInt(monF);
+                    if (!isNaN(m)) dateParts.push(`in ${MONTH_ABBR[m - 1]}`);
+                }
+            }
+
+            const hasDom = !isStar(domF);
+            const hasDow = !isStar(dowF);
+
+            if (hasDow && !hasDom) {
+                if (isRange(dowF)) {
+                    const [a, b] = getRange(dowF);
+                    dateParts.push(`every ${DAY_ABBR[a]} through ${DAY_ABBR[b]}`);
+                } else if (isList(dowF)) {
+                    const days = dowF.split(',').map(d => DAY_ABBR[parseInt(d)] || d).join(', ');
+                    dateParts.push(`on ${days}`);
+                } else {
+                    const d = parseInt(dowF);
+                    if (!isNaN(d)) dateParts.push(`every ${DAY_NAMES[d]}`);
+                }
+            } else if (hasDom && !hasDow) {
+                if (isRange(domF)) {
+                    const [a, b] = getRange(domF);
+                    dateParts.push(`on days ${a} through ${b}`);
+                } else if (isList(domF)) {
+                    dateParts.push(`on days ${domF}`);
+                } else if (isStep(domF)) {
+                    const step = getStep(domF);
+                    dateParts.push(`every ${step} days`);
+                } else {
+                    const d = parseInt(domF);
+                    const suffix = d === 1 || d === 21 || d === 31 ? 'st' : d === 2 || d === 22 ? 'nd' : d === 3 || d === 23 ? 'rd' : 'th';
+                    dateParts.push(`on the ${d}${suffix}`);
+                }
+            } else if (hasDom && hasDow) {
+                if (isRange(dowF)) {
+                    const [a, b] = getRange(dowF);
+                    dateParts.push(`on days ${domF} or ${DAY_ABBR[a]}-${DAY_ABBR[b]}`);
+                } else {
+                    dateParts.push(`on day ${domF} or ${dowF}`);
+                }
+            }
+
+            if (!hasDom && !hasDow && isStar(monF)) {
+                dateParts.push('every day');
+            }
+
+            const dateStr = dateParts.join(' ');
+            const timeStr = timeParts.join(' ');
+
+            if (dateStr && timeStr) return `${dateStr}, ${timeStr}`;
+            if (dateStr) return dateStr;
+            if (timeStr) return timeStr;
+            return expr;
+        }
+
+        function detectFieldType(raw) {
+            if (raw === '*') return 'every';
+            if (/^\*\/\d+$/.test(raw)) return 'step';
+            if (/^\d+$/.test(raw)) return 'specific';
+            if (/^\d+(,\d+)+$/.test(raw)) return 'specific';
+            if (/^\d+-\d+$/.test(raw)) return 'range';
+            return 'custom';
+        }
+
+        function fieldToExpression(state, fieldDef) {
+            const s = state[fieldDef.key];
+            switch (s.type) {
+                case 'every': return '*';
+                case 'step': return `*/${s.value || '1'}`;
+                case 'specific': return s.value || '0';
+                case 'range': {
+                    const parts = (s.value || '0-0').split('-');
+                    return `${parts[0] || fieldDef.min}-${parts[1] || fieldDef.max}`;
+                }
+                case 'custom': return s.value || '*';
+                default: return '*';
+            }
+        }
+
+        function buildExpression() {
+            return FIELDS.map(f => fieldToExpression(builderState, f)).join(' ');
+        }
+
+        function initPresets() {
+            presetsRow.innerHTML = PRESETS.map((p, i) =>
+                `<button class="preset-btn" data-expr="${escapeHTML(p.expr)}">${escapeHTML(p.label)}</button>`
+            ).join('');
+
+            presetsRow.addEventListener('click', (e) => {
+                const btn = e.target.closest('.preset-btn');
+                if (!btn) return;
+                const expr = btn.dataset.expr;
+                expressionInput.value = expr;
+                updateFromExpression();
+                updatePresetHighlight(expr);
+            });
+        }
+
+        function updatePresetHighlight(expr) {
+            presetsRow.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.expr === expr);
+            });
+        }
+
+        function initTimezones() {
+            const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const options = [];
+            const added = new Set();
+            if (!TIMEZONES.find(tz => tz.value === localTz)) {
+                options.push({ value: localTz, label: `${localTz} (Local)` });
+                added.add(localTz);
+            }
+            TIMEZONES.forEach(tz => {
+                if (!added.has(tz.value)) {
+                    options.push(tz);
+                    added.add(tz.value);
+                }
+            });
+            tzSelect.innerHTML = options.map(o =>
+                `<option value="${o.value}"${o.value === localTz ? ' selected' : ''}>${o.label}</option>`
+            ).join('');
+        }
+
+        function renderBuilder() {
+            builderCard.innerHTML = FIELDS.map(f => {
+                const s = builderState[f.key];
+                return `
+                    <div class="builder-field" data-field="${f.key}">
+                        <div class="field-label">${f.label}</div>
+                        <select class="field-type-select" data-field="${f.key}">
+                            <option value="every"${s.type === 'every' ? ' selected' : ''}>Every</option>
+                            <option value="step"${s.type === 'step' ? ' selected' : ''}>Every N</option>
+                            <option value="specific"${s.type === 'specific' ? ' selected' : ''}>Specific</option>
+                            <option value="range"${s.type === 'range' ? ' selected' : ''}>Range</option>
+                            <option value="custom"${s.type === 'custom' ? ' selected' : ''}>Custom</option>
+                        </select>
+                        <div class="field-inputs" data-field="${f.key}">
+                            ${renderFieldInputs(f.key, s, f)}
+                        </div>
+                        <div class="field-preview" data-field="${f.key}">${escapeHTML(fieldToExpression(builderState, f))}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderFieldInputs(key, state, fieldDef) {
+            switch (state.type) {
+                case 'every':
+                    return '<span class="every-label">*</span>';
+                case 'step':
+                    return `<span class="step-prefix">*/</span><input type="number" min="1" max="${fieldDef.max}" value="${state.value || '2'}" data-input="step" class="full-width" placeholder="N">`;
+                case 'specific':
+                    return `<input type="text" value="${escapeHTML(state.value || String(fieldDef.min))}" data-input="specific" class="full-width" placeholder="e.g. 1,3,5">`;
+                case 'range':
+                    return (() => {
+                        const parts = (state.value || `${fieldDef.min}-${fieldDef.max}`).split('-');
+                        return `<input type="number" min="${fieldDef.min}" max="${fieldDef.max}" value="${parts[0] || fieldDef.min}" data-input="range-from" placeholder="From"><span class="range-sep">—</span><input type="number" min="${fieldDef.min}" max="${fieldDef.max}" value="${parts[1] || fieldDef.max}" data-input="range-to" placeholder="To">`;
+                    })();
+                case 'custom':
+                    return `<input type="text" value="${escapeHTML(state.value || '*')}" data-input="custom" class="full-width" placeholder="Cron expression">`;
+                default:
+                    return '';
+            }
+        }
+
+        function updateFieldInputs(key) {
+            const fieldDef = FIELDS.find(f => f.key === key);
+            const s = builderState[key];
+            const inputsContainer = builderCard.querySelector(`.field-inputs[data-field="${key}"]`);
+            const preview = builderCard.querySelector(`.field-preview[data-field="${key}"]`);
+            if (inputsContainer) inputsContainer.innerHTML = renderFieldInputs(key, s, fieldDef);
+            if (preview) preview.textContent = fieldToExpression(builderState, fieldDef);
+        }
+
+        function updateBuilderFromExpr(parsed) {
+            const fieldDefs = [
+                { key: 'minute', min: 0, max: 59 },
+                { key: 'hour', min: 0, max: 23 },
+                { key: 'dom', min: 1, max: 31 },
+                { key: 'month', min: 1, max: 12, preprocess: replaceMonthNames },
+                { key: 'dow', min: 0, max: 6, preprocess: replaceDowNames }
+            ];
+
+            const parts = expressionInput.value.trim().toLowerCase();
+            const exprParts = (SHORTHAND[parts] || parts).split(/\s+/);
+
+            fieldDefs.forEach((def, i) => {
+                let raw = exprParts[i] || '*';
+                if (def.preprocess) raw = def.preprocess(raw);
+                const type = detectFieldType(raw);
+                let value = '';
+                if (type === 'step') value = raw.split('/')[1];
+                else if (type === 'specific') value = raw;
+                else if (type === 'range') value = raw;
+                else if (type === 'custom') value = raw;
+                builderState[def.key] = { type, value };
+            });
+
+            renderBuilder();
+        }
+
+        function updateFromExpression() {
+            syncing = true;
+            const expr = expressionInput.value;
+            const result = parseExpression(expr);
+
+            if (result.error) {
+                errorBar.textContent = result.error;
+                errorBar.classList.add('visible');
+                expressionBar.classList.add('has-error');
+                descriptionEl.textContent = '';
+                descriptionEl.className = 'description-text empty';
+                nextRunsList.innerHTML = '<div class="next-runs-empty">Fix the expression to see upcoming runs</div>';
+            } else {
+                errorBar.classList.remove('visible');
+                expressionBar.classList.remove('has-error');
+
+                const desc = describeExpression(expr);
+                descriptionEl.textContent = desc || expr;
+                descriptionEl.className = desc ? 'description-text' : 'description-text empty';
+
+                updateBuilderFromExpr(result.fields);
+
+                const tz = tzSelect.value;
+                const runs = getNextRuns(result.fields, 10, tz);
+                renderNextRuns(runs, tz);
+            }
+
+            updatePresetHighlight(expr.trim());
+            syncing = false;
+        }
+
+        function renderNextRuns(runs, tz) {
+            if (!runs.length) {
+                nextRunsList.innerHTML = '<div class="next-runs-empty">No upcoming runs found</div>';
+                return;
+            }
+
+            const now = getNowInTz(tz);
+            const items = runs.map((run, i) =>
+                `<div class="next-run-item">
+                    <span class="next-run-index">${i + 1}</span>
+                    <span class="next-run-time">${escapeHTML(formatRunTime(run))}</span>
+                    <span class="next-run-relative">${escapeHTML(timeAgo(run, now))}</span>
+                </div>`
+            ).join('');
+            nextRunsList.innerHTML = `<div class="next-runs-list">${items}</div>`;
+        }
+
+        function onBuilderChange() {
+            if (syncing) return;
+            syncing = true;
+            const expr = buildExpression();
+            expressionInput.value = expr;
+            syncing = false;
+            updateFromExpression();
+        }
+
+        builderCard.addEventListener('change', (e) => {
+            const sel = e.target.closest('.field-type-select');
+            if (sel) {
+                const key = sel.dataset.field;
+                const type = sel.value;
+                const fieldDef = FIELDS.find(f => f.key === key);
+                let value = '';
+                if (type === 'step') value = '2';
+                else if (type === 'specific') value = String(fieldDef.min);
+                else if (type === 'range') value = `${fieldDef.min}-${fieldDef.max}`;
+                else if (type === 'custom') value = '*';
+                builderState[key] = { type, value };
+                updateFieldInputs(key);
+                onBuilderChange();
+            }
+        });
+
+        builderCard.addEventListener('input', (e) => {
+            const input = e.target.closest('input');
+            if (!input) return;
+            const container = input.closest('.field-inputs');
+            if (!container) return;
+            const key = container.dataset.field;
+            const s = builderState[key];
+            const fieldDef = FIELDS.find(f => f.key === key);
+
+            switch (s.type) {
+                case 'step':
+                    s.value = input.value;
+                    break;
+                case 'specific':
+                    s.value = input.value;
+                    break;
+                case 'range': {
+                    const fromInput = container.querySelector('[data-input="range-from"]');
+                    const toInput = container.querySelector('[data-input="range-to"]');
+                    if (fromInput && toInput) s.value = `${fromInput.value}-${toInput.value}`;
+                    break;
+                }
+                case 'custom':
+                    s.value = input.value;
+                    break;
+            }
+
+            const preview = builderCard.querySelector(`.field-preview[data-field="${key}"]`);
+            if (preview) preview.textContent = fieldToExpression(builderState, fieldDef);
+
+            onBuilderChange();
+        });
+
+        expressionInput.addEventListener('input', () => {
+            if (syncing) return;
+            updateFromExpression();
+        });
+
+        tzSelect.addEventListener('change', () => {
+            updateFromExpression();
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const text = expressionInput.value;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                copyBtn.textContent = 'Copied';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 1200);
+            });
+        });
+
+        cheatToggle.addEventListener('click', () => {
+            cheatToggle.classList.toggle('open');
+            cheatContent.classList.toggle('open');
+        });
+
+        function init() {
+            initPresets();
+            initTimezones();
+            updateFromExpression();
+        }
+
+        init();
+    </script>
+</body>
+</html>
