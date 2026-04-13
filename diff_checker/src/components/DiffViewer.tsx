@@ -12,27 +12,31 @@ interface DiffViewerProps {
 export function DiffViewer({ result, view }: DiffViewerProps) {
   if (result.isIdentical) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="p-3 rounded-full bg-emerald-500/10">
-          <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+      <div className="flex flex-col items-center justify-center py-32 gap-6 animate-in fade-in zoom-in duration-700">
+        <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+          <CheckCircle2 className="w-10 h-10 text-emerald-500" />
         </div>
         <div className="text-center">
-          <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-            No Differences Found
-          </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Both texts are identical.
+          <h3 className="text-xl font-bold tracking-tight text-white mb-2">
+            Identical Content
+          </h3>
+          <p className="text-zinc-500 text-sm max-w-[300px] mx-auto leading-relaxed">
+            No differences found between the original and modified text snippets.
           </p>
         </div>
       </div>
     );
   }
 
-  if (view === "side-by-side") {
-    return <SideBySideView lines={result.lines} />;
-  }
-
-  return <UnifiedView lines={result.lines} />;
+  return (
+    <div className="flex flex-col h-full bg-[#080808] font-mono selection:bg-orange-500/30">
+      {view === "side-by-side" ? (
+        <SideBySideView lines={result.lines} />
+      ) : (
+        <UnifiedView lines={result.lines} />
+      )}
+    </div>
+  );
 }
 
 function SideBySideView({ lines }: { lines: DiffLine[] }) {
@@ -81,26 +85,28 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
   }, [lines]);
 
   return (
-    <div className="grid grid-cols-2 divide-x divide-zinc-200 dark:divide-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        {paired.map((pair, i) => (
-          <DiffLineRow
-            key={`l-${i}`}
-            line={pair.left}
-            side="left"
-            pairedLine={pair.right}
-          />
-        ))}
+    <div className="grid grid-cols-2 h-full divide-x divide-white/5 overflow-hidden">
+      <div className="overflow-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="min-w-full">
+          {paired.map((pair, i) => (
+            <DiffLineRow
+              key={`l-${i}`}
+              line={pair.left}
+              side="left"
+            />
+          ))}
+        </div>
       </div>
-      <div className="overflow-x-auto">
-        {paired.map((pair, i) => (
-          <DiffLineRow
-            key={`r-${i}`}
-            line={pair.right}
-            side="right"
-            pairedLine={pair.left}
-          />
-        ))}
+      <div className="overflow-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <div className="min-w-full">
+          {paired.map((pair, i) => (
+            <DiffLineRow
+              key={`r-${i}`}
+              line={pair.right}
+              side="right"
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -108,10 +114,12 @@ function SideBySideView({ lines }: { lines: DiffLine[] }) {
 
 function UnifiedView({ lines }: { lines: DiffLine[] }) {
   return (
-    <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-x-auto">
-      {lines.map((line, i) => (
-        <DiffLineRow key={i} line={line} side="unified" />
-      ))}
+    <div className="overflow-auto h-full scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+      <div className="min-w-full">
+        {lines.map((line, i) => (
+          <DiffLineRow key={i} line={line} side="unified" />
+        ))}
+      </div>
     </div>
   );
 }
@@ -122,7 +130,6 @@ function DiffLineRow({
 }: {
   line: DiffLine | null;
   side: "left" | "right" | "unified";
-  pairedLine?: DiffLine | null;
 }) {
   const renderContent = useCallback(
     (l: DiffLine) => {
@@ -130,7 +137,7 @@ function DiffLineRow({
         return l.content;
       }
 
-      let result: React.ReactNode[] = [];
+      const result: React.ReactNode[] = [];
       let pos = 0;
 
       for (const hl of l.wordHighlights) {
@@ -142,16 +149,17 @@ function DiffLineRow({
           );
         }
         result.push(
-          <span
+          <mark
             key={`h-${hl.start}`}
             className={cn(
+              "p-0 rounded-sm bg-transparent",
               l.type === "removed"
-                ? "bg-rose-500/20 text-rose-600 dark:text-rose-300"
-                : "bg-emerald-500/20 text-emerald-600 dark:text-emerald-300"
+                ? "bg-rose-500/40 text-white"
+                : "bg-emerald-500/40 text-white"
             )}
           >
             {l.content.slice(hl.start, hl.end)}
-          </span>
+          </mark>
         );
         pos = hl.end;
       }
@@ -169,11 +177,10 @@ function DiffLineRow({
 
   if (!line) {
     return (
-      <div className="flex min-h-[22px]">
+      <div className="flex min-h-[22px] bg-white/[0.02]">
         <LineNum num={undefined} />
-        <LineNum num={undefined} />
-        <span className="flex-1 px-3 py-px font-mono text-[13px] leading-relaxed text-zinc-300 dark:text-zinc-700">
-          {"\u00A0"}
+        <span className="flex-1 px-3 py-px font-mono text-[12px] leading-relaxed opacity-20 select-none">
+          ~
         </span>
       </div>
     );
@@ -185,41 +192,40 @@ function DiffLineRow({
   return (
     <div
       className={cn(
-        "flex min-h-[22px]",
-        isRemoved && "bg-rose-500/8 dark:bg-rose-500/10",
-        isAdded && "bg-emerald-500/8 dark:bg-emerald-500/10"
+        "flex min-h-[22px] group transition-colors",
+        isRemoved && "bg-rose-500/10 hover:bg-rose-500/15",
+        isAdded && "bg-emerald-500/10 hover:bg-emerald-500/15",
+        !isRemoved && !isAdded && "hover:bg-white/[0.03]"
       )}
     >
       {side === "unified" ? (
         <>
-          <LineNum num={line.leftNum} />
-          <LineNum num={line.rightNum} />
+          <LineNum num={line.leftNum} className="border-r border-white/5" />
+          <LineNum num={line.rightNum} className="border-r border-white/5" />
           <SignBadge type={line.type} />
           <span
             className={cn(
-              "flex-1 px-2 py-px font-mono text-[13px] leading-relaxed whitespace-pre",
-              isRemoved && "text-rose-700 dark:text-rose-300",
-              isAdded && "text-emerald-700 dark:text-emerald-300",
-              line.type === "unchanged" &&
-                "text-zinc-700 dark:text-zinc-300"
+              "flex-1 px-3 py-px font-mono text-[12px] leading-relaxed whitespace-pre",
+              isRemoved && "text-rose-400",
+              isAdded && "text-emerald-400",
+              line.type === "unchanged" && "text-zinc-400"
             )}
           >
-            {line.wordHighlights ? renderContent(line) : line.content}
+            {line.wordHighlights ? renderContent(line) : line.content || " "}
           </span>
         </>
       ) : (
         <>
-          <LineNum num={side === "left" ? line.leftNum : line.rightNum} />
+          <LineNum num={side === "left" ? line.leftNum : line.rightNum} className="border-r border-white/5" />
           <span
             className={cn(
-              "flex-1 px-3 py-px font-mono text-[13px] leading-relaxed whitespace-pre",
-              isRemoved && "text-rose-700 dark:text-rose-300",
-              isAdded && "text-emerald-700 dark:text-emerald-300",
-              line.type === "unchanged" &&
-                "text-zinc-700 dark:text-zinc-300"
+              "flex-1 px-4 py-px font-mono text-[12px] leading-relaxed whitespace-pre",
+              isRemoved && "text-rose-400",
+              isAdded && "text-emerald-400",
+              line.type === "unchanged" && "text-zinc-400"
             )}
           >
-            {line.wordHighlights ? renderContent(line) : line.content}
+            {line.wordHighlights ? renderContent(line) : line.content || " "}
           </span>
         </>
       )}
@@ -227,9 +233,12 @@ function DiffLineRow({
   );
 }
 
-function LineNum({ num }: { num: number | undefined }) {
+function LineNum({ num, className }: { num: number | undefined; className?: string }) {
   return (
-    <span className="w-10 shrink-0 text-right pr-2 py-px select-none font-mono text-[11px] leading-relaxed text-zinc-400/60 dark:text-zinc-600/60 bg-zinc-50/50 dark:bg-zinc-900/50">
+    <span className={cn(
+      "w-12 shrink-0 text-right pr-3 py-px select-none font-mono text-[10px] leading-relaxed text-zinc-600 bg-black/40",
+      className
+    )}>
       {num ?? ""}
     </span>
   );
@@ -239,10 +248,10 @@ function SignBadge({ type }: { type: DiffLine["type"] }) {
   return (
     <span
       className={cn(
-        "w-5 shrink-0 text-center py-px select-none font-mono text-[13px] font-bold leading-relaxed",
-        type === "removed" && "text-rose-500",
-        type === "added" && "text-emerald-500",
-        type === "unchanged" && "text-zinc-300 dark:text-zinc-700"
+        "w-6 shrink-0 flex items-center justify-center py-px select-none font-mono text-[12px] font-bold leading-relaxed",
+        type === "removed" && "text-rose-500 bg-rose-500/10",
+        type === "added" && "text-emerald-500 bg-emerald-500/10",
+        type === "unchanged" && "text-zinc-800"
       )}
     >
       {type === "removed" ? "-" : type === "added" ? "+" : " "}

@@ -30,7 +30,6 @@ export function Toolbar({
   diffResult,
   left,
   right,
-  onBack,
 }: ToolbarProps) {
   const [copied, setCopied] = useState(false);
 
@@ -42,83 +41,84 @@ export function Toolbar({
   }, [left, right]);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
-        >
-          &larr; Edit Inputs
-        </button>
-
-        {diffResult && !diffResult.isIdentical && (
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-              +{diffResult.additions}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400">
-              -{diffResult.deletions}
-            </span>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-white/5 border border-white/5 rounded-xl">
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex items-center gap-1.5 p-1 bg-black rounded-lg border border-white/5">
+            <ViewToggle
+              active={view === "side-by-side"}
+              onClick={() => onViewChange("side-by-side")}
+              icon={<Columns2 className="w-3.5 h-3.5" />}
+              label="Side by side"
+            />
+            <ViewToggle
+              active={view === "unified"}
+              onClick={() => onViewChange("unified")}
+              icon={<Rows3 className="w-3.5 h-3.5" />}
+              label="Unified"
+            />
           </div>
-        )}
-      </div>
 
-      <div className="flex items-center justify-between gap-4 p-2 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-        <div className="flex items-center gap-1">
-          <ViewToggle
-            active={view === "side-by-side"}
-            onClick={() => onViewChange("side-by-side")}
-            icon={<Columns2 className="w-3.5 h-3.5" />}
-            label="Side by side"
-          />
-          <ViewToggle
-            active={view === "unified"}
-            onClick={() => onViewChange("unified")}
-            icon={<Rows3 className="w-3.5 h-3.5" />}
-            label="Unified"
-          />
-
-          <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-700 mx-1.5" />
-
-          <OptionToggle
-            active={options.ignoreCase}
-            onClick={() =>
-              onOptionsChange({ ...options, ignoreCase: !options.ignoreCase })
-            }
-            icon={<CaseSensitive className="w-3.5 h-3.5" />}
-            label="Ignore case"
-          />
-          <OptionToggle
-            active={options.ignoreWhitespace}
-            onClick={() =>
-              onOptionsChange({
-                ...options,
-                ignoreWhitespace: !options.ignoreWhitespace,
-              })
-            }
-            icon={<Space className="w-3.5 h-3.5" />}
-            label="Ignore whitespace"
-          />
+          <div className="flex items-center gap-2">
+            <OptionToggle
+              active={options.ignoreCase}
+              onClick={() =>
+                onOptionsChange({ ...options, ignoreCase: !options.ignoreCase })
+              }
+              icon={<CaseSensitive className="w-3.5 h-3.5" />}
+              label="Ignore case"
+            />
+            <OptionToggle
+              active={options.ignoreWhitespace}
+              onClick={() =>
+                onOptionsChange({
+                  ...options,
+                  ignoreWhitespace: !options.ignoreWhitespace,
+                })
+              }
+              icon={<Space className="w-3.5 h-3.5" />}
+              label="Ignore whitespace"
+            />
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-md border border-zinc-200 dark:border-zinc-700 transition-colors"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="text-emerald-600 dark:text-emerald-400">Copied</span>
-            </>
-          ) : (
-            <>
-              <Copy className="w-3.5 h-3.5" />
-              Copy Diff
-            </>
+        <div className="flex items-center gap-6">
+          {diffResult && !diffResult.isIdentical && (
+            <div className="flex items-center gap-4">
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Additions</span>
+                <span className="text-sm font-mono font-bold text-emerald-500">
+                  +{diffResult.additions}
+                </span>
+              </div>
+              <div className="w-px h-6 bg-white/5" />
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Deletions</span>
+                <span className="text-sm font-mono font-bold text-rose-500">
+                  -{diffResult.deletions}
+                </span>
+              </div>
+            </div>
           )}
-        </button>
+
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="group flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white bg-orange-500 hover:bg-orange-600 transition-all rounded-lg shadow-lg shadow-orange-500/20"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5" />
+                <span>Copied Diff</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Unified Diff</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -140,10 +140,10 @@ function ViewToggle({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors",
+        "flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
         active
-          ? "bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm"
-          : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          ? "bg-white/10 text-white shadow-inner"
+          : "text-zinc-500 hover:text-zinc-300"
       )}
     >
       {icon}
@@ -168,14 +168,14 @@ function OptionToggle({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors",
+        "flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all",
         active
-          ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-          : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+          ? "bg-orange-500/10 border-orange-500/50 text-orange-500"
+          : "bg-white/5 border-transparent text-zinc-500 hover:text-zinc-300"
       )}
     >
       {icon}
-      <span className="hidden sm:inline">{label}</span>
+      <span className="hidden lg:inline">{label}</span>
     </button>
   );
 }

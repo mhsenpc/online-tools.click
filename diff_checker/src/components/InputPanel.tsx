@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { ArrowLeftRight, X } from "lucide-react";
+import { ArrowLeftRight, Trash2 } from "lucide-react";
 import { cn } from "../lib/cn";
 
 interface InputPanelProps {
@@ -33,42 +33,46 @@ export function InputPanel({
   );
 
   return (
-    <div className="flex flex-col gap-3 h-full">
+    <div className="flex flex-col gap-4 h-full">
       <div className="flex items-center justify-between px-1">
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <div className={cn(
-            "w-2 h-2 rounded-full transition-colors",
-            focused === "left" ? "bg-blue-500" : "bg-zinc-300 dark:bg-zinc-600"
+            "w-1.5 h-1.5 rounded-full transition-all duration-300",
+            focused === "left" ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]" : "bg-white/10"
           )} />
           <div className={cn(
-            "w-2 h-2 rounded-full transition-colors",
-            focused === "right" ? "bg-blue-500" : "bg-zinc-300 dark:bg-zinc-600"
+            "w-1.5 h-1.5 rounded-full transition-all duration-300",
+            focused === "right" ? "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]" : "bg-white/10"
           )} />
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           <button
             type="button"
             onClick={onSwap}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-md transition-colors"
+            className="group flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-none border border-white/5 transition-all"
           >
-            <ArrowLeftRight className="w-3.5 h-3.5" />
+            <ArrowLeftRight className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
             Swap
           </button>
           <button
             type="button"
             onClick={onClear}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-md transition-colors"
+            className="group flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-rose-500 bg-white/5 hover:bg-rose-500/10 rounded-none border border-white/5 transition-all"
           >
-            <X className="w-3.5 h-3.5" />
+            <Trash2 className="w-3 h-3" />
             Clear
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
-        <div className="relative flex flex-col">
-          <label className="absolute top-2.5 left-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
-            Original
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-0">
+        <div className="relative flex flex-col group">
+          <div className={cn(
+            "absolute inset-0 bg-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none",
+            focused === "left" && "opacity-100"
+          )} />
+          <label className="absolute top-3 left-4 text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 pointer-events-none z-10">
+            Original Text
           </label>
           <textarea
             value={left}
@@ -77,13 +81,17 @@ export function InputPanel({
             onBlur={() => setFocused(null)}
             onKeyDown={handleKeyDown}
             spellCheck={false}
-            className="w-full flex-1 resize-none rounded-lg border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-900 p-3 pt-8 font-mono text-[13px] leading-relaxed text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-shadow"
-            placeholder="Paste original text here..."
+            className="w-full flex-1 resize-none bg-transparent border border-white/10 hover:border-white/20 p-4 pt-10 font-mono text-[13px] leading-relaxed text-zinc-300 placeholder:text-zinc-700 focus:outline-none focus:border-orange-500/50 transition-all"
+            placeholder="Paste original content here..."
           />
         </div>
-        <div className="relative flex flex-col">
-          <label className="absolute top-2.5 left-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 pointer-events-none z-10">
-            Modified
+        <div className="relative flex flex-col group">
+          <div className={cn(
+            "absolute inset-0 bg-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none",
+            focused === "right" && "opacity-100"
+          )} />
+          <label className="absolute top-3 left-4 text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500 pointer-events-none z-10">
+            Modified Text
           </label>
           <textarea
             value={right}
@@ -92,8 +100,8 @@ export function InputPanel({
             onBlur={() => setFocused(null)}
             onKeyDown={handleKeyDown}
             spellCheck={false}
-            className="w-full flex-1 resize-none rounded-lg border border-zinc-200 dark:border-zinc-700/50 bg-white dark:bg-zinc-900 p-3 pt-8 font-mono text-[13px] leading-relaxed text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-shadow"
-            placeholder="Paste modified text here..."
+            className="w-full flex-1 resize-none bg-transparent border border-white/10 hover:border-white/20 p-4 pt-10 font-mono text-[13px] leading-relaxed text-zinc-300 placeholder:text-zinc-700 focus:outline-none focus:border-orange-500/50 transition-all"
+            placeholder="Paste modified content here..."
           />
         </div>
       </div>

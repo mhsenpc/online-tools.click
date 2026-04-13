@@ -252,7 +252,6 @@ if git status --porcelain | grep -q .; then
   git push origin "$PROD_BRANCH" --force
   echo ""
   echo -e "  ${GREEN}🚀 Successfully deployed!${NC}"
-  info "Website: https://online-tools.click"
 else
   warn "No changes detected — '$PROD_BRANCH' is already up to date"
 fi
@@ -271,4 +270,5 @@ echo ""
 echo "  Built    : ${BUILT_DIRS[*]:-none}"
 echo "  Static   : ${STATIC_DIRS[*]:-none}"
 echo "  Skipped  : ${ROOT_SKIPPED[*]:-none}"
+info "Website: https://online-tools.click"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
