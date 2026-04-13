@@ -837,7 +837,7 @@
                     attrs = attrs.replace(/\s([\w-]+)=/g, ' <span class="xml-attribute">$1</span>=');
                     // Highlight attribute values
                     attrs = attrs.replace(/="([^"]*)"/g, '="<span class="xml-value">$1</span>"');
-                    attrs = attrs.replace(/='([^']*)'/g, "'<span class="xml-value">$1</span>'");
+                    attrs = attrs.replace(/='([^']*)'/g, "='<span class=\"xml-value\">$1</span>'");
                 }
 
                 highlighted += attrs + end;
