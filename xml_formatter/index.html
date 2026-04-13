@@ -486,7 +486,7 @@
     <div class="container">
         <header>
             <h1>XML Formatter</h1>
-            <p class="subtitle">Format, validate, and minify XML instantly</p>
+            <p class="subtitle">Format and validate XML instantly</p>
         </header>
 
         <div class="toolbar">
@@ -496,12 +496,6 @@
                         <path d="M21 10H3M21 6H3M21 14H3M21 18H3"/>
                     </svg>
                     Format
-                </button>
-                <button class="btn" id="minifyBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                    Minify
                 </button>
                 <button class="btn" id="validateBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -612,7 +606,6 @@
         const outputContent = document.getElementById('outputContent');
         const outputDisplay = document.getElementById('outputDisplay');
         const formatBtn = document.getElementById('formatBtn');
-        const minifyBtn = document.getElementById('minifyBtn');
         const validateBtn = document.getElementById('validateBtn');
         const indentSelect = document.getElementById('indentSelect');
         const lineNumbersCheck = document.getElementById('lineNumbersCheck');
@@ -644,7 +637,6 @@
         // Event Listeners
         function setupEventListeners() {
             formatBtn.addEventListener('click', formatXml);
-            minifyBtn.addEventListener('click', minifyXml);
             validateBtn.addEventListener('click', validateXml);
             indentSelect.addEventListener('change', (e) => {
                 currentIndent = e.target.value;
@@ -748,39 +740,6 @@
             }
 
             return result;
-        }
-
-        // Minify XML
-        function minifyXml() {
-            const input = inputXml.value.trim();
-            if (!input) {
-                showError('Please enter some XML to minify.');
-                return;
-            }
-
-            hideError();
-
-            try {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(input, 'text/xml');
-
-                const parseError = xmlDoc.getElementsByTagName('parsererror');
-                if (parseError.length > 0) {
-                    throw new Error(parseError[0].textContent);
-                }
-
-                const serializer = new XMLSerializer();
-                let minified = serializer.serializeToString(xmlDoc);
-
-                // Remove extra whitespace between tags
-                minified = minified.replace(/>\s+</g, '><');
-
-                setOutput(minified);
-                setOutputStats('Minified', 'success');
-            } catch (error) {
-                showError(error.message || 'Invalid XML');
-                setOutputStats('Error', 'error');
-            }
         }
 
         // Validate XML

@@ -4,11 +4,11 @@
 This is a web platform that hosts various online tools (JSON viewer, MD5 decode, etc.). The main site is at `online-tools.click`, with subdomains for individual tools.
 
 ## Architecture
-- **Main Domain**: `online-tools.click` - Homepage/portal
-- **Subdomains**: Each tool has its own subdomain (e.g., `jsonviewer.online-tools.click`, `md5decode.online-tools.click`)
+- **Main Domain**: `online-tools.click` - Homepage with links to all tools and descriptions.
+- **Directories**: Each tool has its own folders
 
 ## Tech Stack
-- Portal directory: `/portal` (ready for implementation)
+- index.html: landing page for the main domain. it contains links to all the tools and a brief description of each.
 
 
 UI for all apps:
