@@ -1,181 +1,144 @@
-import {
-  Columns2,
-  Rows3,
-  CaseSensitive,
-  Space,
-  Copy,
-  Check,
-} from "lucide-react";
-import { useState, useCallback } from "react";
-import { cn } from "../lib/cn";
-import type { DiffView, DiffOptions, DiffResult } from "../hooks/useDiff";
-import { generateUnifiedDiffString } from "../hooks/useDiff";
+import React from 'react';
+import { 
+  ArrowLeftRight, 
+  Eraser, 
+  Play, 
+  ChevronLeft, 
+  Split, 
+  LayoutList, 
+  Settings2,
+  Check
+} from 'lucide-react';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 interface ToolbarProps {
-  view: DiffView;
-  onViewChange: (view: DiffView) => void;
-  options: DiffOptions;
-  onOptionsChange: (options: DiffOptions) => void;
-  diffResult: DiffResult | null;
-  left: string;
-  right: string;
-  onBack: () => void;
+  showDiff: boolean;
+  onReset: () => void;
+  onDiff: () => void;
+  onSwap: () => void;
+  onClear: () => void;
+  viewMode: 'side-by-side' | 'unified';
+  setViewMode: (mode: 'side-by-side' | 'unified') => void;
+  options: {
+    ignoreWhitespace: boolean;
+    ignoreCase: boolean;
+  };
+  setOptions: React.Dispatch<React.SetStateAction<{
+    ignoreWhitespace: boolean;
+    ignoreCase: boolean;
+  }>>;
+  summary: { additions: number; deletions: number };
 }
 
-export function Toolbar({
-  view,
-  onViewChange,
+const Toolbar: React.FC<ToolbarProps> = ({
+  showDiff,
+  onReset,
+  onDiff,
+  onSwap,
+  onClear,
+  viewMode,
+  setViewMode,
   options,
-  onOptionsChange,
-  diffResult,
-  left,
-  right,
-}: ToolbarProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = useCallback(async () => {
-    const unified = generateUnifiedDiffString(left, right);
-    await navigator.clipboard.writeText(unified);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }, [left, right]);
-
+  setOptions,
+}) => {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-4 p-3 bg-white/5 border border-white/5 rounded-xl">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="flex items-center gap-1.5 p-1 bg-black rounded-lg border border-white/5">
-            <ViewToggle
-              active={view === "side-by-side"}
-              onClick={() => onViewChange("side-by-side")}
-              icon={<Columns2 className="w-3.5 h-3.5" />}
-              label="Side by side"
-            />
-            <ViewToggle
-              active={view === "unified"}
-              onClick={() => onViewChange("unified")}
-              icon={<Rows3 className="w-3.5 h-3.5" />}
-              label="Unified"
-            />
-          </div>
+    <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm sticky top-20 z-40">
+      <div className="flex items-center gap-2">
+        {!showDiff ? (
+          <>
+            <button
+              onClick={onDiff}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold transition-all shadow-lg shadow-emerald-500/10 active:scale-95 group"
+            >
+              <Play className="w-4 h-4 fill-current group-hover:scale-110 transition-transform" />
+              Compare
+            </button>
+            <button
+              onClick={onSwap}
+              className="p-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
+              title="Swap original and modified text"
+            >
+              <ArrowLeftRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClear}
+              className="p-2.5 rounded-xl bg-zinc-800 hover:bg-rose-950/30 hover:text-rose-400 text-zinc-400 transition-all"
+              title="Clear all"
+            >
+              <Eraser className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={onReset}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-semibold transition-all"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back to edit
+          </button>
+        )}
+      </div>
 
-          <div className="flex items-center gap-2">
-            <OptionToggle
-              active={options.ignoreCase}
-              onClick={() =>
-                onOptionsChange({ ...options, ignoreCase: !options.ignoreCase })
-              }
-              icon={<CaseSensitive className="w-3.5 h-3.5" />}
-              label="Ignore case"
+      <div className="flex items-center gap-6 divide-x divide-zinc-800">
+        {/* Settings Toggle */}
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-xs font-medium text-zinc-500 cursor-pointer hover:text-zinc-300 select-none">
+            <input
+              type="checkbox"
+              className="hidden peer"
+              checked={options.ignoreWhitespace}
+              onChange={(e) => setOptions(o => ({ ...o, ignoreWhitespace: e.target.checked }))}
             />
-            <OptionToggle
-              active={options.ignoreWhitespace}
-              onClick={() =>
-                onOptionsChange({
-                  ...options,
-                  ignoreWhitespace: !options.ignoreWhitespace,
-                })
-              }
-              icon={<Space className="w-3.5 h-3.5" />}
-              label="Ignore whitespace"
+            <div className="w-4 h-4 rounded border border-zinc-700 flex items-center justify-center peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-colors">
+              <Check className="w-3 h-3 text-zinc-950 hidden peer-checked:block" />
+            </div>
+            Ignore Whitespace
+          </label>
+          <label className="flex items-center gap-2 text-xs font-medium text-zinc-500 cursor-pointer hover:text-zinc-300 select-none">
+            <input
+              type="checkbox"
+              className="hidden peer"
+              checked={options.ignoreCase}
+              onChange={(e) => setOptions(o => ({ ...o, ignoreCase: e.target.checked }))}
             />
-          </div>
+            <div className="w-4 h-4 rounded border border-zinc-700 flex items-center justify-center peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-colors">
+              <Check className="w-3 h-3 text-zinc-950 hidden peer-checked:block" />
+            </div>
+            Ignore Case
+          </label>
         </div>
 
-        <div className="flex items-center gap-6">
-          {diffResult && !diffResult.isIdentical && (
-            <div className="flex items-center gap-4">
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Additions</span>
-                <span className="text-sm font-mono font-bold text-emerald-500">
-                  +{diffResult.additions}
-                </span>
-              </div>
-              <div className="w-px h-6 bg-white/5" />
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Deletions</span>
-                <span className="text-sm font-mono font-bold text-rose-500">
-                  -{diffResult.deletions}
-                </span>
-              </div>
-            </div>
-          )}
-
+        {/* View Mode Switcher */}
+        <div className="pl-6 flex items-center gap-1 bg-zinc-950/50 p-1 rounded-xl border border-zinc-800/50">
           <button
-            type="button"
-            onClick={handleCopy}
-            className="group flex items-center gap-2 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.15em] text-white bg-orange-500 hover:bg-orange-600 transition-all rounded-lg shadow-lg shadow-orange-500/20"
-          >
-            {copied ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Copied Diff</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5" />
-                <span>Copy Unified Diff</span>
-              </>
+            onClick={() => setViewMode('side-by-side')}
+            className={twMerge(
+              clsx(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                viewMode === 'side-by-side' ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+              )
             )}
+          >
+            <Split className="w-3.5 h-3.5" />
+            Side-by-side
+          </button>
+          <button
+            onClick={() => setViewMode('unified')}
+            className={twMerge(
+              clsx(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                viewMode === 'unified' ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
+              )
+            )}
+          >
+            <LayoutList className="w-3.5 h-3.5" />
+            Unified
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
-function ViewToggle({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
-        active
-          ? "bg-white/10 text-white shadow-inner"
-          : "text-zinc-500 hover:text-zinc-300"
-      )}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-}
-
-function OptionToggle({
-  active,
-  onClick,
-  icon,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex items-center gap-2 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all",
-        active
-          ? "bg-orange-500/10 border-orange-500/50 text-orange-500"
-          : "bg-white/5 border-transparent text-zinc-500 hover:text-zinc-300"
-      )}
-    >
-      {icon}
-      <span className="hidden lg:inline">{label}</span>
-    </button>
-  );
-}
+export default Toolbar;

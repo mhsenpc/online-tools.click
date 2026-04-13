@@ -1,260 +1,142 @@
-import { useMemo, useCallback } from "react";
-import { CheckCircle2 } from "lucide-react";
-import { cn } from "../lib/cn";
-import type { DiffLine, DiffResult, DiffView } from "../hooks/useDiff";
-import { computeWordHighlights } from "../hooks/useDiff";
+import React, { useMemo } from 'react';
+import { DiffLine } from '../hooks/useDiff';
+import { clsx } from 'clsx';
 
 interface DiffViewerProps {
-  result: DiffResult;
-  view: DiffView;
+  diffLines: DiffLine[];
+  viewMode: 'side-by-side' | 'unified';
 }
 
-export function DiffViewer({ result, view }: DiffViewerProps) {
-  if (result.isIdentical) {
+const DiffViewer: React.FC<DiffViewerProps> = ({ diffLines, viewMode }) => {
+  // If we're in side-by-side mode, we need to pair lines
+  const pairedLines = useMemo(() => {
+    if (viewMode === 'unified') return null;
+
+    const left: (DiffLine | null)[] = [];
+    const right: (DiffLine | null)[] = [];
+    
+    // Simple pairing logic: if we have a deletion followed by an addition,
+    // they might be related. But more generally, we need to track both pointers.
+    let i = 0;
+    while (i < diffLines.length) {
+      const current = diffLines[i];
+      if (current.type === 'neutral') {
+        left.push(current);
+        right.push(current);
+        i++;
+      } else if (current.type === 'deletion') {
+        // Look ahead for additions
+        let j = i;
+        const deletions: DiffLine[] = [];
+        while (j < diffLines.length && diffLines[j].type === 'deletion') {
+          deletions.push(diffLines[j]);
+          j++;
+        }
+        
+        const additions: DiffLine[] = [];
+        while (j < diffLines.length && diffLines[j].type === 'addition') {
+          additions.push(diffLines[j]);
+          j++;
+        }
+
+        const max = Math.max(deletions.length, additions.length);
+        for (let k = 0; k < max; k++) {
+          left.push(deletions[k] || null);
+          right.push(additions[k] || null);
+        }
+        i = j;
+      } else if (current.type === 'addition') {
+        left.push(null);
+        right.push(current);
+        i++;
+      }
+    }
+
+    return { left, right };
+  }, [diffLines, viewMode]);
+
+  if (viewMode === 'unified') {
     return (
-      <div className="flex flex-col items-center justify-center py-32 gap-6 animate-in fade-in zoom-in duration-700">
-        <div className="p-4 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
-          <CheckCircle2 className="w-10 h-10 text-emerald-500" />
-        </div>
-        <div className="text-center">
-          <h3 className="text-xl font-bold tracking-tight text-white mb-2">
-            Identical Content
-          </h3>
-          <p className="text-zinc-500 text-sm max-w-[300px] mx-auto leading-relaxed">
-            No differences found between the original and modified text snippets.
-          </p>
+      <div className="w-full border border-zinc-800 rounded-2xl overflow-hidden bg-zinc-950/50">
+        <div className="flex flex-col">
+          {diffLines.length === 0 && (
+            <div className="p-12 text-center text-zinc-600 italic">No differences found</div>
+          )}
+          {diffLines.map((line, idx) => (
+            <div 
+              key={idx} 
+              className={clsx(
+                "diff-line group hover:bg-zinc-900/40 transition-colors",
+                line.type === 'addition' && "diff-addition",
+                line.type === 'deletion' && "diff-deletion"
+              )}
+            >
+              <div className="diff-gutter opacity-40 group-hover:opacity-100 transition-opacity">
+                {line.lineNumberOriginal || ''}
+              </div>
+              <div className="diff-gutter opacity-40 group-hover:opacity-100 transition-opacity">
+                {line.lineNumberModified || ''}
+              </div>
+              <div className="flex-none px-2 select-none text-zinc-700 font-bold w-6 text-center">
+                {line.type === 'addition' ? '+' : line.type === 'deletion' ? '-' : ' '}
+              </div>
+              <div className="diff-content font-mono">
+                {line.content || ' '}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#080808] font-mono selection:bg-orange-500/30">
-      {view === "side-by-side" ? (
-        <SideBySideView lines={result.lines} />
-      ) : (
-        <UnifiedView lines={result.lines} />
-      )}
-    </div>
-  );
-}
-
-function SideBySideView({ lines }: { lines: DiffLine[] }) {
-  const paired = useMemo(() => {
-    const pairs: { left: DiffLine | null; right: DiffLine | null }[] = [];
-    let i = 0;
-    while (i < lines.length) {
-      const line = lines[i];
-      if (line.type === "unchanged") {
-        pairs.push({ left: line, right: line });
-        i++;
-      } else if (line.type === "removed") {
-        const removedBatch: DiffLine[] = [];
-        while (i < lines.length && lines[i].type === "removed") {
-          removedBatch.push(lines[i]);
-          i++;
-        }
-        const addedBatch: DiffLine[] = [];
-        while (i < lines.length && lines[i].type === "added") {
-          addedBatch.push(lines[i]);
-          i++;
-        }
-        const maxLen = Math.max(removedBatch.length, addedBatch.length);
-        for (let j = 0; j < maxLen; j++) {
-          const left = j < removedBatch.length ? removedBatch[j] : null;
-          const right = j < addedBatch.length ? addedBatch[j] : null;
-
-          if (left && right) {
-            const highlights = computeWordHighlights(left.content, right.content);
-            pairs.push({
-              left: { ...left, wordHighlights: highlights.removed },
-              right: { ...right, wordHighlights: highlights.added },
-            });
-          } else {
-            pairs.push({ left, right });
-          }
-        }
-      } else if (line.type === "added") {
-        pairs.push({ left: null, right: line });
-        i++;
-      } else {
-        i++;
-      }
-    }
-    return pairs;
-  }, [lines]);
-
-  return (
-    <div className="grid grid-cols-2 h-full divide-x divide-white/5 overflow-hidden">
-      <div className="overflow-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        <div className="min-w-full">
-          {paired.map((pair, i) => (
-            <DiffLineRow
-              key={`l-${i}`}
-              line={pair.left}
-              side="left"
-            />
-          ))}
-        </div>
+    <div className="w-full border border-zinc-800 rounded-2xl overflow-hidden flex divide-x divide-zinc-900 bg-zinc-950/50">
+      {/* Left Panel (Original) */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <div className="bg-zinc-900/50 px-4 py-2 border-b border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Original</div>
+        {pairedLines?.left.map((line, idx) => (
+          <div 
+            key={idx} 
+            className={clsx(
+              "diff-line group h-6 hover:bg-zinc-900/40 transition-colors",
+              line?.type === 'deletion' && "diff-deletion",
+              !line && "bg-zinc-900/20"
+            )}
+          >
+            <div className="diff-gutter opacity-40 group-hover:opacity-100 transition-opacity">
+              {line?.lineNumberOriginal || ''}
+            </div>
+            <div className="diff-content font-mono">
+              {line?.content || ' '}
+            </div>
+          </div>
+        ))}
       </div>
-      <div className="overflow-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        <div className="min-w-full">
-          {paired.map((pair, i) => (
-            <DiffLineRow
-              key={`r-${i}`}
-              line={pair.right}
-              side="right"
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function UnifiedView({ lines }: { lines: DiffLine[] }) {
-  return (
-    <div className="overflow-auto h-full scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-      <div className="min-w-full">
-        {lines.map((line, i) => (
-          <DiffLineRow key={i} line={line} side="unified" />
+      {/* Right Panel (Modified) */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <div className="bg-zinc-900/50 px-4 py-2 border-b border-zinc-800 text-xs font-bold text-zinc-500 uppercase tracking-widest">Modified</div>
+        {pairedLines?.right.map((line, idx) => (
+          <div 
+            key={idx} 
+            className={clsx(
+              "diff-line group h-6 hover:bg-zinc-900/40 transition-colors",
+              line?.type === 'addition' && "diff-addition",
+              !line && "bg-zinc-900/20"
+            )}
+          >
+            <div className="diff-gutter opacity-40 group-hover:opacity-100 transition-opacity">
+              {line?.lineNumberModified || ''}
+            </div>
+            <div className="diff-content font-mono">
+              {line?.content || ' '}
+            </div>
+          </div>
         ))}
       </div>
     </div>
   );
-}
+};
 
-function DiffLineRow({
-  line,
-  side,
-}: {
-  line: DiffLine | null;
-  side: "left" | "right" | "unified";
-}) {
-  const renderContent = useCallback(
-    (l: DiffLine) => {
-      if (!l.wordHighlights || l.wordHighlights.length === 0) {
-        return l.content;
-      }
-
-      const result: React.ReactNode[] = [];
-      let pos = 0;
-
-      for (const hl of l.wordHighlights) {
-        if (pos < hl.start) {
-          result.push(
-            <span key={`t-${pos}`}>
-              {l.content.slice(pos, hl.start)}
-            </span>
-          );
-        }
-        result.push(
-          <mark
-            key={`h-${hl.start}`}
-            className={cn(
-              "p-0 rounded-sm bg-transparent",
-              l.type === "removed"
-                ? "bg-rose-500/40 text-white"
-                : "bg-emerald-500/40 text-white"
-            )}
-          >
-            {l.content.slice(hl.start, hl.end)}
-          </mark>
-        );
-        pos = hl.end;
-      }
-
-      if (pos < l.content.length) {
-        result.push(
-          <span key={`t-${pos}`}>{l.content.slice(pos)}</span>
-        );
-      }
-
-      return result;
-    },
-    []
-  );
-
-  if (!line) {
-    return (
-      <div className="flex min-h-[22px] bg-white/[0.02]">
-        <LineNum num={undefined} />
-        <span className="flex-1 px-3 py-px font-mono text-[12px] leading-relaxed opacity-20 select-none">
-          ~
-        </span>
-      </div>
-    );
-  }
-
-  const isRemoved = line.type === "removed";
-  const isAdded = line.type === "added";
-
-  return (
-    <div
-      className={cn(
-        "flex min-h-[22px] group transition-colors",
-        isRemoved && "bg-rose-500/10 hover:bg-rose-500/15",
-        isAdded && "bg-emerald-500/10 hover:bg-emerald-500/15",
-        !isRemoved && !isAdded && "hover:bg-white/[0.03]"
-      )}
-    >
-      {side === "unified" ? (
-        <>
-          <LineNum num={line.leftNum} className="border-r border-white/5" />
-          <LineNum num={line.rightNum} className="border-r border-white/5" />
-          <SignBadge type={line.type} />
-          <span
-            className={cn(
-              "flex-1 px-3 py-px font-mono text-[12px] leading-relaxed whitespace-pre",
-              isRemoved && "text-rose-400",
-              isAdded && "text-emerald-400",
-              line.type === "unchanged" && "text-zinc-400"
-            )}
-          >
-            {line.wordHighlights ? renderContent(line) : line.content || " "}
-          </span>
-        </>
-      ) : (
-        <>
-          <LineNum num={side === "left" ? line.leftNum : line.rightNum} className="border-r border-white/5" />
-          <span
-            className={cn(
-              "flex-1 px-4 py-px font-mono text-[12px] leading-relaxed whitespace-pre",
-              isRemoved && "text-rose-400",
-              isAdded && "text-emerald-400",
-              line.type === "unchanged" && "text-zinc-400"
-            )}
-          >
-            {line.wordHighlights ? renderContent(line) : line.content || " "}
-          </span>
-        </>
-      )}
-    </div>
-  );
-}
-
-function LineNum({ num, className }: { num: number | undefined; className?: string }) {
-  return (
-    <span className={cn(
-      "w-12 shrink-0 text-right pr-3 py-px select-none font-mono text-[10px] leading-relaxed text-zinc-600 bg-black/40",
-      className
-    )}>
-      {num ?? ""}
-    </span>
-  );
-}
-
-function SignBadge({ type }: { type: DiffLine["type"] }) {
-  return (
-    <span
-      className={cn(
-        "w-6 shrink-0 flex items-center justify-center py-px select-none font-mono text-[12px] font-bold leading-relaxed",
-        type === "removed" && "text-rose-500 bg-rose-500/10",
-        type === "added" && "text-emerald-500 bg-emerald-500/10",
-        type === "unchanged" && "text-zinc-800"
-      )}
-    >
-      {type === "removed" ? "-" : type === "added" ? "+" : " "}
-    </span>
-  );
-}
+export default DiffViewer;

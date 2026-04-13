@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-zinc-950 text-zinc-200;
+  }
+}
+
+.diff-line {
+  @apply flex font-mono text-sm leading-6 border-b border-zinc-900/50;
+}
+
+.diff-gutter {
+  @apply w-12 flex-none select-none text-right pr-3 text-zinc-600 border-r border-zinc-900;
+}
+
+.diff-content {
+  @apply pl-4 pr-2 flex-grow break-all whitespace-pre-wrap;
+}
+
+.diff-addition {
+  @apply bg-emerald-500/10 text-emerald-400;
+}
+
+.diff-deletion {
+  @apply bg-rose-500/10 text-rose-400;
+}
+
+.diff-word-addition {
+  @apply bg-emerald-500/30 text-emerald-300 rounded px-0.5;
+}
+
+.diff-word-deletion {
+  @apply bg-rose-500/30 text-rose-300 rounded px-0.5 line-through;
+}

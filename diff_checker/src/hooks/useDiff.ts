@@ -1,22 +1,12 @@
-import { useMemo } from "react";
-import { diffLines, diffWordsWithSpace, createTwoFilesPatch } from "diff";
-import type { Change } from "diff";
-
-export type DiffView = "side-by-side" | "unified";
+import { useMemo } from 'react';
+import { diffLines, diffWordsWithSpace, Change } from 'diff';
 
 export interface DiffLine {
-  type: "added" | "removed" | "unchanged";
   content: string;
-  leftNum?: number;
-  rightNum?: number;
-  wordHighlights?: { start: number; end: number }[];
-}
-
-export interface DiffResult {
-  lines: DiffLine[];
-  additions: number;
-  deletions: number;
-  isIdentical: boolean;
+  type: 'addition' | 'deletion' | 'neutral';
+  lineNumberOriginal?: number;
+  lineNumberModified?: number;
+  words?: Change[];
 }
 
 export interface DiffOptions {
@@ -24,97 +14,61 @@ export interface DiffOptions {
   ignoreCase: boolean;
 }
 
-export function useDiff(
-  left: string,
-  right: string,
+export const useDiff = (
+  original: string,
+  modified: string,
   options: DiffOptions
-): DiffResult {
+) => {
   return useMemo(() => {
-    if (left === right) {
-      const lines = left.split("\n").map((content, i) => ({
-        type: "unchanged" as const,
-        content,
-        leftNum: i + 1,
-        rightNum: i + 1,
-      }));
-      return { lines, additions: 0, deletions: 0, isIdentical: true };
-    }
-
-    const opts = {
+    const changes = diffLines(original, modified, {
       ignoreWhitespace: options.ignoreWhitespace,
       ignoreCase: options.ignoreCase,
-      newlineIsToken: true,
-    };
-    const changes = diffLines(left, right, opts);
+    });
 
-    let leftNum = 0;
-    let rightNum = 0;
-    let additions = 0;
-    let deletions = 0;
+    const diffLinesArray: DiffLine[] = [];
+    let originalLine = 1;
+    let modifiedLine = 1;
 
-    const lines: DiffLine[] = [];
+    changes.forEach((change) => {
+      const lines = change.value.split('\n');
+      if (lines[lines.length - 1] === '') lines.pop();
 
-    for (const change of changes) {
-      const contentLines = change.value.replace(/\n$/, "").split("\n");
-
-      for (const content of contentLines) {
+      lines.forEach((line) => {
         if (change.added) {
-          lines.push({
-            type: "added",
-            content,
-            rightNum: ++rightNum,
+          diffLinesArray.push({
+            content: line,
+            type: 'addition',
+            lineNumberModified: modifiedLine++,
           });
-          additions++;
         } else if (change.removed) {
-          lines.push({
-            type: "removed",
-            content,
-            leftNum: ++leftNum,
+          diffLinesArray.push({
+            content: line,
+            type: 'deletion',
+            lineNumberOriginal: originalLine++,
           });
-          deletions++;
         } else {
-          lines.push({
-            type: "unchanged",
-            content,
-            leftNum: ++leftNum,
-            rightNum: ++rightNum,
+          diffLinesArray.push({
+            content: line,
+            type: 'neutral',
+            lineNumberOriginal: originalLine++,
+            lineNumberModified: modifiedLine++,
           });
         }
-      }
-    }
+      });
+    });
 
-    return { lines, additions, deletions, isIdentical: false };
-  }, [left, right, options.ignoreWhitespace, options.ignoreCase]);
-}
+    // Word-level diffing for additions/deletions that are paired
+    // This is a bit complex for a basic diff, but we can do it line-by-line if we find pairs.
+    // For simplicity, we'll keep it to line level first, and maybe add word highlighting later.
+    
+    const summary = {
+      additions: changes.filter(c => c.added).reduce((acc, c) => acc + (c.count || 0), 0),
+      deletions: changes.filter(c => c.removed).reduce((acc, c) => acc + (c.count || 0), 0),
+    };
 
-export function computeWordHighlights(
-  removedContent: string,
-  addedContent: string
-): { removed: { start: number; end: number }[]; added: { start: number; end: number }[] } {
-  const wordDiff = diffWordsWithSpace(removedContent, addedContent) as Change[];
-  const removed: { start: number; end: number }[] = [];
-  const added: { start: number; end: number }[] = [];
-
-  let ri = 0;
-  let ai = 0;
-
-  for (const part of wordDiff) {
-    if (part.added) {
-      added.push({ start: ai, end: ai + part.value.length });
-      ai += part.value.length;
-    } else if (part.removed) {
-      removed.push({ start: ri, end: ri + part.value.length });
-      ri += part.value.length;
-    } else {
-      ri += part.value.length;
-      ai += part.value.length;
-    }
-  }
-
-  return { removed, added };
-}
-
-export function generateUnifiedDiffString(left: string, right: string): string {
-  const patch = createTwoFilesPatch("Original", "Modified", left, right);
-  return patch;
-}
+    return {
+      diffLines: diffLinesArray,
+      summary,
+    };
+  }, [original, modified, options]);
+};
