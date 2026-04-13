@@ -226,7 +226,6 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 # STEP 6 — Setup prod branch worktree
 # ═════════════════════════════════════════════════════════════════
 section "Setting Up '$PROD_BRANCH' Branch"
-info "Website: https://online-tools.click"
 setup_prod_worktree
 
 # ═════════════════════════════════════════════════════════════════
@@ -253,6 +252,7 @@ if git status --porcelain | grep -q .; then
   git push origin "$PROD_BRANCH" --force
   echo ""
   echo -e "  ${GREEN}🚀 Successfully deployed!${NC}"
+  info "Website: https://online-tools.click"
 else
   warn "No changes detected — '$PROD_BRANCH' is already up to date"
 fi
