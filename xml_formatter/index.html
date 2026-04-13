@@ -43,6 +43,64 @@
             line-height: 1.6;
         }
 
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .navbar-brand:hover {
+            color: var(--accent-primary);
+        }
+
+        .navbar-sep {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .navbar-current {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .navbar-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .navbar-right a:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
         .background-grid {
             position: fixed;
             top: 0;
@@ -482,6 +540,17 @@
 </head>
 <body>
     <div class="background-grid"></div>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="https://online-tools.click" class="navbar-brand">Online Tools</a>
+            <span class="navbar-sep">/</span>
+            <span class="navbar-current">XML Formatter</span>
+        </div>
+        <div class="navbar-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </nav>
 
     <div class="container">
         <header>

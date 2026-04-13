@@ -5,7 +5,7 @@ set -e
 # CONFIG — Edit these
 # ─────────────────────────────────────────────────────────────────
 SOURCE_BRANCH="main"
-PROD_BRANCH="prod"
+TARGET_BRANCH="${1:-prod}"  # Default to 'prod', but allow override via CLI arg
 BUILD_CMD="npm run build"
 
 # Build output dirs to detect (checked in order)
@@ -86,19 +86,19 @@ matches_exclude() {
 # Helper: Create prod branch safely (handles old git versions)
 # ─────────────────────────────────────────────────────────────────
 setup_prod_worktree() {
-  if git show-ref --verify --quiet "refs/heads/$PROD_BRANCH"; then
-    git worktree add "$TEMP_WORKTREE" "$PROD_BRANCH"
-    log "Attached to existing '$PROD_BRANCH' branch"
+  if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
+    git worktree add "$TEMP_WORKTREE" "$TARGET_BRANCH"
+    log "Attached to existing '$TARGET_BRANCH' branch"
   else
-    warn "'$PROD_BRANCH' doesn't exist → creating empty orphan branch"
+    warn "'$TARGET_BRANCH' doesn't exist → creating empty orphan branch"
 
     # Create an empty commit without switching current branch (git plumbing)
     EMPTY_TREE=$(git hash-object -t tree --stdin < /dev/null)
     EMPTY_COMMIT=$(git commit-tree "$EMPTY_TREE" -m "chore: init prod branch")
-    git update-ref "refs/heads/$PROD_BRANCH" "$EMPTY_COMMIT"
+    git update-ref "refs/heads/$TARGET_BRANCH" "$EMPTY_COMMIT"
 
-    git worktree add "$TEMP_WORKTREE" "$PROD_BRANCH"
-    log "Created new '$PROD_BRANCH' branch"
+    git worktree add "$TEMP_WORKTREE" "$TARGET_BRANCH"
+    log "Created new '$TARGET_BRANCH' branch"
   fi
 }
 
@@ -225,13 +225,13 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 # ═════════════════════════════════════════════════════════════════
 # STEP 6 — Setup prod branch worktree
 # ═════════════════════════════════════════════════════════════════
-section "Setting Up '$PROD_BRANCH' Branch"
+section "Setting Up '$TARGET_BRANCH' Branch"
 setup_prod_worktree
 
 # ═════════════════════════════════════════════════════════════════
 # STEP 7 — Replace prod content with staged build
 # ═════════════════════════════════════════════════════════════════
-section "Replacing '$PROD_BRANCH' Content"
+section "Replacing '$TARGET_BRANCH' Content"
 
 # Wipe everything (keep .git)
 find "$TEMP_WORKTREE" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
@@ -249,11 +249,11 @@ cd "$TEMP_WORKTREE"
 if git status --porcelain | grep -q .; then
   git add -A
   git commit -m "deploy($COMMIT_HASH): $COMMIT_MSG [$TIMESTAMP]"
-  git push origin "$PROD_BRANCH" --force
+  git push origin "$TARGET_BRANCH" --force
   echo ""
   echo -e "  ${GREEN}🚀 Successfully deployed!${NC}"
 else
-  warn "No changes detected — '$PROD_BRANCH' is already up to date"
+  warn "No changes detected — '$TARGET_BRANCH' is already up to date"
 fi
 
 # ═════════════════════════════════════════════════════════════════
@@ -265,7 +265,7 @@ echo -e "${CYAN}  Deployment Summary${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo "  Commit   : $COMMIT_HASH — $COMMIT_MSG"
 echo "  Time     : $TIMESTAMP"
-echo "  Branch   : $PROD_BRANCH"
+echo "  Branch   : $TARGET_BRANCH"
 echo ""
 echo "  Built    : ${BUILT_DIRS[*]:-none}"
 echo "  Static   : ${STATIC_DIRS[*]:-none}"
