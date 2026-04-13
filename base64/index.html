@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base64 Encoder/Decoder — Free Online Tool</title>
+  <meta name="description" content="Free online Base64 encoder and decoder. Encode text to Base64 or decode Base64 to text instantly. Supports UTF-8, URL-safe Base64, and auto-detection. 100% private — runs in your browser." />
+  <meta name="keywords" content="base64 encode online, base64 decode online, base64 to text, text to base64, url-safe base64" />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Base64 Encoder/Decoder",
+    "description": "Free online Base64 encoder and decoder with UTF-8 and URL-safe support.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+    // Apply dark mode from localStorage or system preference before render
+    (function() {
+      const saved = localStorage.getItem('b64_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    /* Custom focus ring style */
+    textarea:focus { outline: none; }
+    .valid-base64   { border-color: #22c55e !important; }
+    .invalid-base64 { border-color: #ef4444 !important; }
+
+    /* File drop zone */
+    #drop-zone { transition: background 0.15s, border-color 0.15s; }
+    #drop-zone.drag-over { background: #eff6ff; border-color: #3b82f6; }
+    @media (prefers-color-scheme: dark) {
+      #drop-zone.drag-over { background: rgba(59,130,246,0.15); border-color: #3b82f6; }
+    }
+
+    /* Progress bar */
+    #file-progress-bar-inner { transition: width 0.1s linear; }
+  </style>
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🔐</span>
+      <div class="flex-1">
+        <h1 class="text-xl font-bold leading-tight">Base64 Encoder / Decoder</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+      <!-- Dark mode toggle button (ONLA-21) -->
+      <button id="btn-dark-toggle"
+              class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Toggle dark mode"
+              title="Toggle dark/light mode">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Top-level tab: Text vs File -->
+    <div class="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-1">
+      <button id="tab-text"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900"
+              aria-selected="true" role="tab">
+        Text
+      </button>
+      <button id="tab-file"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900"
+              aria-selected="false" role="tab">
+        File
+      </button>
+    </div>
+
+    <!-- ===== TEXT TAB PANEL ===== -->
+    <div id="panel-text">
+
+    <!-- Mode bar -->
+    <section aria-labelledby="mode-label" class="flex flex-wrap items-center gap-3">
+      <span id="mode-label" class="font-medium text-sm">Mode:</span>
+
+      <fieldset class="flex gap-2" aria-label="Conversion mode">
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="mode" value="encode" id="mode-encode" class="accent-blue-600" checked />
+          <span class="text-sm">Encode (Text → Base64)</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="mode" value="decode" id="mode-decode" class="accent-blue-600" />
+          <span class="text-sm">Decode (Base64 → Text)</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="radio" name="mode" value="auto" id="mode-auto" class="accent-blue-600" />
+          <span class="text-sm">Auto-detect</span>
+        </label>
+      </fieldset>
+
+      <!-- URL-safe toggle -->
+      <label class="flex items-center gap-1.5 cursor-pointer ml-auto" title="Use - and _ instead of + and /">
+        <input type="checkbox" id="url-safe" class="accent-blue-600 w-4 h-4" aria-label="URL-safe Base64 (- and _ instead of + and /)" />
+        <span class="text-sm">URL-safe Base64 (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">-_</code> instead of <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">+/</code>)</span>
+      </label>
+    </section>
+
+    <!-- ONLA-18: Line-break and chunked output options -->
+    <section aria-labelledby="output-options-label" class="flex flex-wrap items-center gap-4 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <span id="output-options-label" class="font-medium text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Output options:</span>
+
+      <!-- Strip newlines -->
+      <label class="flex items-center gap-1.5 cursor-pointer" title="Strip newlines from input before processing">
+        <input type="checkbox" id="strip-newlines" class="accent-blue-600 w-4 h-4" aria-label="Strip newlines from input" />
+        <span class="text-sm">Strip newlines</span>
+      </label>
+
+      <!-- Wrap at column -->
+      <label class="flex items-center gap-1.5 cursor-pointer" title="Wrap output at fixed column width (PEM/MIME format)">
+        <input type="checkbox" id="wrap-output" class="accent-blue-600 w-4 h-4" aria-label="Wrap output at column" />
+        <span class="text-sm">Wrap at</span>
+      </label>
+      <select id="wrap-cols" class="text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-0.5" aria-label="Wrap column width">
+        <option value="64">64 chars (PEM)</option>
+        <option value="76" selected>76 chars (MIME)</option>
+        <option value="80">80 chars</option>
+      </select>
+
+      <!-- Data URI wrap (ONLA-19: text mode) -->
+      <label class="flex items-center gap-1.5 cursor-pointer" title="Wrap Base64 output as a data URI (only for encode mode)">
+        <input type="checkbox" id="text-data-uri" class="accent-blue-600 w-4 h-4" aria-label="Wrap as data URI" />
+        <span class="text-sm">Data URI <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">data:text/plain;base64,…</code></span>
+      </label>
+    </section>
+
+    <!-- Auto-detect suggestion banner -->
+    <div id="auto-detect-banner" role="status" aria-live="polite"
+         class="hidden items-center gap-2 px-4 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200 text-sm">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+      </svg>
+      <span id="auto-detect-message"></span>
+    </div>
+
+    <!-- Input / Output grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Input panel -->
+      <section aria-labelledby="input-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="input-label" for="input-text" class="font-medium text-sm">Input</label>
+          <div class="flex items-center gap-2">
+            <!-- ONLA-19: validation badge -->
+            <span id="input-valid-badge" class="hidden text-xs font-medium px-2 py-0.5 rounded-full" aria-live="polite"></span>
+            <span id="input-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 chars / 0 bytes</span>
+          </div>
+        </div>
+        <textarea
+          id="input-text"
+          rows="12"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Type or paste text here…"
+          aria-label="Input text"
+          aria-describedby="input-count input-valid-badge"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <!-- Output panel -->
+      <section aria-labelledby="output-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="output-label" for="output-text" class="font-medium text-sm">Output</label>
+          <span id="output-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 chars / 0 bytes</span>
+        </div>
+        <textarea
+          id="output-text"
+          rows="12"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Result will appear here…"
+          aria-label="Output text"
+          aria-describedby="output-count"
+          spellcheck="false"
+          readonly
+        ></textarea>
+      </section>
+    </div>
+
+    <!-- Error / status bar -->
+    <div id="error-bar" role="alert" aria-live="assertive"
+         class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="btn-convert"
+              class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+              aria-label="Convert (Ctrl+Enter)">
+        Convert
+      </button>
+
+      <button id="btn-swap"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Swap input and output">
+        ⇄ Swap
+      </button>
+
+      <button id="btn-copy"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Copy output to clipboard">
+        Copy Output
+      </button>
+
+      <button id="btn-clear"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Clear all">
+        Clear
+      </button>
+
+      <!-- Copy confirmation (sr + visual) -->
+      <span id="copy-msg" role="status" aria-live="polite"
+            class="hidden text-sm text-green-600 dark:text-green-400 font-medium">
+        ✓ Copied!
+      </span>
+    </div>
+
+    <!-- Share URL section -->
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="btn-share"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Share current conversion via URL">
+        Share via URL
+      </button>
+      <span id="share-msg" role="status" aria-live="polite"
+            class="hidden text-sm text-green-600 dark:text-green-400 font-medium">
+        ✓ URL copied!
+      </span>
+      <input id="share-url-display" type="text" readonly
+             class="hidden flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-xs font-mono text-gray-700 dark:text-gray-300"
+             aria-label="Shareable URL" />
+    </div>
+
+    <!-- Conversion History -->
+    <section aria-labelledby="history-label" id="history-section" class="hidden">
+      <div class="flex items-center justify-between mb-2">
+        <h2 id="history-label" class="font-medium text-sm">Recent Conversions</h2>
+        <button id="btn-clear-history"
+                class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                aria-label="Clear conversion history">
+          Clear history
+        </button>
+      </div>
+      <ul id="history-list" class="space-y-1.5" role="list" aria-label="Conversion history"></ul>
+    </section>
+
+    <!-- Keyboard shortcut hints (ONLA-21) -->
+    <p class="text-xs text-gray-400 dark:text-gray-500">
+      Keyboard shortcuts: <kbd class="px-1 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono text-xs">Ctrl+Enter</kbd> convert &nbsp;·&nbsp;
+      <kbd class="px-1 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono text-xs">Ctrl+Shift+C</kbd> copy output
+    </p>
+
+    <!-- Privacy note -->
+    <p class="text-xs text-gray-400 dark:text-gray-500">
+      🔒 Your data never leaves this page. All encoding and decoding happens locally in your browser.
+    </p>
+
+    </div><!-- end #panel-text -->
+
+    <!-- ===== FILE TAB PANEL ===== -->
+    <div id="panel-file" class="hidden space-y-4">
+
+      <!-- File encode sub-section -->
+      <section aria-labelledby="file-encode-label" class="space-y-3">
+        <h2 id="file-encode-label" class="font-semibold text-sm">File → Base64</h2>
+
+        <!-- URL-safe toggle for file mode -->
+        <label class="inline-flex items-center gap-1.5 cursor-pointer" title="Use - and _ instead of + and /">
+          <input type="checkbox" id="file-url-safe" class="accent-blue-600 w-4 h-4" aria-label="URL-safe Base64 for file encoding" />
+          <span class="text-sm">URL-safe Base64 (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">-_</code>)</span>
+        </label>
+
+        <!-- Drop zone -->
+        <div id="drop-zone"
+             class="flex flex-col items-center justify-center gap-3 p-8 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500"
+             role="button" tabindex="0" aria-label="Drop a file here or click to browse">
+          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Drag &amp; drop a file here, or <span class="text-blue-600 dark:text-blue-400 underline">browse</span></p>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Any file type · Files &gt;5 MB will show a warning</p>
+          <input type="file" id="file-input" class="sr-only" aria-label="Choose file to encode" />
+        </div>
+
+        <!-- Large file warning -->
+        <div id="file-large-warning" role="alert" aria-live="polite"
+             class="hidden px-4 py-2 rounded-lg bg-orange-50 dark:bg-orange-900/30 border border-orange-300 dark:border-orange-700 text-orange-700 dark:text-orange-300 text-sm">
+          ⚠️ Large file detected. Encoding may take a moment — the UI will remain responsive via a background worker.
+        </div>
+
+        <!-- Progress bar -->
+        <div id="file-progress" class="hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="File encoding progress">
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+              <div id="file-progress-bar-inner" class="h-2 rounded-full bg-blue-500" style="width:0%"></div>
+            </div>
+            <span id="file-progress-pct" class="text-xs text-gray-500 dark:text-gray-400 w-8 text-right">0%</span>
+          </div>
+        </div>
+
+        <!-- File info -->
+        <div id="file-info" class="hidden flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+          <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z"/>
+          </svg>
+          <span id="file-info-text"></span>
+        </div>
+
+        <!-- File output -->
+        <div id="file-output-section" class="hidden space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="file-output" class="font-medium text-sm">Base64 Output</label>
+            <div class="flex items-center gap-2">
+              <span id="file-output-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite"></span>
+              <button id="btn-file-copy"
+                      class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                      aria-label="Copy Base64 output to clipboard">
+                Copy
+              </button>
+              <span id="file-copy-msg" role="status" aria-live="polite"
+                    class="hidden text-xs text-green-600 dark:text-green-400 font-medium">✓ Copied!</span>
+            </div>
+          </div>
+          <textarea id="file-output" rows="6" readonly
+                    class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-xs font-mono text-gray-700 dark:text-gray-300"
+                    aria-label="Base64 output for file"
+                    spellcheck="false"></textarea>
+          <!-- Data URI helper -->
+          <div class="flex items-center gap-2">
+            <label class="flex items-center gap-1.5 cursor-pointer text-xs text-gray-500 dark:text-gray-400">
+              <input type="checkbox" id="data-uri-wrap" class="accent-blue-600 w-3.5 h-3.5" />
+              Wrap as <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">data:[mime];base64,…</code> URI
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <hr class="border-gray-200 dark:border-gray-700" />
+
+      <!-- File decode sub-section -->
+      <section aria-labelledby="file-decode-label" class="space-y-3">
+        <h2 id="file-decode-label" class="font-semibold text-sm">Base64 → File Download</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Paste a Base64 string (with or without a <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">data:[mime];base64,</code> prefix). The MIME type will be detected automatically if the prefix is present.
+        </p>
+
+        <textarea id="file-decode-input" rows="5"
+                  class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-xs font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                  placeholder="Paste Base64 string here… (data URI prefix optional)"
+                  aria-label="Base64 input for file download"
+                  spellcheck="false"></textarea>
+
+        <!-- Filename override -->
+        <div class="flex items-center gap-3">
+          <label for="file-decode-name" class="text-sm shrink-0">Download filename:</label>
+          <input id="file-decode-name" type="text" placeholder="decoded-file"
+                 class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm"
+                 aria-label="Filename for the downloaded file" />
+          <label for="file-decode-mime" class="text-sm shrink-0">MIME override:</label>
+          <input id="file-decode-mime" type="text" placeholder="auto-detect"
+                 class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm"
+                 aria-label="MIME type override for download" />
+        </div>
+
+        <!-- Decode error -->
+        <div id="file-decode-error" role="alert" aria-live="assertive"
+             class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+        </div>
+
+        <button id="btn-file-download"
+                class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                aria-label="Download decoded file">
+          ↓ Download File
+        </button>
+        <span id="file-decode-info" role="status" aria-live="polite"
+              class="hidden text-xs text-gray-500 dark:text-gray-400 ml-2"></span>
+      </section>
+
+      <!-- Privacy note (file panel) -->
+      <p class="text-xs text-gray-400 dark:text-gray-500">
+        🔒 Your file never leaves this page. All processing happens locally in your browser.
+      </p>
+
+    </div><!-- end #panel-file -->
+
+  </main>
+
+  <!-- ===== Script ===== -->
+  <script>
+    (() => {
+      'use strict';
+
+      // ── DOM refs ──────────────────────────────────────────────
+      const inputEl        = document.getElementById('input-text');
+      const outputEl       = document.getElementById('output-text');
+      const inputCount     = document.getElementById('input-count');
+      const outputCount    = document.getElementById('output-count');
+      const inputValidBadge= document.getElementById('input-valid-badge');
+      const errorBar       = document.getElementById('error-bar');
+      const banner         = document.getElementById('auto-detect-banner');
+      const bannerMsg      = document.getElementById('auto-detect-message');
+      const copyMsg        = document.getElementById('copy-msg');
+      const urlSafeChk     = document.getElementById('url-safe');
+      // ONLA-18: new option controls
+      const stripNewlinesChk = document.getElementById('strip-newlines');
+      const wrapOutputChk    = document.getElementById('wrap-output');
+      const wrapColsSel      = document.getElementById('wrap-cols');
+      const textDataUriChk   = document.getElementById('text-data-uri');
+
+      // Radio helpers
+      const getMode = () => document.querySelector('input[name="mode"]:checked').value;
+      const setMode = (v) => { const r = document.querySelector(`input[name="mode"][value="${v}"]`); if (r) r.checked = true; };
+
+      // ── Base64 core ───────────────────────────────────────────
+
+      /**
+       * Encode a UTF-8 string to Base64.
+       * Uses TextEncoder → Uint8Array → binary string → btoa pipeline
+       * for full Unicode / emoji support.
+       */
+      function encodeBase64(text, urlSafe = false) {
+        const bytes  = new TextEncoder().encode(text);
+        let binary   = '';
+        for (const b of bytes) binary += String.fromCharCode(b);
+        let b64 = btoa(binary);
+        if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+        return b64;
+      }
+
+      /**
+       * Decode a Base64 string (standard or URL-safe) to UTF-8 text.
+       * Normalises URL-safe chars before atob, then runs TextDecoder
+       * to reconstruct the original UTF-8 string.
+       */
+      function decodeBase64(b64) {
+        // Normalise URL-safe chars → standard Base64
+        const standard = b64.replace(/-/g, '+').replace(/_/g, '/');
+        const binary   = atob(standard);          // may throw on invalid input
+        const bytes    = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      }
+
+      /**
+       * Heuristic: does the string look like Base64-encoded data?
+       * Accepts standard (+/) and URL-safe (-_) variants.
+       */
+      function looksLikeBase64(text) {
+        const stripped = text.trim().replace(/\s/g, '');
+        if (stripped.length === 0) return false;
+        // Must match the Base64 character set (incl. URL-safe)
+        if (!/^[A-Za-z0-9+/\-_]*={0,2}$/.test(stripped)) return false;
+        // Length must be divisible by 4 after accounting for padding
+        const padded = stripped.replace(/-/g, '+').replace(/_/g, '/');
+        // Quick decode attempt
+        try {
+          decodeBase64(padded);
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      // ── UI helpers ────────────────────────────────────────────
+
+      function showError(msg) {
+        errorBar.textContent = msg;
+        errorBar.classList.remove('hidden');
+        outputEl.classList.remove('valid-base64');
+        outputEl.classList.add('invalid-base64');
+      }
+
+      function clearError() {
+        errorBar.textContent = '';
+        errorBar.classList.add('hidden');
+        outputEl.classList.remove('invalid-base64');
+      }
+
+      function showBanner(msg) {
+        bannerMsg.textContent = msg;
+        banner.classList.remove('hidden');
+        banner.classList.add('flex');
+      }
+
+      function hideBanner() {
+        banner.classList.add('hidden');
+        banner.classList.remove('flex');
+      }
+
+      function byteLength(str) {
+        return new TextEncoder().encode(str).length;
+      }
+
+      function fmtCount(chars, bytes) {
+        const c = chars === 1 ? '1 char' : `${chars.toLocaleString()} chars`;
+        const b = bytes === 1 ? '1 byte' : `${bytes.toLocaleString()} bytes`;
+        return `${c} / ${b}`;
+      }
+
+      // ONLA-19: Update input validation badge for decode mode
+      function updateValidationBadge() {
+        const mode = getMode();
+        const raw  = inputEl.value;
+        if (raw.trim() === '' || mode === 'encode') {
+          inputValidBadge.classList.add('hidden');
+          inputEl.classList.remove('valid-base64', 'invalid-base64');
+          return;
+        }
+        // In decode or auto mode, validate the input
+        const isValid = looksLikeBase64(raw);
+        inputValidBadge.classList.remove('hidden');
+        inputEl.classList.remove('valid-base64', 'invalid-base64');
+        if (isValid) {
+          inputEl.classList.add('valid-base64');
+          inputValidBadge.textContent = '✓ Valid Base64';
+          inputValidBadge.className = 'text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300';
+        } else {
+          inputEl.classList.add('invalid-base64');
+          inputValidBadge.textContent = '✗ Invalid Base64';
+          inputValidBadge.className = 'text-xs font-medium px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300';
+        }
+      }
+
+      function updateCounts() {
+        const iv = inputEl.value;
+        const ov = outputEl.value;
+        inputCount.textContent  = fmtCount(iv.length, byteLength(iv));
+        outputCount.textContent = fmtCount(ov.length, byteLength(ov));
+      }
+
+      // ONLA-18: Wrap a string at a given column width
+      function wrapAtColumn(str, cols) {
+        const lines = [];
+        for (let i = 0; i < str.length; i += cols) lines.push(str.slice(i, i + cols));
+        return lines.join('\n');
+      }
+
+      // ── Core convert logic ────────────────────────────────────
+
+      function convert() {
+        clearError();
+        hideBanner();
+
+        let raw      = inputEl.value;
+        const urlSafe = urlSafeChk.checked;
+        let   mode   = getMode();
+
+        if (raw.trim() === '') {
+          outputEl.value = '';
+          updateCounts();
+          updateValidationBadge();
+          return;
+        }
+
+        // ONLA-18: Strip newlines from input if toggled
+        if (stripNewlinesChk.checked) {
+          raw = raw.replace(/[\r\n]/g, '');
+        }
+
+        // Auto-detect: figure out likely mode
+        if (mode === 'auto') {
+          if (looksLikeBase64(raw)) {
+            mode = 'decode';
+            showBanner('Auto-detected: input looks like Base64 — decoding.');
+          } else {
+            mode = 'encode';
+            showBanner('Auto-detected: input looks like plain text — encoding.');
+          }
+        }
+
+        try {
+          if (mode === 'encode') {
+            let result = encodeBase64(raw, urlSafe);
+            // ONLA-18: Chunked/wrapped output
+            if (wrapOutputChk.checked) {
+              result = wrapAtColumn(result, parseInt(wrapColsSel.value, 10));
+            }
+            // ONLA-19: Data URI helper for text mode
+            if (textDataUriChk.checked) {
+              result = `data:text/plain;base64,${result.replace(/\n/g, '')}`;
+            }
+            outputEl.value = result;
+            outputEl.classList.add('valid-base64');
+            setTimeout(() => outputEl.classList.remove('valid-base64'), 800);
+          } else {
+            // Strip whitespace from Base64 input before decoding
+            const cleanRaw = raw.replace(/\s/g, '');
+            outputEl.value = decodeBase64(cleanRaw);
+            outputEl.classList.add('valid-base64');
+            setTimeout(() => outputEl.classList.remove('valid-base64'), 800);
+          }
+        } catch (err) {
+          outputEl.value = '';
+          if (mode === 'decode') {
+            showError('Invalid Base64 input — please check your input and try again.');
+          } else {
+            showError(`Encoding error: ${err.message}`);
+          }
+        }
+
+        updateCounts();
+        updateValidationBadge();
+      }
+
+      // ── Event wiring ──────────────────────────────────────────
+
+      // Live conversion (debounced)
+      let debounceTimer;
+      inputEl.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(convert, 250);
+        updateCounts();
+        updateValidationBadge();
+      });
+
+      // Mode change → re-convert
+      document.querySelectorAll('input[name="mode"]').forEach(r =>
+        r.addEventListener('change', convert)
+      );
+
+      // URL-safe toggle → re-convert
+      urlSafeChk.addEventListener('change', convert);
+
+      // ONLA-18: output option toggles → re-convert
+      stripNewlinesChk.addEventListener('change', convert);
+      wrapOutputChk.addEventListener('change', convert);
+      wrapColsSel.addEventListener('change', convert);
+      textDataUriChk.addEventListener('change', convert);
+
+      // Keyboard shortcut: Ctrl+Enter to convert
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          convert();
+        }
+      });
+
+      // Convert button
+      document.getElementById('btn-convert').addEventListener('click', convert);
+
+      // Swap button
+      document.getElementById('btn-swap').addEventListener('click', () => {
+        const tmp      = inputEl.value;
+        inputEl.value  = outputEl.value;
+        outputEl.value = tmp;
+
+        // Flip mode (encode ↔ decode); auto stays auto
+        const m = getMode();
+        if (m === 'encode') setMode('decode');
+        else if (m === 'decode') setMode('encode');
+
+        clearError();
+        hideBanner();
+        convert();
+      });
+
+      // Copy button (Clipboard API with fallback)
+      document.getElementById('btn-copy').addEventListener('click', async () => {
+        const text = outputEl.value;
+        if (!text) return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          // Fallback for non-secure contexts
+          outputEl.removeAttribute('readonly');
+          outputEl.select();
+          document.execCommand('copy');
+          outputEl.setAttribute('readonly', '');
+        }
+
+        copyMsg.classList.remove('hidden');
+        setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+      });
+
+      // Clear button
+      document.getElementById('btn-clear').addEventListener('click', () => {
+        inputEl.value  = '';
+        outputEl.value = '';
+        clearError();
+        hideBanner();
+        updateCounts();
+      });
+
+      // Keyboard shortcut: Ctrl+Shift+C to copy
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+          e.preventDefault();
+          document.getElementById('btn-copy').click();
+        }
+      });
+
+      // Initial count sync
+      updateCounts();
+
+      // ── Conversion History (localStorage) ────────────────────
+
+      const HISTORY_KEY = 'b64_history';
+      const HISTORY_MAX = 10;
+
+      function loadHistory() {
+        try {
+          return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        } catch { return []; }
+      }
+
+      function saveHistory(entries) {
+        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(entries)); } catch {}
+      }
+
+      function addHistoryEntry(mode, input, output) {
+        if (!input.trim() || !output.trim()) return;
+        const entries = loadHistory();
+        // Remove duplicate if same input+mode exists
+        const idx = entries.findIndex(e => e.input === input && e.mode === mode);
+        if (idx !== -1) entries.splice(idx, 1);
+        entries.unshift({ mode, input: input.slice(0, 500), output: output.slice(0, 500), ts: Date.now() });
+        if (entries.length > HISTORY_MAX) entries.length = HISTORY_MAX;
+        saveHistory(entries);
+        renderHistory();
+      }
+
+      function renderHistory() {
+        const entries = loadHistory();
+        const section = document.getElementById('history-section');
+        const list    = document.getElementById('history-list');
+        if (entries.length === 0) { section.classList.add('hidden'); return; }
+        section.classList.remove('hidden');
+        list.innerHTML = '';
+        entries.forEach((entry, i) => {
+          const date = new Date(entry.ts).toLocaleTimeString();
+          const preview = entry.input.length > 40 ? entry.input.slice(0, 40) + '…' : entry.input;
+          const li = document.createElement('li');
+          li.className = 'flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs';
+          li.innerHTML = `
+            <span class="shrink-0 px-1.5 py-0.5 rounded text-xs font-mono uppercase
+              ${entry.mode === 'encode' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300'}">
+              ${entry.mode === 'encode' ? 'enc' : 'dec'}
+            </span>
+            <span class="flex-1 truncate font-mono text-gray-700 dark:text-gray-300" title="${entry.input.replace(/"/g, '&quot;')}">${preview.replace(/</g, '&lt;')}</span>
+            <span class="shrink-0 text-gray-400">${date}</span>
+            <button class="shrink-0 px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900/40 text-gray-600 dark:text-gray-300 transition-colors"
+                    aria-label="Restore conversion ${i + 1}"
+                    data-idx="${i}">
+              Restore
+            </button>
+          `;
+          list.appendChild(li);
+        });
+
+        // Restore button handlers
+        list.querySelectorAll('button[data-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const entry = loadHistory()[parseInt(btn.dataset.idx, 10)];
+            if (!entry) return;
+            inputEl.value = entry.input;
+            setMode(entry.mode);
+            clearError();
+            hideBanner();
+            convert();
+          });
+        });
+      }
+
+      // Clear history
+      document.getElementById('btn-clear-history').addEventListener('click', () => {
+        saveHistory([]);
+        renderHistory();
+      });
+
+      // Wrap convert to also save a history entry on success
+      const _origConvert = convert;
+      function convertAndRecord() {
+        _origConvert();
+        const mode = getMode();
+        // Only record when there is output and no error (auto resolves to encode/decode inside convert)
+        if (outputEl.value && errorBar.classList.contains('hidden')) {
+          // Resolved mode after auto-detect: check which radio is effectively active
+          const resolvedMode = mode === 'auto'
+            ? (banner.classList.contains('hidden') ? mode : (bannerMsg.textContent.includes('decod') ? 'decode' : 'encode'))
+            : mode;
+          if (resolvedMode !== 'auto') {
+            addHistoryEntry(resolvedMode, inputEl.value, outputEl.value);
+          }
+        }
+      }
+
+      // Re-wire all event listeners to use convertAndRecord
+      // Remove old ones by replacing the element clone method is complex;
+      // instead we keep old convert for internal calls and override the button
+      document.getElementById('btn-convert').removeEventListener('click', convert);
+      document.getElementById('btn-convert').addEventListener('click', convertAndRecord);
+
+      // Override debounced input handler
+      inputEl.removeEventListener('input', inputEl._debounceHandler);
+      let debounceTimer2;
+      inputEl.addEventListener('input', () => {
+        clearTimeout(debounceTimer2);
+        debounceTimer2 = setTimeout(convertAndRecord, 250);
+        updateCounts();
+      });
+
+      // Initial history render
+      renderHistory();
+
+      // ── URL Hash Sharing ──────────────────────────────────────
+
+      const SHARE_MAX_INPUT = 2000; // max chars to encode into URL
+
+      function buildShareURL() {
+        const input = inputEl.value;
+        if (!input || input.length > SHARE_MAX_INPUT) return null;
+        const mode    = getMode();
+        const urlSafe = urlSafeChk.checked;
+        const payload = JSON.stringify({ input, mode, urlSafe });
+        const encoded = btoa(unescape(encodeURIComponent(payload)));
+        const url = new URL(location.href);
+        url.hash = encoded;
+        return url.toString();
+      }
+
+      function loadFromURLHash() {
+        const hash = location.hash.slice(1);
+        if (!hash) return;
+        try {
+          const payload = JSON.parse(decodeURIComponent(escape(atob(hash))));
+          if (payload && payload.input !== undefined) {
+            inputEl.value = payload.input;
+            if (payload.mode) setMode(payload.mode);
+            if (typeof payload.urlSafe === 'boolean') urlSafeChk.checked = payload.urlSafe;
+            convert();
+          }
+        } catch { /* malformed hash — ignore */ }
+      }
+
+      document.getElementById('btn-share').addEventListener('click', async () => {
+        const url = buildShareURL();
+        const displayEl = document.getElementById('share-url-display');
+        const shareMsg  = document.getElementById('share-msg');
+
+        if (!url) {
+          // Input too large — show message
+          displayEl.classList.add('hidden');
+          shareMsg.textContent = 'Input too large to share via URL (max 2 000 chars)';
+          shareMsg.classList.remove('hidden');
+          shareMsg.classList.remove('text-green-600', 'dark:text-green-400');
+          shareMsg.classList.add('text-orange-500', 'dark:text-orange-400');
+          setTimeout(() => { shareMsg.classList.add('hidden'); }, 3000);
+          return;
+        }
+
+        displayEl.value = url;
+        displayEl.classList.remove('hidden');
+
+        try {
+          await navigator.clipboard.writeText(url);
+          shareMsg.textContent = '✓ URL copied!';
+        } catch {
+          shareMsg.textContent = 'Copy the URL above to share';
+        }
+        shareMsg.classList.remove('hidden', 'text-orange-500', 'dark:text-orange-400');
+        shareMsg.classList.add('text-green-600', 'dark:text-green-400');
+        setTimeout(() => { shareMsg.classList.add('hidden'); displayEl.classList.add('hidden'); }, 4000);
+      });
+
+      // Load state from URL hash on page load
+      loadFromURLHash();
+
+      // ── Tab switching (Text / File) ───────────────────────────
+
+      const tabText  = document.getElementById('tab-text');
+      const tabFile  = document.getElementById('tab-file');
+      const panelText = document.getElementById('panel-text');
+      const panelFile = document.getElementById('panel-file');
+
+      function activateTab(which) {
+        if (which === 'file') {
+          tabText.setAttribute('aria-selected', 'false');
+          tabText.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900';
+          tabFile.setAttribute('aria-selected', 'true');
+          tabFile.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900';
+          panelText.classList.add('hidden');
+          panelFile.classList.remove('hidden');
+        } else {
+          tabFile.setAttribute('aria-selected', 'false');
+          tabFile.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900';
+          tabText.setAttribute('aria-selected', 'true');
+          tabText.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900';
+          panelFile.classList.add('hidden');
+          panelText.classList.remove('hidden');
+        }
+      }
+
+      tabText.addEventListener('click', () => activateTab('text'));
+      tabFile.addEventListener('click', () => activateTab('file'));
+
+      // ── File → Base64 encoding ────────────────────────────────
+
+      const LARGE_FILE_THRESHOLD = 5 * 1024 * 1024; // 5 MB
+
+      const dropZone          = document.getElementById('drop-zone');
+      const fileInput         = document.getElementById('file-input');
+      const fileLargeWarning  = document.getElementById('file-large-warning');
+      const fileProgress      = document.getElementById('file-progress');
+      const fileProgressInner = document.getElementById('file-progress-bar-inner');
+      const fileProgressPct   = document.getElementById('file-progress-pct');
+      const fileInfo          = document.getElementById('file-info');
+      const fileInfoText      = document.getElementById('file-info-text');
+      const fileOutputSection = document.getElementById('file-output-section');
+      const fileOutputEl      = document.getElementById('file-output');
+      const fileOutputCount   = document.getElementById('file-output-count');
+      const fileUrlSafeChk    = document.getElementById('file-url-safe');
+      const dataUriWrap       = document.getElementById('data-uri-wrap');
+
+      let currentFileMime = '';
+      let currentFileBase64Raw = ''; // raw b64 without data URI
+
+      function fmtBytes(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      }
+
+      function setProgress(pct) {
+        fileProgressInner.style.width = `${pct}%`;
+        fileProgressPct.textContent   = `${pct}%`;
+        fileProgress.setAttribute('aria-valuenow', pct);
+      }
+
+      function showFileOutput(b64raw, mime, fileName) {
+        currentFileBase64Raw = b64raw;
+        currentFileMime      = mime;
+
+        const display = dataUriWrap.checked ? `data:${mime};base64,${b64raw}` : b64raw;
+        fileOutputEl.value = display;
+        const len = display.length;
+        fileOutputCount.textContent = len === 1 ? '1 char' : `${len.toLocaleString()} chars`;
+        fileOutputSection.classList.remove('hidden');
+      }
+
+      function encodeFileWithWorker(file) {
+        const urlSafe = fileUrlSafeChk.checked;
+        const worker = new Worker('file-worker.js');
+
+        setProgress(0);
+        fileProgress.classList.remove('hidden');
+        fileOutputSection.classList.add('hidden');
+
+        worker.postMessage({ file, urlSafe });
+
+        worker.addEventListener('message', (e) => {
+          const { type } = e.data;
+          if (type === 'progress') {
+            setProgress(e.data.percent);
+          } else if (type === 'done') {
+            setProgress(100);
+            setTimeout(() => fileProgress.classList.add('hidden'), 500);
+            showFileOutput(e.data.result, e.data.mimeType, e.data.fileName);
+            worker.terminate();
+          } else if (type === 'error') {
+            fileProgress.classList.add('hidden');
+            showFileDecodeError(`Encoding error: ${e.data.message}`);
+            worker.terminate();
+          }
+        });
+      }
+
+      function encodeFileDirect(file) {
+        const urlSafe = fileUrlSafeChk.checked;
+        const reader  = new FileReader();
+        setProgress(0);
+        fileProgress.classList.remove('hidden');
+        fileOutputSection.classList.add('hidden');
+
+        reader.onload = (ev) => {
+          // ev.target.result is a data URL: data:[mime];base64,[b64]
+          const dataUrl = ev.target.result;
+          const commaIdx = dataUrl.indexOf(',');
+          let b64 = commaIdx >= 0 ? dataUrl.slice(commaIdx + 1) : dataUrl;
+          if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+          setProgress(100);
+          setTimeout(() => fileProgress.classList.add('hidden'), 400);
+          showFileOutput(b64, file.type || 'application/octet-stream', file.name);
+        };
+
+        reader.onerror = () => {
+          fileProgress.classList.add('hidden');
+          showFileDecodeError('Failed to read the file.');
+        };
+
+        reader.readAsDataURL(file);
+      }
+
+      function handleFile(file) {
+        // Reset
+        fileLargeWarning.classList.add('hidden');
+        fileOutputSection.classList.add('hidden');
+
+        // Show file info
+        fileInfoText.textContent = `${file.name} (${fmtBytes(file.size)}) · ${file.type || 'unknown type'}`;
+        fileInfo.classList.remove('hidden');
+
+        // Large file warning
+        if (file.size > LARGE_FILE_THRESHOLD) {
+          fileLargeWarning.classList.remove('hidden');
+        }
+
+        // Use Web Worker for files >1 MB, direct FileReader otherwise
+        if (file.size > 1024 * 1024 && typeof Worker !== 'undefined') {
+          encodeFileWithWorker(file);
+        } else {
+          encodeFileDirect(file);
+        }
+      }
+
+      // Click to browse
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) handleFile(fileInput.files[0]);
+        fileInput.value = ''; // allow re-selecting same file
+      });
+
+      // Drag and drop
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f) handleFile(f);
+      });
+
+      // URL-safe toggle → refresh output if already encoded
+      fileUrlSafeChk.addEventListener('change', () => {
+        if (!currentFileBase64Raw) return;
+        let b64 = currentFileBase64Raw;
+        if (fileUrlSafeChk.checked) {
+          b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+        } else {
+          b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+        }
+        currentFileBase64Raw = b64;
+        showFileOutput(b64, currentFileMime, '');
+      });
+
+      // data-URI wrap toggle
+      dataUriWrap.addEventListener('change', () => {
+        if (!currentFileBase64Raw) return;
+        showFileOutput(currentFileBase64Raw, currentFileMime, '');
+      });
+
+      // Copy file output
+      document.getElementById('btn-file-copy').addEventListener('click', async () => {
+        const text = fileOutputEl.value;
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          fileOutputEl.removeAttribute('readonly');
+          fileOutputEl.select();
+          document.execCommand('copy');
+          fileOutputEl.setAttribute('readonly', '');
+        }
+        const msg = document.getElementById('file-copy-msg');
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 2000);
+      });
+
+      // ── Base64 → File download ────────────────────────────────
+
+      const fileDecodeInput = document.getElementById('file-decode-input');
+      const fileDecodeError = document.getElementById('file-decode-error');
+      const fileDecodeInfo  = document.getElementById('file-decode-info');
+
+      function showFileDecodeError(msg) {
+        fileDecodeError.textContent = msg;
+        fileDecodeError.classList.remove('hidden');
+        fileDecodeInfo.classList.add('hidden');
+      }
+
+      function hideFileDecodeError() {
+        fileDecodeError.textContent = '';
+        fileDecodeError.classList.add('hidden');
+      }
+
+      /**
+       * Parse a Base64 string that may or may not have a data URI prefix.
+       * Returns { b64: string, mime: string }.
+       */
+      function parseBase64Input(raw) {
+        const trimmed = raw.trim();
+        // data:[mime];base64,[data]
+        const dataUriMatch = trimmed.match(/^data:([^;]+);base64,(.+)$/is);
+        if (dataUriMatch) {
+          return { b64: dataUriMatch[2].trim(), mime: dataUriMatch[1].trim() };
+        }
+        return { b64: trimmed, mime: '' };
+      }
+
+      /**
+       * Guess a file extension from MIME type.
+       */
+      function mimeToExt(mime) {
+        const map = {
+          'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif',
+          'image/webp': 'webp', 'image/svg+xml': 'svg', 'image/bmp': 'bmp',
+          'image/tiff': 'tiff', 'image/x-icon': 'ico',
+          'application/pdf': 'pdf',
+          'application/json': 'json',
+          'application/zip': 'zip',
+          'application/gzip': 'gz',
+          'application/x-tar': 'tar',
+          'application/x-7z-compressed': '7z',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx',
+          'text/plain': 'txt',
+          'text/html': 'html',
+          'text/css': 'css',
+          'text/csv': 'csv',
+          'text/javascript': 'js',
+          'audio/mpeg': 'mp3',
+          'audio/wav': 'wav',
+          'audio/ogg': 'ogg',
+          'video/mp4': 'mp4',
+          'video/webm': 'webm',
+        };
+        return map[mime] || '';
+      }
+
+      document.getElementById('btn-file-download').addEventListener('click', () => {
+        hideFileDecodeError();
+        fileDecodeInfo.classList.add('hidden');
+
+        const rawInput = fileDecodeInput.value;
+        if (!rawInput.trim()) {
+          showFileDecodeError('Please paste a Base64 string to decode.');
+          return;
+        }
+
+        const { b64, mime: detectedMime } = parseBase64Input(rawInput);
+
+        // Normalise URL-safe chars
+        const standardB64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+
+        let binaryStr;
+        try {
+          binaryStr = atob(standardB64);
+        } catch {
+          showFileDecodeError('Invalid Base64 string — could not decode. Check for correct formatting.');
+          return;
+        }
+
+        // Resolve MIME type (override > data URI detected > fallback)
+        const mimeOverride = document.getElementById('file-decode-mime').value.trim();
+        const finalMime    = mimeOverride || detectedMime || 'application/octet-stream';
+
+        // Build Uint8Array from binary string
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+
+        // Resolve filename
+        const nameInput  = document.getElementById('file-decode-name').value.trim();
+        const ext        = mimeToExt(finalMime);
+        const baseName   = nameInput || 'decoded-file';
+        const fileName   = (baseName.includes('.') || !ext) ? baseName : `${baseName}.${ext}`;
+
+        // Create and trigger download
+        const blob = new Blob([bytes], { type: finalMime });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = fileName;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+
+        fileDecodeInfo.textContent = `Downloaded: ${fileName} · ${fmtBytes(bytes.length)} · ${finalMime}`;
+        fileDecodeInfo.classList.remove('hidden');
+      });
+
+      // ── ONLA-21: Dark mode toggle button ─────────────────────
+
+      const btnDarkToggle = document.getElementById('btn-dark-toggle');
+
+      function applyDarkMode(dark) {
+        if (dark) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('b64_dark_mode', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('b64_dark_mode', 'light');
+        }
+      }
+
+      btnDarkToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        applyDarkMode(!isDark);
+      });
+
+      // Listen for system preference changes (when no explicit choice stored)
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('b64_dark_mode')) {
+          applyDarkMode(e.matches);
+        }
+      });
+
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Preview & Editor | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online Markdown editor with real-time preview and GitHub-Flavored Markdown support.">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-editor: #ffffff;
+            --text-editor: #1a1a1a;
+        }
+        .dark {
+            --bg-editor: #0d1117;
+            --text-editor: #c9d1d9;
+        }
+        
+        body {
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .editor-textarea {
+            background-color: var(--bg-editor);
+            color: var(--text-editor);
+            caret-color: #3b82f6;
+            resize: none;
+            outline: none;
+            tab-size: 4;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #30363d;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background-color: transparent !important;
+        }
+
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+
+        .dark .markdown-body {
+            color: #c9d1d9;
+        }
+
+        /* Toolbar button active state */
+        .toolbar-btn:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="h-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                online-tools.click
+            </a>
+            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+            <h1 class="text-lg font-semibold flex items-center gap-2">
+                Markdown Editor
+            </h1>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button id="btn-export-md" class="px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Download .md file">
+                Download .md
+            </button>
+            <button id="btn-export-html" class="px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Download .html file">
+                Export HTML
+            </button>
+            <button id="btn-theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle theme">
+                <svg id="sun-icon" class="hidden w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                <svg id="moon-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="flex items-center gap-1 px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <button onclick="insertAtCursor('**', '**')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Bold (Ctrl+B)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"></path></svg>
+        </button>
+        <button onclick="insertAtCursor('_', '_')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Italic (Ctrl+I)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+        </button>
+        <button onclick="insertAtCursor('# ')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Heading">
+            <span class="text-xs font-bold">H</span>
+        </button>
+        <div class="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+        <button onclick="insertAtCursor('[', '](https://)')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Link (Ctrl+K)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+        </button>
+        <button onclick="insertAtCursor('![alt text](', ')')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Image">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </button>
+        <div class="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+        <button onclick="insertAtCursor('\n```\n', '\n```\n')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Code Block">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </button>
+        <button onclick="insertAtCursor('\n| Title | Column |\n| --- | --- |\n| Content | Cell |\n')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Table">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        </button>
+        <div class="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+        <button onclick="insertAtCursor('\n- ')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Bullet List">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <button onclick="insertAtCursor('\n1. ')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Numbered List">
+            <span class="text-[10px] font-bold">1.</span>
+        </button>
+        <button onclick="insertAtCursor('\n- [ ] ')" class="toolbar-btn p-2 hover:bg-gray-200 dark:hover:bg-gray-800 rounded transition-all" title="Task List">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        </button>
+        <div class="flex-1"></div>
+        <button id="btn-copy-html" class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded shadow-sm transition-all">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10l7-7"></path></svg>
+            Copy HTML
+        </button>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex h-full flex-1 overflow-hidden">
+        <!-- Editor Section -->
+        <section id="editor-container" class="w-1/2 flex flex-col border-r border-gray-200 dark:border-gray-800 h-full relative transition-all duration-300">
+            <div class="flex items-center justify-between px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">
+                Editor
+                <span id="char-count">0 characters</span>
+            </div>
+            <textarea id="markdown-input" class="editor-textarea flex-1 p-6 font-mono text-sm leading-relaxed" placeholder="Type your markdown here..."></textarea>
+        </section>
+
+        <!-- Preview Section -->
+        <section id="preview-container" class="w-1/2 flex flex-col h-full overflow-hidden bg-white dark:bg-gray-950 transition-all duration-300">
+            <div class="flex items-center justify-between px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">
+                Preview
+                <span id="reading-time">0 min read</span>
+            </div>
+            <div id="preview-scroll" class="flex-1 overflow-y-auto scroll-smooth">
+                <div id="markdown-preview" class="markdown-body"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Navigation (Floating Toggle) -->
+    <div class="md:hidden fixed bottom-6 right-6 z-50">
+        <button id="mobile-view-toggle" class="bg-blue-600 text-white p-4 rounded-full shadow-xl ring-4 ring-white dark:ring-gray-900 active:scale-95 transition-all">
+            <svg id="view-preview-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            <svg id="view-editor-icon" class="hidden w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        const input = document.getElementById('markdown-input');
+        const preview = document.getElementById('markdown-preview');
+        const previewScroll = document.getElementById('preview-scroll');
+        const charCount = document.getElementById('char-count');
+        const readingTime = document.getElementById('reading-time');
+        const toast = document.getElementById('toast');
+
+        // Configure Marked
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            highlight: function(code, lang) {
+                if (Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                } else {
+                    return code;
+                }
+            }
+        });
+
+        // Live Preview Function
+        function renderMarkdown() {
+            const rawValue = input.value;
+            const cleanHTML = DOMPurify.sanitize(marked.parse(rawValue));
+            preview.innerHTML = cleanHTML;
+            
+            // Statistics
+            charCount.textContent = `${rawValue.length} characters`;
+            const words = rawValue.trim().split(/\s+/).length;
+            const time = Math.ceil(words / 200);
+            readingTime.textContent = `${time} min read`;
+
+            // Auto-save
+            localStorage.setItem('markdown_content', rawValue);
+            
+            // Re-highlight Prism
+            Prism.highlightAllUnder(preview);
+        }
+
+        // Scroll Sync
+        let isSyncingInputScroll = false;
+        let isSyncingPreviewScroll = false;
+
+        input.onscroll = function() {
+            if (!isSyncingInputScroll) {
+                isSyncingPreviewScroll = true;
+                const percentage = input.scrollTop / (input.scrollHeight - input.offsetHeight);
+                previewScroll.scrollTop = percentage * (previewScroll.scrollHeight - previewScroll.offsetHeight);
+            }
+            isSyncingInputScroll = false;
+        };
+
+        previewScroll.onscroll = function() {
+            if (!isSyncingPreviewScroll) {
+                isSyncingInputScroll = true;
+                const percentage = previewScroll.scrollTop / (previewScroll.scrollHeight - previewScroll.offsetHeight);
+                input.scrollTop = percentage * (input.scrollHeight - input.offsetHeight);
+            }
+            isSyncingPreviewScroll = false;
+        };
+
+        // Formatting Helper
+        window.insertAtCursor = function(prefix, suffix = '') {
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+            const selection = text.substring(start, end);
+
+            input.value = before + prefix + selection + suffix + after;
+            input.focus();
+            
+            // Set cursor position
+            const newCursorPos = start + prefix.length + selection.length + suffix.length;
+            input.setSelectionRange(newCursorPos, newCursorPos);
+            
+            renderMarkdown();
+        };
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('btn-theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        function updateThemeIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeBtn.onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcons();
+        };
+
+        // Download Actions
+        document.getElementById('btn-export-md').onclick = () => {
+            downloadFile(input.value, 'document.md', 'text/markdown');
+        };
+
+        document.getElementById('btn-export-html').onclick = () => {
+            const fullHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></head><body class="markdown-body" style="padding: 40px">${preview.innerHTML}</body></html>`;
+            downloadFile(fullHTML, 'document.html', 'text/html');
+        };
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Copy Actions
+        document.getElementById('btn-copy-html').onclick = () => {
+            navigator.clipboard.writeText(preview.innerHTML).then(() => showToast('HTML Copied!'));
+        };
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+        }
+
+        // Mobile View Toggle
+        const mobileToggle = document.getElementById('mobile-view-toggle');
+        const editorPanel = document.getElementById('editor-container');
+        const previewPanel = document.getElementById('preview-container');
+        const editorIcon = document.getElementById('view-editor-icon');
+        const previewIcon = document.getElementById('view-preview-icon');
+
+        mobileToggle.onclick = () => {
+            if (editorPanel.classList.contains('w-1/2')) {
+                // Initialize mobile states if first click
+                editorPanel.classList.remove('w-1/2');
+                previewPanel.classList.remove('w-1/2');
+            }
+
+            if (editorPanel.classList.contains('hidden')) {
+                editorPanel.classList.remove('hidden');
+                editorPanel.classList.add('w-full');
+                previewPanel.classList.add('hidden');
+                previewPanel.classList.remove('w-full');
+                editorIcon.classList.add('hidden');
+                previewIcon.classList.remove('hidden');
+            } else {
+                editorPanel.classList.add('hidden');
+                editorPanel.classList.remove('w-full');
+                previewPanel.classList.remove('hidden');
+                previewPanel.classList.add('w-full');
+                editorIcon.classList.remove('hidden');
+                previewIcon.classList.add('hidden');
+            }
+        };
+
+        // Initialize
+        window.onload = () => {
+            // Restore content
+            const saved = localStorage.getItem('markdown_content');
+            if (saved) {
+                input.value = saved;
+            } else {
+                input.value = "# Hello World\n\nWelcome to the **online-tools.click** Markdown Editor.\n\n### Features:\n- GitHub Flavored Markdown\n- Syntax Highlighting\n- Real-time Preview\n- Scroll Sync\n\n```javascript\nconsole.log(\"Snap!\");\n```";
+            }
+            
+            // Restore theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+            updateThemeIcons();
+            
+            input.addEventListener('input', renderMarkdown);
+            renderMarkdown();
+        };
+
+        // Shortcuts
+        document.onkeydown = (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'b') { e.preventDefault(); insertAtCursor('**', '**'); }
+                if (e.key === 'i') { e.preventDefault(); insertAtCursor('_', '_'); }
+                if (e.key === 'k') { e.preventDefault(); insertAtCursor('[', '](https://)'); }
+            }
+        };
+    </script>
+</body>
+</html>
