@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address Lookup & Geolocation | online-tools.click</title>
+    <meta name="description" content="Instantly find your public IP address and get detailed geolocation data including country, city, ISP, and timezone.">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+        
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e5e7eb;
+            border-bottom-color: #3b82f6;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .map-placeholder {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .dark .map-placeholder {
+            background-image: radial-gradient(#374151 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">IP Address Lookup</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Find your public IP and explore geolocation details.</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="relative max-w-xl mx-auto mb-12">
+            <input type="text" id="ip-input" placeholder="Enter any IP address (e.g. 8.8.8.8)..." class="w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-6 py-4 text-lg font-mono outline-none focus:border-blue-500 transition-all shadow-lg">
+            <button id="btn-lookup" class="absolute right-3 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-semibold transition-all">Lookup</button>
+        </div>
+
+        <!-- Main Display Card -->
+        <main id="main-card" class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+                
+                <!-- Left: Info -->
+                <div class="p-10 space-y-8 border-r border-gray-100 dark:border-gray-800">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-widest text-blue-500 mb-1 block">Your Public IP</label>
+                        <div class="flex items-center gap-4">
+                            <h2 id="display-ip" class="text-4xl font-mono font-bold tracking-tight">0.0.0.0</h2>
+                            <button id="btn-copy" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-400" title="Copy IP">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10l7-7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8">
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block font-mono">Country</label>
+                            <div id="display-country" class="font-semibold flex items-center gap-2">---</div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block font-mono">City / Region</label>
+                            <div id="display-location" class="font-semibold">---</div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block font-mono">ISP</label>
+                            <div id="display-isp" class="font-semibold">---</div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 block font-mono">Timezone</label>
+                            <div id="display-timezone" class="font-semibold">---</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex gap-4">
+                        <div id="badge-version" class="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-[10px] font-bold text-gray-500 uppercase tracking-tighter">IPv4</div>
+                        <div id="badge-proxy" class="hidden px-3 py-1 bg-red-100 dark:bg-red-900/30 rounded-full text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-tighter">VPN/Proxy Detected</div>
+                    </div>
+                </div>
+
+                <!-- Right: Visual/Map -->
+                <div class="relative bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center map-placeholder overflow-hidden p-10">
+                    <div id="map-circle" class="absolute w-64 h-64 bg-blue-500/10 rounded-full animate-pulse"></div>
+                    <div class="relative z-10 text-center space-y-4">
+                        <div id="display-flag" class="text-8xl">📍</div>
+                        <div class="space-y-1">
+                            <div id="display-lat-long" class="text-xs font-mono text-gray-400 uppercase tracking-widest">0.0000, 0.0000</div>
+                            <div class="text-xs text-blue-500 font-bold uppercase">Approximate Location</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-20 flex flex-col items-center gap-4">
+            <span class="loader"></span>
+            <p class="text-gray-400 font-medium animate-pulse">Fetching IP and Geolocation data...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden text-center py-20">
+            <div class="text-red-500 text-5xl mb-4">⚠️</div>
+            <h3 class="text-xl font-bold mb-2">Failed to Fetch Data</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6">We couldn't connect to the geolocation service. Please check your connection or try again later.</p>
+            <button onclick="window.location.reload()" class="px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-xl font-semibold hover:bg-gray-300 transition-all">Retry</button>
+        </div>
+
+        <!-- Privacy Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8">
+            <p class="mb-4">🔒 This tool uses the IP-API service for public IP geolocation. We do not store your IP address or any lookup history.</p>
+            <div class="flex justify-center gap-4">
+                <button id="btn-theme-toggle" class="hover:text-blue-500 transition-colors">Toggle Dark Mode</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors">More Tools</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        // --- Elements ---
+        const ipInput = document.getElementById('ip-input');
+        const btnLookup = document.getElementById('btn-lookup');
+        const mainCard = document.getElementById('main-card');
+        const loadingState = document.getElementById('loading-state');
+        const errorState = document.getElementById('error-state');
+        const toast = document.getElementById('toast');
+
+        // --- Logic ---
+        async function fetchIPData(ip = '') {
+            loadingState.classList.remove('hidden');
+            mainCard.classList.add('hidden');
+            errorState.classList.add('hidden');
+
+            try {
+                // Using ip-api.com (Free tier, HTTP only but works well for client-side demo)
+                const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,countryCode,regionName,city,zip,lat,lon,timezone,isp,org,as,proxy,query`);
+                const data = await response.json();
+
+                if (data.status === 'fail') throw new Error(data.message);
+
+                updateUI(data);
+            } catch (err) {
+                console.error(err);
+                loadingState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+            }
+        }
+
+        function updateUI(data) {
+            document.getElementById('display-ip').textContent = data.query;
+            document.getElementById('display-country').innerHTML = `<span>${data.country}</span> <span class="text-xs text-gray-400 font-mono">(${data.countryCode})</span>`;
+            document.getElementById('display-location').textContent = `${data.city}, ${data.regionName}`;
+            document.getElementById('display-isp').textContent = data.isp;
+            document.getElementById('display-timezone').textContent = data.timezone;
+            document.getElementById('display-lat-long').textContent = `${data.lat}, ${data.lon}`;
+            
+            // Version check (simple heuristic)
+            document.getElementById('badge-version').textContent = data.query.includes(':') ? 'IPv6' : 'IPv4';
+            
+            // Proxy check
+            if (data.proxy) document.getElementById('badge-proxy').classList.remove('hidden');
+            else document.getElementById('badge-proxy').classList.add('hidden');
+
+            // Set Flag Placeholder (using emoji for now)
+            // Note: In real production we might use a flag library
+            document.getElementById('display-flag').textContent = '📍';
+
+            loadingState.classList.add('hidden');
+            mainCard.classList.remove('hidden');
+        }
+
+        // --- Events ---
+        btnLookup.onclick = () => {
+            const val = ipInput.value.trim();
+            if (val) fetchIPData(val);
+        };
+
+        ipInput.onkeydown = (e) => {
+            if (e.key === 'Enter') btnLookup.click();
+        };
+
+        document.getElementById('btn-copy').onclick = () => {
+            const ip = document.getElementById('display-ip').textContent;
+            navigator.clipboard.writeText(ip).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+
+        document.getElementById('btn-theme-toggle').onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        };
+
+        // Initialize
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Initial fetch for user's own IP
+        fetchIPData();
+    </script>
+</body>
+</html>

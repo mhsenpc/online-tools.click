@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Generator | Online Tools</title>
+    <meta name="description" content="Secure, client-side password generator. Generate strong, random passwords and readable passphrases with customizable rules. 100% private.">
+    <meta property="og:title" content="Password Generator | Online Tools">
+    <meta property="og:description" content="Secure, client-side password generator. Generate strong, random passwords and readable passphrases.">
+    <meta property="og:url" content="https://online-tools.click/password_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Password Generator | Online Tools">
+    <meta name="twitter:description" content="Secure, client-side password generator. 100% private.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/password_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Result Area */
+        .result-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .main-result {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .password-display {
+            flex: 1;
+            font-family: var(--font-mono);
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--bg-input);
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            white-space: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .password-display::-webkit-scrollbar {
+            display: none;
+        }
+
+        .password-display:hover {
+            border-color: var(--border-focus);
+        }
+
+        .btn-generate {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            width: 64px;
+            height: 64px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-generate:hover {
+            transform: rotate(30deg);
+            background: #ff5522;
+        }
+
+        .btn-generate svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .strength-meter {
+            height: 6px;
+            background: var(--bg-input);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .strength-segment {
+            flex: 1;
+            height: 100%;
+            background: var(--border);
+            transition: background-color 0.3s;
+        }
+
+        .strength-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .strength-label {
+            color: var(--text-muted);
+        }
+
+        .strength-value {
+            color: var(--text-secondary);
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .length-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .length-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .length-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid var(--bg-elevated);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .length-number {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            width: 40px;
+            text-align: right;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--border-focus);
+        }
+
+        .checkbox-item.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        .checkbox-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .mode-toggle {
+            display: flex;
+            background: var(--bg-input);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 8px;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--bg-elevated);
+            color: var(--text);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* History & Batch */
+        .batch-container {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .batch-container.visible {
+            display: block;
+        }
+
+        .history-container {
+            margin-top: 40px;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .history-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        .history-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .history-item:hover svg {
+            opacity: 1;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .password-display {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">Password Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Secure Password Generator</h1>
+            <p>Generate high-entropy random passwords or memorable passphrases. 100% client-side security.</p>
+        </section>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="random">Random Password</button>
+            <button class="mode-btn" data-mode="passphrase">Memorable Passphrase</button>
+        </div>
+
+        <div class="result-container">
+            <div class="main-result">
+                <div class="password-display" id="password-display" title="Click to copy">
+                    ••••••••••••
+                </div>
+                <button class="btn-generate" id="generate-btn" title="Generate New">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                </button>
+            </div>
+            
+            <div class="strength-meter" id="strength-meter">
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+                <div class="strength-segment"></div>
+            </div>
+            <div class="strength-text">
+                <span class="strength-label">Security Strength</span>
+                <span class="strength-value" id="strength-value">Not Generated</span>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+            <div class="setting-group" id="random-settings">
+                <label class="setting-label">Password Length</label>
+                <div class="length-control">
+                    <input type="range" class="length-slider" id="length-slider" min="8" max="128" value="16">
+                    <span class="length-number" id="length-number">16</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Uppercase Letters (A-Z)</span>
+                        <input type="checkbox" id="include-upper" checked>
+                    </label>
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Lowercase Letters (a-z)</span>
+                        <input type="checkbox" id="include-lower" checked>
+                    </label>
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Numbers (0-9)</span>
+                        <input type="checkbox" id="include-numbers" checked>
+                    </label>
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Symbols (!@#$%^&*)</span>
+                        <input type="checkbox" id="include-symbols" checked>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group" id="passphrase-settings" style="display: none;">
+                <label class="setting-label">Number of Words</label>
+                <div class="length-control">
+                    <input type="range" class="length-slider" id="word-count-slider" min="3" max="12" value="4">
+                    <span class="length-number" id="word-count-number">4</span>
+                </div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Capitalize Words</span>
+                        <input type="checkbox" id="capitalize-words" checked>
+                    </label>
+                    <label class="checkbox-item active">
+                        <span class="checkbox-text">Include Number</span>
+                        <input type="checkbox" id="include-number-pass">
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Optimization</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <span class="checkbox-text">Exclude Ambiguous (O, 0, l, 1)</span>
+                        <input type="checkbox" id="exclude-ambiguous">
+                    </label>
+                    <label class="checkbox-item">
+                        <span class="checkbox-text">Batch Mode (10x)</span>
+                        <input type="checkbox" id="batch-mode">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="batch-container" id="batch-container">
+            <div class="setting-label">Batch Results</div>
+            <div class="history-list" id="batch-list"></div>
+        </div>
+
+        <div class="history-container">
+            <div class="setting-label">Recently Generated</div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+        // --- Word List for Passphrase ---
+        const words = ["apple", "banana", "cherry", "dragon", "eagle", "forest", "galaxy", "harbor", "island", "jungle", "knight", "lemon", "mountain", "nebula", "ocean", "planet", "quartz", "river", "shadow", "tiger", "umbra", "valley", "wizard", "xenon", "yacht", "zebra", "atlas", "beacon", "castle", "desert", "echo", "frost", "glacier", "horizon", "iron", "jade", "kite", "lunar", "mist", "night", "opal", "pulse", "quiver", "radar", "solar", "tundra", "vortex", "willow", "yarn", "zenith", "alpha", "bravo", "clock", "drift", "ember", "flame", "grape", "haste", "ink", "joy", "karma", "leaf", "maze", "node", "olive", "petal", "quark", "rust", "stone", "tide", "unit", "valve", "wave", "xray", "yoga", "zone", "amber", "blade", "cloud", "dusk", "earth", "field", "gold", "house", "ice", "jump", "key", "lake", "moon", "nest", "oak", "pearl", "quest", "rain", "star", "tree", "vibe", "wind", "zinc"];
+
+        // --- State ---
+        let mode = 'random';
+        let history = [];
+
+        // --- Elements ---
+        const passwordDisplay = document.getElementById('password-display');
+        const generateBtn = document.getElementById('generate-btn');
+        const lengthSlider = document.getElementById('length-slider');
+        const lengthNumber = document.getElementById('length-number');
+        const wordCountSlider = document.getElementById('word-count-slider');
+        const wordCountNumber = document.getElementById('word-count-number');
+        const strengthSegments = document.querySelectorAll('.strength-segment');
+        const strengthValue = document.getElementById('strength-value');
+        const toast = document.getElementById('toast');
+        const historyList = document.getElementById('history-list');
+        const batchList = document.getElementById('batch-list');
+        const batchContainer = document.getElementById('batch-container');
+
+        // --- Security Utils ---
+        function secureRandom(max) {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] % max;
+        }
+
+        // --- Core Logic ---
+        function generatePassword() {
+            if (mode === 'random') {
+                const length = parseInt(lengthSlider.value);
+                const charset = {
+                    upper: 'ABCDEFGHJKLMNPQRSTUVWXYZ', // Ambiguous O removed
+                    lower: 'abcdefghijkmnopqrstuvwxyz', // Ambiguous l, 1 removed if opt-in
+                    numbers: '23456789',
+                    symbols: '!@#$%^&*'
+                };
+                
+                if (!document.getElementById('exclude-ambiguous').checked) {
+                    charset.upper += 'IO';
+                    charset.lower += 'l';
+                    charset.numbers += '01';
+                }
+
+                let pool = '';
+                if (document.getElementById('include-upper').checked) pool += charset.upper;
+                if (document.getElementById('include-lower').checked) pool += charset.lower;
+                if (document.getElementById('include-numbers').checked) pool += charset.numbers;
+                if (document.getElementById('include-symbols').checked) pool += charset.symbols;
+
+                if (pool === '') return 'Select Options';
+
+                let result = '';
+                for (let i = 0; i < length; i++) {
+                    result += pool[secureRandom(pool.length)];
+                }
+                return result;
+            } else {
+                const count = parseInt(wordCountSlider.value);
+                const capitalize = document.getElementById('capitalize-words').checked;
+                const includeNum = document.getElementById('include-number-pass').checked;
+                
+                let selectedWords = [];
+                for (let i = 0; i < count; i++) {
+                    let w = words[secureRandom(words.length)];
+                    if (capitalize) w = w.charAt(0).toUpperCase() + w.slice(1);
+                    selectedWords.push(w);
+                }
+
+                let result = selectedWords.join('-');
+                if (includeNum) result += secureRandom(99);
+                return result;
+            }
+        }
+
+        function calculateStrength(pw) {
+            let score = 0;
+            if (pw.length > 8) score++;
+            if (pw.length > 12) score++;
+            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            
+            // Passphrase weight
+            if (mode === 'passphrase') {
+                const count = parseInt(wordCountSlider.value);
+                if (count >= 4) return 4;
+                if (count >= 3) return 3;
+            }
+
+            return Math.min(4, Math.floor(score * 0.8));
+        }
+
+        function updateUI(pw) {
+            passwordDisplay.textContent = pw;
+            const strength = calculateStrength(pw);
+            
+            const labels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+            const colors = ['#ef4444', '#f59e0b', '#facc15', '#22c55e', '#10b981'];
+            
+            strengthValue.textContent = labels[strength];
+            strengthValue.style.color = colors[strength];
+
+            strengthSegments.forEach((seg, i) => {
+                if (i <= strength - 1) {
+                    seg.style.background = colors[strength];
+                } else {
+                    seg.style.background = 'var(--border)';
+                }
+            });
+
+            if (!document.getElementById('batch-mode').checked) {
+                addToHistory(pw);
+            }
+        }
+
+        function addToHistory(pw) {
+            if (history.includes(pw)) return;
+            history.unshift(pw);
+            if (history.length > 12) history.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = history.map(pw => `
+                <div class="history-item" onclick="copyText('${pw}')">
+                    <span>${pw.length > 20 ? pw.substring(0, 17) + '...' : pw}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+            `).join('');
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.classList.add('visible');
+                setTimeout(() => toast.classList.remove('visible'), 1500);
+            });
+        }
+
+        // --- Handlers ---
+        generateBtn.addEventListener('click', () => {
+            if (document.getElementById('batch-mode').checked) {
+                batchContainer.classList.add('visible');
+                let batch = [];
+                for(let i=0; i<10; i++) batch.push(generatePassword());
+                batchList.innerHTML = batch.map(pw => `
+                    <div class="history-item" onclick="copyText('${pw}')">
+                        <span>${pw}</span>
+                    </div>
+                `).join('');
+                updateUI(batch[0]);
+            } else {
+                batchContainer.classList.remove('visible');
+                updateUI(generatePassword());
+            }
+        });
+
+        passwordDisplay.addEventListener('click', () => copyText(passwordDisplay.textContent));
+
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                mode = btn.dataset.mode;
+                
+                document.getElementById('random-settings').style.display = mode === 'random' ? 'flex' : 'none';
+                document.getElementById('passphrase-settings').style.display = mode === 'passphrase' ? 'flex' : 'none';
+                
+                updateUI(generatePassword());
+            });
+        });
+
+        lengthSlider.addEventListener('input', () => {
+            lengthNumber.textContent = lengthSlider.value;
+            updateUI(generatePassword());
+        });
+
+        wordCountSlider.addEventListener('input', () => {
+            wordCountNumber.textContent = wordCountSlider.value;
+            updateUI(generatePassword());
+        });
+
+        document.querySelectorAll('.checkbox-item input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                e.target.closest('.checkbox-item').classList.toggle('active', e.target.checked);
+                updateUI(generatePassword());
+            });
+        });
+
+        // Initial
+        updateUI(generatePassword());
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
