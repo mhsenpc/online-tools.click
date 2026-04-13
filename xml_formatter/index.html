@@ -776,7 +776,11 @@
         }
 
         // Format XML node recursively
-        function formatXmlNode(node, indent) {
+        function formatXmlNode(node, indent, depth = 0) {
+            const MAX_DEPTH = 500;
+            if (depth > MAX_DEPTH) {
+                throw new Error('XML is too deeply nested to format (max depth exceeded).');
+            }
             const indentStr = getIndentString();
             let result = '';
 
@@ -819,7 +823,7 @@
                 if (elementChildren.length > 0) {
                     result += '\n';
                     children.forEach(child => {
-                        const formatted = formatXmlNode(child, indent + indentStr);
+                        const formatted = formatXmlNode(child, indent + indentStr, depth + 1);
                         if (formatted) {
                             result += formatted + '\n';
                         }
