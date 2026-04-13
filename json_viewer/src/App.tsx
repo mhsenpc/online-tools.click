@@ -187,9 +187,9 @@ export default function App() {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col md:flex-row h-[calc(100vh-64px)] overflow-hidden">
+      <main className="flex-1 flex flex-col md:flex-row h-auto md:h-[calc(100vh-64px)] overflow-hidden">
         {/* Input Panel */}
-        <div className="flex-1 flex flex-col border-r border-border h-full min-h-[40vh] md:min-h-0">
+        <div className="flex-1 flex flex-col border-r border-border h-full min-h-[500px] md:min-h-0">
           <div className="h-12 border-b border-border flex items-center justify-between px-4 bg-surface">
             <span className="text-xs uppercase tracking-widest text-white/40 font-bold">Input JSON</span>
             <div className="flex items-center gap-1">
