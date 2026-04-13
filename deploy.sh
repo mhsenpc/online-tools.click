@@ -270,5 +270,12 @@ echo ""
 echo "  Built    : ${BUILT_DIRS[*]:-none}"
 echo "  Static   : ${STATIC_DIRS[*]:-none}"
 echo "  Skipped  : ${ROOT_SKIPPED[*]:-none}"
-info "Website: https://online-tools.click"
+
+# Dynamic website URL based on target branch
+if [ "$TARGET_BRANCH" = "prod" ]; then
+  WEBSITE_URL="https://online-tools.click"
+else
+  WEBSITE_URL="https://${TARGET_BRANCH}.online-tools.click"
+fi
+info "Website: $WEBSITE_URL"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
