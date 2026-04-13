@@ -219,12 +219,12 @@ export default function App() {
               </button>
             </div>
           </div>
-          <div className="flex-1 relative group">
-            <textarea
-              value={input}
-              onChange={handleInputChange}
-              spellCheck={false}
-              className="w-full h-full bg-bg p-8 font-mono text-[15px] resize-none focus:outline-none placeholder:text-white/10 leading-[1.6] transition-all focus:bg-[#080808]"
+           <div className="flex-1 relative group overflow-hidden">
+             <textarea
+               value={input}
+               onChange={handleInputChange}
+               spellCheck={false}
+               className="w-full h-full min-h-[700px] bg-bg p-8 font-mono text-[15px] resize-none focus:outline-none placeholder:text-white/10 leading-[1.6] transition-all focus:bg-[#080808]"
               placeholder='Paste your JSON here...
 {
   "project": "Online Tools",
