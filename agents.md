@@ -9,3 +9,8 @@ This is a web platform that hosts various online tools (JSON viewer, MD5 decode,
 
 ## Tech Stack
 - Portal directory: `/portal` (ready for implementation)
+
+
+UI for all apps:
+on navbar of each app, there is Online Tools -> app name
+Online Tools is a link to the main page (online-tools.click)
