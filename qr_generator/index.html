@@ -69,6 +69,8 @@
                     <button data-type="text" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-sm transition-all">URL / Text</button>
                     <button data-type="wifi" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">WiFi</button>
                     <button data-type="vcard" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">vCard</button>
+                    <button data-type="email" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Email</button>
+                    <button data-type="phone" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Phone</button>
                 </div>
 
                 <!-- Dynamic Form Area -->
@@ -102,6 +104,20 @@
                         </div>
                         <input id="vcard-tel" type="tel" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Phone Number">
                         <input id="vcard-email" type="email" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Email Address">
+                    </div>
+
+                    <!-- Email Form (Hidden) -->
+                    <div id="form-email" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Email Settings</label>
+                        <input id="email-to" type="email" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Recipient Email">
+                        <input id="email-subject" type="text" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Subject">
+                        <textarea id="email-body" rows="3" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Message Body"></textarea>
+                    </div>
+
+                    <!-- Phone Form (Hidden) -->
+                    <div id="form-phone" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Phone Number</label>
+                        <input id="phone-num" type="tel" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Phone Number (e.g. +123456789)">
                     </div>
 
                     <!-- Appearance -->
@@ -188,6 +204,11 @@
         const vcardTel = document.getElementById('vcard-tel');
         const vcardEmail = document.getElementById('vcard-email');
 
+        const emailTo = document.getElementById('email-to');
+        const emailSubject = document.getElementById('email-subject');
+        const emailBody = document.getElementById('email-body');
+        const phoneNum = document.getElementById('phone-num');
+
         // Options
         const optSize = document.getElementById('opt-size');
         const optLevel = document.getElementById('opt-level');
@@ -203,6 +224,12 @@
             } else if (currentType === 'vcard') {
                 if (!vcardFN.value && !vcardLN.value) return '';
                 return `BEGIN:VCARD\nVERSION:3.0\nN:${vcardLN.value};${vcardFN.value};;;\nFN:${vcardFN.value} ${vcardLN.value}\nTEL;TYPE=CELL:${vcardTel.value}\nEMAIL:${vcardEmail.value}\nEND:VCARD`;
+            } else if (currentType === 'email') {
+                if (!emailTo.value) return '';
+                return `MATMSG:TO:${emailTo.value};SUB:${emailSubject.value};BODY:${emailBody.value};;`;
+            } else if (currentType === 'phone') {
+                if (!phoneNum.value) return '';
+                return `tel:${phoneNum.value}`;
             }
             return '';
         }
@@ -248,7 +275,7 @@
             };
         });
 
-        const allInputs = [inputText, wifiSSID, wifiPass, wifiEnc, vcardFN, vcardLN, vcardTel, vcardEmail, optSize, optLevel, optColor];
+        const allInputs = [inputText, wifiSSID, wifiPass, wifiEnc, vcardFN, vcardLN, vcardTel, vcardEmail, emailTo, emailSubject, emailBody, phoneNum, optSize, optLevel, optColor];
         allInputs.forEach(input => {
             input.addEventListener('input', generateQR);
         });
