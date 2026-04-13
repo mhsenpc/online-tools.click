@@ -891,15 +891,32 @@
             if (!pattern) return { matches: [], error: null };
 
             try {
+                // Pre-check for common catastrophic backtracking patterns if pattern is long
+                if (pattern.length > 50 && (pattern.includes('(.+)*') || pattern.includes('(.*)*'))) {
+                    throw new Error('Pattern contains potential catastrophic backtracking risks.');
+                }
+
                 const regex = new RegExp(pattern, flags);
                 const matches = [];
 
                 if (flags.includes('g')) {
                     let match;
-                    const maxIterations = 100000;
+                    const maxIterations = 50000; // Reduced from 100k for better responsiveness
                     let iterations = 0;
-                    while ((match = regex.exec(testStr)) !== null && iterations < maxIterations) {
+                    const startTime = performance.now();
+                    
+                    while ((match = regex.exec(testStr)) !== null) {
                         iterations++;
+                        
+                        // Safety exits
+                        if (iterations > maxIterations) {
+                            console.warn('Max regex iterations reached');
+                            break;
+                        }
+                        if (performance.now() - startTime > 500) { // 500ms timeout
+                            throw new Error('Regex matching took too long (potential catastrophic backtracking).');
+                        }
+
                         matches.push({
                             full: match[0],
                             index: match.index,
@@ -907,12 +924,18 @@
                             groups: Array.from(match).slice(1),
                             namedGroups: match.groups || {}
                         });
+                        
                         if (match[0].length === 0) {
                             regex.lastIndex++;
                         }
                     }
                 } else {
+                    const startTime = performance.now();
                     const match = regex.exec(testStr);
+                    if (performance.now() - startTime > 500) {
+                        throw new Error('Regex matching took too long.');
+                    }
+                    
                     if (match) {
                         matches.push({
                             full: match[0],
