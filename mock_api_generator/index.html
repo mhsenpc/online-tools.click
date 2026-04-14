@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock API Generator | online-tools.click</title>
+    <meta name="description" content="Build and export mock JSON structures for development.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .output-box { @apply bg-gray-50 dark:bg-gray-800 p-4 rounded-xl font-mono text-sm break-all; min-height: 200px; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-3xl font-bold mt-2">Mock API Generator</h1>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-4">
+                <h2 class="font-bold">Define Schema</h2>
+                <textarea id="schema" class="w-full h-64 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 font-mono text-sm outline-none border border-transparent focus:border-blue-500">{
+  "id": "uuid",
+  "name": "name",
+  "email": "email",
+  "active": "boolean"
+}</textarea>
+                <button id="btn-generate" class="w-full py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">Generate Mock Data</button>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-4">
+                <h2 class="font-bold">JSON Output</h2>
+                <div class="output-box" id="output">{}</div>
+                <button id="btn-copy" class="w-full py-2 bg-gray-200 dark:bg-gray-800 rounded-xl font-bold hover:bg-gray-300 dark:hover:bg-gray-700">Copy JSON</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const schema = document.getElementById('schema');
+        const output = document.getElementById('output');
+        const btnGenerate = document.getElementById('btn-generate');
+        const btnCopy = document.getElementById('btn-copy');
+
+        function generateData() {
+            try {
+                const s = JSON.parse(schema.value);
+                const mock = {};
+                for (let key in s) {
+                    if (s[key] === 'uuid') mock[key] = Math.random().toString(36).substring(2);
+                    else if (s[key] === 'name') mock[key] = "User " + Math.floor(Math.random()*100);
+                    else if (s[key] === 'email') mock[key] = "user@example.com";
+                    else if (s[key] === 'boolean') mock[key] = Math.random() > 0.5;
+                    else mock[key] = s[key];
+                }
+                output.innerText = JSON.stringify(mock, null, 2);
+            } catch(e) {
+                output.innerText = "Invalid JSON schema";
+            }
+        }
+
+        btnGenerate.onclick = generateData;
+        btnCopy.onclick = () => navigator.clipboard.writeText(output.innerText);
+    </script>
+</body>
+</html>
