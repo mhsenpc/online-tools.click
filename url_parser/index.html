@@ -42,7 +42,6 @@
 
             <h2 class="font-bold">Query Parameters</h2>
             <div id="params" class="space-y-2"></div>
-            <button id="btn-add-param" class="py-2 px-4 bg-gray-200 dark:bg-gray-800 rounded-xl font-bold text-sm hover:bg-gray-300 dark:hover:bg-gray-700">+ Add Parameter</button>
         </div>
     </div>
 
@@ -53,7 +52,6 @@
         const outPath = document.getElementById('out-path');
         const outHash = document.getElementById('out-hash');
         const paramsList = document.getElementById('params');
-        const btnAddParam = document.getElementById('btn-add-param');
 
         function parseUrl() {
             try {
@@ -81,7 +79,6 @@
         }
 
         inUrl.oninput = parseUrl;
-        btnAddParam.onclick = () => addParamRow();
     </script>
 
     <!-- Google tag (gtag.js) -->
