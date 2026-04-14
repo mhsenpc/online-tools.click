@@ -99,6 +99,14 @@
             transform: scale(0.95);
         }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-GHGXLWQR4V");
+    </script>
 </head>
 <body class="h-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
 
@@ -314,6 +322,14 @@
         };
 
         document.getElementById('btn-export-html').onclick = () => {
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-GHGXLWQR4V");
+    </script>
             const fullHTML = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown.min.css"></head><body class="markdown-body" style="padding: 40px">${preview.innerHTML}</body></html>`;
             downloadFile(fullHTML, 'document.html', 'text/html');
         };
