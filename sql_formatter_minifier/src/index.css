@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+pre[class*="language-"] {
+  @apply rounded-lg !bg-gray-900 !m-0;
+}
