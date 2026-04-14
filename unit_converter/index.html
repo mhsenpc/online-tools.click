@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Converter (Developer Edition) — Free Online Tool</title>
+    <meta name="description" content="A specialized unit converter for developers dealing with data sizes, time durations, and screen units. Fast, private, client-side." />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+        (function() {
+            const saved = localStorage.getItem('uc_dark_mode');
+            if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;600&family=Syne:wght@700;800&display=swap');
+        :root {
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Instrument Sans', sans-serif;
+        }
+        body {
+            font-family: var(--font-body);
+        }
+        h1, h2, h3 {
+            font-family: var(--font-display);
+        }
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        input:focus { outline: none; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+            <span class="text-2xl" aria-hidden="true">⚖️</span>
+            <div class="flex-1">
+                <h1 class="text-xl font-bold leading-tight uppercase tracking-wider">Unit Converter</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Developer Edition • 100% Client-side</p>
+            </div>
+            <button id="btn-dark-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors">
+                <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+                </svg>
+                <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        <!-- Input Section -->
+        <section class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2">
+                    <label for="input-value" class="block text-sm font-medium mb-2 text-gray-500 uppercase tracking-widest">Value to Convert</label>
+                    <input type="text" id="input-value" placeholder="Enter value (e.g. 1024)" 
+                        class="w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-2xl font-mono focus:border-orange-500 dark:focus:border-orange-500 transition-colors" />
+                </div>
+                <div>
+                    <label for="category-select" class="block text-sm font-medium mb-2 text-gray-500 uppercase tracking-widest">Category</label>
+                    <select id="category-select" class="w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-lg focus:border-orange-500 dark:focus:border-orange-500 transition-colors">
+                        <option value="data">Data Size</option>
+                        <option value="time">Time Duration</option>
+                        <option value="screen">Screen Units</option>
+                        <option value="base">Number Bases</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="unit-selector" class="mt-6 flex flex-wrap gap-3">
+                <!-- Units will be injected here -->
+            </div>
+        </section>
+
+        <!-- Results Grid -->
+        <section id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Result cards will be injected here -->
+        </section>
+
+        <!-- Footer Info -->
+        <footer class="text-center space-y-4 pt-8">
+            <p class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest">
+                🔒 Private & Local • No data sent to server
+            </p>
+            <a href="/" class="inline-block text-sm text-orange-500 hover:text-orange-600 font-medium">← Back to Online Tools</a>
+        </footer>
+    </main>
+
+    <script>
+        const units = {
+            data: [
+                { id: 'b', name: 'Bytes (B)', factor: 1 },
+                { id: 'kb', name: 'Kilobytes (KB)', factor: 1000 },
+                { id: 'mb', name: 'Megabytes (MB)', factor: 1000**2 },
+                { id: 'gb', name: 'Gigabytes (GB)', factor: 1000**3 },
+                { id: 'tb', name: 'Terabytes (TB)', factor: 1000**4 },
+                { id: 'kib', name: 'Kibibytes (KiB)', factor: 1024 },
+                { id: 'mib', name: 'Mebibytes (MiB)', factor: 1024**2 },
+                { id: 'gib', name: 'Gibibytes (GiB)', factor: 1024**3 },
+                { id: 'tib', name: 'Tebibytes (TiB)', factor: 1024**4 }
+            ],
+            time: [
+                { id: 'ms', name: 'Milliseconds (ms)', factor: 1 },
+                { id: 's', name: 'Seconds (s)', factor: 1000 },
+                { id: 'm', name: 'Minutes (m)', factor: 60000 },
+                { id: 'h', name: 'Hours (h)', factor: 3600000 },
+                { id: 'd', name: 'Days (d)', factor: 86400000 },
+                { id: 'y', name: 'Years (y)', factor: 31536000000 }
+            ],
+            screen: [
+                { id: 'px', name: 'Pixels (px)', factor: 1 },
+                { id: 'rem', name: 'Rem (rem)', factor: 16 },
+                { id: 'em', name: 'Em (em)', factor: 16 },
+                { id: 'pt', name: 'Points (pt)', factor: 1.333333 }
+            ],
+            base: [
+                { id: 'dec', name: 'Decimal', base: 10 },
+                { id: 'hex', name: 'Hexadecimal', base: 16 },
+                { id: 'bin', name: 'Binary', base: 2 },
+                { id: 'oct', name: 'Octal', base: 8 }
+            ]
+        };
+
+        const inputVal = document.getElementById('input-value');
+        const categorySelect = document.getElementById('category-select');
+        const unitSelector = document.getElementById('unit-selector');
+        const resultsGrid = document.getElementById('results-grid');
+        const darkToggle = document.getElementById('btn-dark-toggle');
+
+        let currentCategory = 'data';
+        let currentSourceUnit = 'b';
+
+        function init() {
+            renderUnitSelectors();
+            updateResults();
+        }
+
+        categorySelect.addEventListener('change', (e) => {
+            currentCategory = e.target.value;
+            currentSourceUnit = units[currentCategory][0].id;
+            renderUnitSelectors();
+            updateResults();
+        });
+
+        function renderUnitSelectors() {
+            unitSelector.innerHTML = '';
+            units[currentCategory].forEach(unit => {
+                const btn = document.createElement('button');
+                btn.textContent = unit.name;
+                btn.className = `px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    currentSourceUnit === unit.id 
+                    ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`;
+                btn.onclick = () => {
+                    currentSourceUnit = unit.id;
+                    renderUnitSelectors();
+                    updateResults();
+                };
+                unitSelector.appendChild(btn);
+            });
+        }
+
+        inputVal.addEventListener('input', updateResults);
+
+        function updateResults() {
+            const rawValue = inputVal.value.trim();
+            resultsGrid.innerHTML = '';
+
+            if (currentCategory === 'base') {
+                updateBaseResults(rawValue);
+                return;
+            }
+
+            const val = parseFloat(rawValue);
+            if (isNaN(val)) return;
+
+            const sourceUnit = units[currentCategory].find(u => u.id === currentSourceUnit);
+            const baseValue = val * sourceUnit.factor;
+
+            units[currentCategory].forEach(unit => {
+                const result = baseValue / unit.factor;
+                createResultCard(unit.name, formatNumber(result), unit.id);
+            });
+        }
+
+        function updateBaseResults(raw) {
+            const sourceUnit = units.base.find(u => u.id === currentSourceUnit);
+            let decimalVal;
+
+            try {
+                if (currentSourceUnit === 'dec') decimalVal = parseInt(raw, 10);
+                else if (currentSourceUnit === 'hex') decimalVal = parseInt(raw, 16);
+                else if (currentSourceUnit === 'bin') decimalVal = parseInt(raw, 2);
+                else if (currentSourceUnit === 'oct') decimalVal = parseInt(raw, 8);
+            } catch (e) { return; }
+
+            if (isNaN(decimalVal)) return;
+
+            units.base.forEach(unit => {
+                let result;
+                if (unit.id === 'dec') result = decimalVal.toString(10);
+                else if (unit.id === 'hex') result = decimalVal.toString(16).toUpperCase();
+                else if (unit.id === 'bin') result = decimalVal.toString(2);
+                else if (unit.id === 'oct') result = decimalVal.toString(8);
+                createResultCard(unit.name, result, unit.id);
+            });
+        }
+
+        function createResultCard(title, value, id) {
+            const card = document.createElement('div');
+            card.className = 'tool-card bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 group hover:border-orange-500 transition-colors';
+            card.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">${title}</span>
+                    <button onclick="copyToClipboard('${value}', this)" class="opacity-0 group-hover:opacity-100 p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-all text-gray-400 hover:text-orange-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    </button>
+                </div>
+                <div class="text-xl font-mono break-all font-semibold text-gray-800 dark:text-gray-100">${value}</div>
+            `;
+            resultsGrid.appendChild(card);
+        }
+
+        function formatNumber(num) {
+            if (Math.abs(num) < 0.000001 && num !== 0) return num.toExponential(6);
+            if (num % 1 !== 0) return parseFloat(num.toFixed(6)).toString();
+            return num.toLocaleString();
+        }
+
+        async function copyToClipboard(text, btn) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>';
+                setTimeout(() => btn.innerHTML = originalHTML, 2000);
+            } catch (err) {
+                console.error('Failed to copy!', err);
+            }
+        }
+
+        darkToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('uc_dark_mode', isDark ? 'dark' : 'light');
+        });
+
+        init();
+    </script>
+</body>
+</html>
