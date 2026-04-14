@@ -244,6 +244,20 @@
         </header>
 
         <section class="tools-grid">
+            <!-- Tool: DNS Lookup Tool -->
+            <a href="/dns_lookup_tool/" class="tool-card">
+                <span class="tool-icon">🌐</span>
+                <h3>DNS Lookup Tool</h3>
+                <p>Lookup DNS records for any domain with ease.</p>
+            </a>
+          
+            <!-- Tool: URL Parser -->
+            <a href="/url_parser/" class="tool-card">
+                <span class="tool-icon">🔗</span>
+                <h3>URL Parser</h3>
+                <p>Decompose URLs and edit query parameters easily.</p>
+            </a>
+
             <!-- Tool: Cron Expression Generator -->
             <a href="/cron_expression_generator/" class="tool-card">
                 <span class="tool-icon">🕒</span>
@@ -370,11 +384,25 @@
                 <p>Visual color selection and multi-format conversion with contrast checking.</p>
             </a>
 
+            <!-- Tool: ASCII Art Generator -->
+            <a href="/ascii_art_generator/" class="tool-card">
+                <span class="tool-icon">🎨</span>
+                <h3>ASCII Art Generator</h3>
+                <p>Convert text into stylized ASCII art banners instantly.</p>
+            </a>
+
             <!-- Tool: Lorem Ipsum -->
             <a href="/lorem_ipsum/" class="tool-card">
                 <span class="tool-icon">🖋️</span>
                 <h3>Lorem Ipsum</h3>
                 <p>Generate clean placeholder text for your design and development projects.</p>
+            </a>
+
+            <!-- Tool: Mock API Generator -->
+            <a href="/mock_api_generator/" class="tool-card">
+                <span class="tool-icon">🛠️</span>
+                <h3>Mock API Generator</h3>
+                <p>Build and export mock JSON structures instantly.</p>
             </a>
         </section>
 
@@ -410,6 +438,16 @@
             const y = (e.clientY / window.innerHeight) * 100;
             glow.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255, 62, 0, 0.15) 0%, transparent 50%)`;
         });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
     </script>
 </body>
 </html>
