@@ -8,7 +8,19 @@
     
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/figlet/1.8.0/figlet.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/figlet@1.8.0/lib/figlet.min.js"></script>
+    <script>
+        // Ensure figlet is available before using it
+        window.addEventListener('load', () => {
+            if (typeof figlet !== 'undefined') {
+                figlet.defaults({ fontPath: 'https://cdn.jsdelivr.net/npm/figlet@1.8.0/fonts' });
+                generate();
+            } else {
+                console.error('Figlet library failed to load.');
+                document.getElementById('output-text').innerText = "Error: ASCII art library failed to load from CDN. Please refresh or try again later.";
+            }
+        });
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -123,6 +135,10 @@
         const toast = document.getElementById('toast');
 
         function generate() {
+            if (typeof figlet === 'undefined') {
+                output.innerText = "Error: ASCII art library is not loaded.";
+                return;
+            }
             const text = inText.value;
             const font = optFont.value;
             
@@ -145,10 +161,16 @@
                 setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
             });
         };
+    </script>
 
-        // Init
-        figlet.defaults({ fontPath: 'https://cdnjs.cloudflare.com/ajax/libs/figlet/1.8.0/fonts/' });
-        generate();
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
     </script>
 </body>
 </html>
