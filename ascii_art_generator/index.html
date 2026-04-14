@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art Generator | online-tools.click</title>
+    <meta name="description" content="Free, fast, and secure online ASCII art generator. Convert text into stylized ASCII art banners instantly.">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/figlet/1.8.0/figlet.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+        
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .output-area {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-xs leading-none outline-none focus:border-blue-500 transition-all shadow-inner overflow-auto font-mono;
+            min-height: 300px;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">ASCII Art Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Convert text into stylized ASCII art banners instantly.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Settings -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                    <!-- Text Input -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Text</label>
+                        <textarea id="in-text" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 text-sm outline-none transition-all" rows="3">Hello</textarea>
+                    </div>
+
+                    <!-- Font -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Font</label>
+                        <select id="opt-font" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 text-sm outline-none transition-all">
+                            <option value="Standard">Standard</option>
+                            <option value="Slant">Slant</option>
+                            <option value="Shadow">Shadow</option>
+                            <option value="Block">Block</option>
+                            <option value="Doom">Doom</option>
+                        </select>
+                    </div>
+
+                    <button id="btn-generate" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                        Generate
+                    </button>
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div class="lg:col-span-8 space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Generated Art</h2>
+                    <button id="btn-copy" class="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-tighter transition-colors">Copy to Clipboard</button>
+                </div>
+                <div id="output-text" class="output-area"></div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Client-Side: Your content stays in the browser. No tracking or logging.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        const output = document.getElementById('output-text');
+        const inText = document.getElementById('in-text');
+        const btnGenerate = document.getElementById('btn-generate');
+        const btnCopy = document.getElementById('btn-copy');
+        const optFont = document.getElementById('opt-font');
+        const toast = document.getElementById('toast');
+
+        function generate() {
+            const text = inText.value;
+            const font = optFont.value;
+            
+            figlet(text, { font: font }, (err, data) => {
+                if (err) {
+                    output.innerText = "Error: " + err;
+                    return;
+                }
+                output.innerText = data;
+            });
+        }
+
+        btnGenerate.onclick = generate;
+
+        btnCopy.onclick = () => {
+            const text = output.innerText;
+            if (!text) return;
+            navigator.clipboard.writeText(text).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+
+        // Init
+        figlet.defaults({ fontPath: 'https://cdnjs.cloudflare.com/ajax/libs/figlet/1.8.0/fonts/' });
+        generate();
+    </script>
+</body>
+</html>
