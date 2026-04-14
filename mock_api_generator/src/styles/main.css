@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-bg-main: #f8fafc;
+  --color-bg-card: #ffffff;
+  --color-border: #e2e8f0;
+}
+
+body {
+  @apply bg-bg-main text-slate-900;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
