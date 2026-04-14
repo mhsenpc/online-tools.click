@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAML ↔ JSON Converter | online-tools.click</title>
+    <meta name="description" content="Convert between YAML and JSON formats locally in your browser.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <style>
+        .editor { @apply w-full h-96 bg-white dark:bg-gray-900 rounded-2xl p-4 font-mono text-sm outline-none border border-gray-200 dark:border-gray-800 focus:border-blue-500; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-3xl font-bold mt-2">YAML ↔ JSON Converter</h1>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <h2 class="font-bold">YAML</h2>
+                <textarea id="in-yaml" class="editor" placeholder="YAML input..."></textarea>
+                <button id="btn-yaml-to-json" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">YAML to JSON</button>
+            </div>
+            
+            <div class="space-y-4">
+                <h2 class="font-bold">JSON</h2>
+                <textarea id="in-json" class="editor" placeholder="JSON input..."></textarea>
+                <button id="btn-json-to-yaml" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">JSON to YAML</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const inYaml = document.getElementById('in-yaml');
+        const inJson = document.getElementById('in-json');
+        const btnYamlToJson = document.getElementById('btn-yaml-to-json');
+        const btnJsonToYaml = document.getElementById('btn-json-to-yaml');
+
+        btnYamlToJson.onclick = () => {
+            try {
+                const obj = jsyaml.load(inYaml.value);
+                inJson.value = JSON.stringify(obj, null, 2);
+            } catch (e) {
+                alert("Invalid YAML: " + e.message);
+            }
+        };
+
+        btnJsonToYaml.onclick = () => {
+            try {
+                const obj = JSON.parse(inJson.value);
+                inYaml.value = jsyaml.dump(obj);
+            } catch (e) {
+                alert("Invalid JSON: " + e.message);
+            }
+        };
+    </script>
+</body>
+</html>
