@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RegEx Tester</title>
+    <style>
+        .match { background: yellow; }
+        #output-display { white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; }
+        #error-display { color: red; }
+    </style>
+</head>
+<body>
+    <h1>RegEx Tester</h1>
+    <input type="text" id="regex-input" placeholder="Pattern (e.g., \d+)">
+    <input type="text" id="flags-input" placeholder="Flags (e.g., g)">
+    <textarea id="text-input" placeholder="Test text"></textarea>
+    <div id="output-display"></div>
+    <div id="error-display"></div>
+    <script type="module" src="dist/bundle.js"></script>
+</body>
+</html>
