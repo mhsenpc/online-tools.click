@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Formatter | Online Tools</title>
+    <meta name="description" content="Free, client-side SQL query formatter. Format and pretty-print your SQL queries with syntax highlighting.">
+    <meta property="og:title" content="SQL Query Formatter | Online Tools">
+    <meta property="og:description" content="Format and pretty-print your SQL queries with syntax highlighting. Fast, private, client-side.">
+    <meta property="og:url" content="https://online-tools.click/sql_formatter_standardized/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SQL Query Formatter | Online Tools">
+    <meta name="twitter:description" content="Format and pretty-print your SQL queries. Fast, private, client-side.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/sql_formatter_standardized/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --keyword: #ff79c6;
+            --string: #f1fa8c;
+            --number: #bd93f9;
+            --comment: #6272a4;
+            --function: #50fa7b;
+            --operator: #ff79c6;
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --success: #22c55e;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-section: 112px;
+            --space-group: 64px;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: var(--space-element);
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-element);
+            margin-bottom: var(--space-element);
+        }
+
+        @media (max-width: 1024px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-input);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-icon:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            background: var(--bg-input);
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 20px;
+            resize: none;
+            tab-size: 4;
+        }
+
+        .output-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+            background: var(--bg-input);
+        }
+
+        .output-content {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow: auto;
+            tab-size: 4;
+        }
+
+        .output-content .keyword {
+            color: var(--keyword);
+            font-weight: 500;
+        }
+
+        .output-content .string {
+            color: var(--string);
+        }
+
+        .output-content .number {
+            color: var(--number);
+        }
+
+        .output-content .comment {
+            color: var(--comment);
+            font-style: italic;
+        }
+
+        .output-content .function {
+            color: var(--function);
+        }
+
+        .output-content .operator {
+            color: var(--operator);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-input);
+        }
+
+        .options {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border-top: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .option input[type="number"] {
+            width: 60px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 13px;
+        }
+
+        .option input[type="number"]:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .option label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .error-message {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-element);
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .examples {
+            margin-top: var(--space-element);
+            padding: 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+        }
+
+        .examples-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .example-item {
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .example-item:hover {
+            border-color: var(--border-focus);
+            color: var(--text);
+        }
+
+        .example-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">SQL Query Formatter</span>
+        </div>
+        <div class="header-right">
+            <a href="/">Back to Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="error-message" id="error-message"></div>
+
+        <div class="action-bar" style="margin-bottom: var(--space-element);">
+            <button class="btn-primary" id="format-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+                Format SQL
+            </button>
+            <button class="btn-secondary" id="clear-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear
+            </button>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Input</span>
+                    <div class="panel-actions">
+                        <button class="btn-icon" id="paste-btn" title="Paste">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Paste
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-wrapper">
+                    <textarea id="input-sql" placeholder="Paste your SQL query here...
+
+Example:
+SELECT * FROM users WHERE id = 1;"></textarea>
+                </div>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Output</span>
+                    <div class="panel-actions">
+                        <button class="btn-icon" id="copy-btn" title="Copy to clipboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="output-wrapper">
+                    <div class="output-content" id="output-sql"></div>
+                </div>
+                <div class="options">
+                    <div class="option">
+                        <label for="indent-size">Indentation:</label>
+                        <input type="number" id="indent-size" value="4" min="2" max="8">
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="uppercase" checked>
+                        <label for="uppercase">Uppercase keywords</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <div class="examples-title">Example Queries</div>
+            <div class="example-item" data-example="select">
+                SELECT * FROM users WHERE status = 'active' ORDER BY created_at DESC
+            </div>
+            <div class="example-item" data-example="join">
+                SELECT u.name, o.total FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE o.total > 100
+            </div>
+            <div class="example-item" data-example="complex">
+                SELECT c.name, COUNT(o.id) as order_count, SUM(o.total) as total FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.created_at >= '2024-01-01' GROUP BY c.id, c.name HAVING COUNT(o.id) > 5 ORDER BY total DESC
+            </div>
+            <div class="example-item" data-example="subquery">
+                SELECT name, department FROM employees WHERE salary > (SELECT AVG(salary) FROM employees)
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // SQL Keywords for highlighting
+        const KEYWORDS = new Set([
+            'SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 'ON',
+            'AND', 'OR', 'NOT', 'IN', 'LIKE', 'BETWEEN', 'IS', 'NULL', 'ORDER', 'BY',
+            'GROUP', 'HAVING', 'AS', 'DISTINCT', 'ALL', 'EXISTS', 'UNION', 'INTERSECT',
+            'EXCEPT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE',
+            'TABLE', 'DROP', 'ALTER', 'INDEX', 'VIEW', 'CASE', 'WHEN', 'THEN', 'ELSE',
+            'END', 'LIMIT', 'OFFSET', 'ASC', 'DESC', 'WITH', 'RECURSIVE', 'OVER',
+            'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST',
+            'LAST', 'FILTER', 'WITHIN', 'DESCENDANT', 'ASCENDANT', 'NULLS', 'PRIMARY',
+            'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE', 'CHECK', 'DEFAULT', 'CASCADE',
+            'RESTRICT', 'NO', 'ACTION', 'SET', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP'
+        ]);
+
+        const FUNCTIONS = new Set([
+            'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'COALESCE', 'NULLIF', 'CAST', 'EXTRACT',
+            'DATE_TRUNC', 'NOW', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+            'UPPER', 'LOWER', 'TRIM', 'SUBSTRING', 'CONCAT', 'LENGTH', 'POSITION',
+            'REPLACE', 'SPLIT_PART', 'REGEXP_REPLACE', 'ARRAY_AGG', 'JSON_AGG',
+            'ROW_TO_JSON', 'JSONB_BUILD_OBJECT', 'GENSERIAL'
+        ]);
+
+        // Format SQL query
+        function formatSQL(input, options = {}) {
+            const {
+                indentSize = 4,
+                uppercase = true
+            } = options;
+
+            if (!input.trim()) {
+                return '';
+            }
+
+            const indent = ' '.repeat(indentSize);
+            let output = '';
+            let level = 0;
+            let inString = false;
+            let stringChar = '';
+            let inComment = false;
+            let lastChar = '';
+            let parenLevel = 0;
+
+            const tokens = tokenizeSQL(input);
+
+            for (let i = 0; i < tokens.length; i++) {
+                let token = tokens[i];
+                let prevToken = i > 0 ? tokens[i - 1] : '';
+                let nextToken = i < tokens.length - 1 ? tokens[i + 1] : '';
+
+                // Handle comments
+                if (token.startsWith('--')) {
+                    output += '\n' + token;
+                    continue;
+                }
+
+                // Track parentheses
+                if (token === '(') {
+                    parenLevel++;
+                } else if (token === ')') {
+                    parenLevel = Math.max(0, parenLevel - 1);
+                }
+
+                // Convert to uppercase if needed
+                if (uppercase && KEYWORDS.has(token.toUpperCase())) {
+                    token = token.toUpperCase();
+                } else if (uppercase && FUNCTIONS.has(token.toUpperCase())) {
+                    token = token.toUpperCase();
+                }
+
+                // Add newlines before major keywords
+                if (KEYWORDS.has(token.toUpperCase())) {
+                    const needsNewline = !prevToken ||
+                                        prevToken === ';' ||
+                                        prevToken === ',' ||
+                                        KEYWORDS.has(prevToken.toUpperCase());
+
+                    if (needsNewline && token.toUpperCase() !== 'AND' && token.toUpperCase() !== 'OR') {
+                        output += '\n' + indent.repeat(level);
+                    } else if (token.toUpperCase() === 'FROM' || token.toUpperCase() === 'WHERE') {
+                        output += '\n' + indent.repeat(Math.max(0, level - 1));
+                    } else if ((token.toUpperCase() === 'AND' || token.toUpperCase() === 'OR') && parenLevel === 0) {
+                        output += '\n' + indent.repeat(level);
+                    }
+                }
+
+                // Handle commas
+                if (token === ',') {
+                    output += token + '\n' + indent.repeat(level);
+                    continue;
+                }
+
+                // Handle opening parentheses
+                if (token === '(') {
+                    output += token + '\n' + indent.repeat(level + 1);
+                    level++;
+                    continue;
+                }
+
+                // Handle closing parentheses
+                if (token === ')') {
+                    level = Math.max(0, level - 1);
+                    output += '\n' + indent.repeat(level) + token;
+                    continue;
+                }
+
+                // Handle semicolons
+                if (token === ';') {
+                    output += token + '\n\n';
+                    level = 0;
+                    continue;
+                }
+
+                // Add token with spacing
+                if (token !== '') {
+                    if (output && output.slice(-1) !== '\n' && output.slice(-1) !== ' ' &&
+                        !['(', ')', ';', '.'].includes(token)) {
+                        output += ' ';
+                    }
+                    output += token;
+                }
+
+                lastChar = token;
+            }
+
+            return output.trim();
+        }
+
+        // Tokenize SQL input
+        function tokenizeSQL(input) {
+            const tokens = [];
+            let current = '';
+            let inString = false;
+            let stringChar = '';
+            let inComment = false;
+
+            for (let i = 0; i < input.length; i++) {
+                const char = input[i];
+                const nextChar = input[i + 1] || '';
+
+                // Handle comments
+                if (char === '-' && nextChar === '-' && !inString) {
+                    inComment = true;
+                    if (current) {
+                        tokens.push(current);
+                        current = '';
+                    }
+                }
+
+                if (inComment) {
+                    current += char;
+                    if (char === '\n') {
+                        tokens.push(current.trim());
+                        current = '';
+                        inComment = false;
+                    }
+                    continue;
+                }
+
+                // Handle strings
+                if ((char === '"' || char === "'") && !inString) {
+                    inString = true;
+                    stringChar = char;
+                    if (current) {
+                        tokens.push(current);
+                        current = '';
+                    }
+                    current = char;
+                    continue;
+                }
+
+                if (inString) {
+                    current += char;
+                    if (char === stringChar) {
+                        if (i > 0 && input[i - 1] === '\\') {
+                            // Escaped quote, stay in string
+                        } else {
+                            inString = false;
+                            tokens.push(current);
+                            current = '';
+                        }
+                    }
+                    continue;
+                }
+
+                // Handle operators and special characters
+                if (['(', ')', ',', ';', '.', '+', '-', '*', '/', '=', '<', '>', '!', '@', ':'].includes(char)) {
+                    if (current) {
+                        tokens.push(current);
+                        current = '';
+                    }
+                    tokens.push(char);
+                    continue;
+                }
+
+                // Build current token
+                if (char !== ' ' && char !== '\n' && char !== '\t' && char !== '\r') {
+                    current += char;
+                } else if (current) {
+                    tokens.push(current);
+                    current = '';
+                }
+            }
+
+            if (current) {
+                tokens.push(current);
+            }
+
+            return tokens;
+        }
+
+        // Highlight SQL syntax
+        function highlightSQL(sql) {
+            if (!sql) return '';
+
+            // Escape HTML first
+            let highlighted = sql
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Highlight strings
+            highlighted = highlighted.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="string">$&</span>');
+
+            // Highlight numbers
+            highlighted = highlighted.replace(/\b\d+\b/g, '<span class="number">$&</span>');
+
+            // Highlight comments
+            highlighted = highlighted.replace(/--[^\n]*/g, '<span class="comment">$&</span>');
+
+            // Highlight keywords (case-insensitive)
+            const keywordPattern = new RegExp(`\\b(${Array.from(KEYWORDS).join('|')})\\b`, 'gi');
+            highlighted = highlighted.replace(keywordPattern, '<span class="keyword">$1</span>');
+
+            // Highlight functions
+            const functionPattern = new RegExp(`\\b(${Array.from(FUNCTIONS).join('|')})\\s*\\(`, 'gi');
+            highlighted = highlighted.replace(functionPattern, '<span class="function">$1</span>(');
+
+            // Highlight operators
+            highlighted = highlighted.replace(/([=<>!]+)/g, '<span class="operator">$1</span>');
+
+            return highlighted;
+        }
+
+        // DOM elements
+        const inputSQL = document.getElementById('input-sql');
+        const outputSQL = document.getElementById('output-sql');
+        const formatBtn = document.getElementById('format-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const pasteBtn = document.getElementById('paste-btn');
+        const indentSizeInput = document.getElementById('indent-size');
+        const uppercaseInput = document.getElementById('uppercase');
+        const errorMessage = document.getElementById('error-message');
+        const exampleItems = document.querySelectorAll('.example-item');
+
+        // Format button
+        formatBtn.addEventListener('click', () => {
+            try {
+                const input = inputSQL.value;
+                const indentSize = parseInt(indentSizeInput.value) || 4;
+                const uppercase = uppercaseInput.checked;
+
+                if (!input.trim()) {
+                    showError('Please enter a SQL query to format');
+                    return;
+                }
+
+                const formatted = formatSQL(input, { indentSize, uppercase });
+                outputSQL.innerHTML = highlightSQL(formatted);
+                hideError();
+            } catch (error) {
+                showError('Error formatting SQL: ' + error.message);
+            }
+        });
+
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            inputSQL.value = '';
+            outputSQL.innerHTML = '';
+            hideError();
+        });
+
+        // Copy button
+        copyBtn.addEventListener('click', async () => {
+            const text = outputSQL.textContent;
+            if (!text) {
+                showError('No formatted SQL to copy');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                `;
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy
+                    `;
+                }, 2000);
+                hideError();
+            } catch (error) {
+                showError('Failed to copy to clipboard');
+            }
+        });
+
+        // Paste button
+        pasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputSQL.value = text;
+                hideError();
+            } catch (error) {
+                showError('Failed to paste from clipboard. Please use Ctrl+V');
+            }
+        });
+
+        // Example clicks
+        exampleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                inputSQL.value = item.textContent;
+                formatBtn.click();
+            });
+        });
+
+        // Auto-format on option change if there's content
+        indentSizeInput.addEventListener('change', () => {
+            if (inputSQL.value.trim()) {
+                formatBtn.click();
+            }
+        });
+
+        uppercaseInput.addEventListener('change', () => {
+            if (inputSQL.value.trim()) {
+                formatBtn.click();
+            }
+        });
+
+        // Error handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to format
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                formatBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
