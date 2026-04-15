@@ -1,72 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit Converter | online-tools.click</title>
-    <meta name="description" content="Developer-focused unit converter for data sizes, time, and screen units.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .output-box { @apply bg-gray-50 dark:bg-gray-800 p-4 rounded-xl font-mono text-sm break-all; }
-    </style>
-</head>
-<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
-
-    <div class="max-w-2xl mx-auto px-6 py-12">
-        <header class="text-center mb-10">
-            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
-            <h1 class="text-3xl font-bold mt-2">Unit Converter</h1>
-        </header>
-
-        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
-            <div>
-                <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Input</label>
-                <input type="number" id="in-val" value="1" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 outline-none">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-2">From</label>
-                    <select id="sel-from" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 outline-none">
-                        <option value="b">Bytes</option>
-                        <option value="kb">KB</option>
-                        <option value="mb">MB</option>
-                        <option value="gb">GB</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase text-gray-400 mb-2">To</label>
-                    <select id="sel-to" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 outline-none">
-                        <option value="b">Bytes</option>
-                        <option value="kb">KB</option>
-                        <option value="mb">MB</option>
-                        <option value="gb">GB</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="output-box" id="output">0</div>
-        </div>
-    </div>
-
-    <script>
-        const inVal = document.getElementById('in-val');
-        const selFrom = document.getElementById('sel-from');
-        const selTo = document.getElementById('sel-to');
-        const output = document.getElementById('output');
-
-        const rates = { b: 1, kb: 1024, mb: 1024*1024, gb: 1024*1024*1024 };
-
-        function convert() {
-            const val = parseFloat(inVal.value);
-            const from = selFrom.value;
-            const to = selTo.value;
-            const res = (val * rates[from]) / rates[to];
-            output.innerText = res.toLocaleString(undefined, { maximumFractionDigits: 4 });
-        }
-
-        [inVal, selFrom, selTo].forEach(el => el.oninput = convert);
-        convert();
-    </script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Converter (Developer Edition)</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
