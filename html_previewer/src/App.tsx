@@ -6,8 +6,9 @@ function App() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', fontFamily: 'sans-serif' }}>
-      <header style={{ padding: '1rem', borderBottom: '1px solid #ccc', backgroundColor: '#f9f9f9' }}>
+      <header style={{ padding: '1rem', borderBottom: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ margin: 0, fontSize: '1.5rem' }}>HTML Previewer</h1>
+        <button onClick={() => setHtml('')} style={{ padding: '0.5rem 1rem', cursor: 'pointer' }}>Clear</button>
       </header>
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <textarea 
