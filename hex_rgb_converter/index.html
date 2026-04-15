@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex to RGB / RGB to Hex Converter | online-tools.click</title>
+    <meta name="description" content="Convert colors between Hexadecimal and RGB formats instantly with visual preview and copy to clipboard.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .color-preview {
+            transition: background-color 0.15s ease;
+        }
+        input:focus {
+            outline: none;
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-3xl font-bold mt-3">Hex to RGB / RGB to Hex Converter</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Convert colors between hexadecimal and RGB formats instantly</p>
+        </header>
+
+        <div class="space-y-6">
+            <!-- Color Preview -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Color Preview</label>
+                <div id="color-preview" class="color-preview w-full h-24 rounded-xl border border-gray-200 dark:border-gray-700"></div>
+            </div>
+
+            <!-- Hex Input -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+                <div class="flex items-center justify-between mb-3">
+                    <label for="hex-input" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Hex Color</label>
+                    <button id="copy-hex" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-xs font-medium transition-colors">
+                        Copy
+                    </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="relative flex-1">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-mono text-lg">#</span>
+                        <input
+                            type="text"
+                            id="hex-input"
+                            class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl pl-8 pr-4 py-3 font-mono text-lg border-2 border-transparent focus:border-blue-500 transition-all"
+                            placeholder="3B82F6"
+                            maxlength="6"
+                            spellcheck="false">
+                    </div>
+                    <input type="color" id="color-picker" class="w-14 h-12 rounded-lg cursor-pointer border-0">
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Example: 3B82F6 (blue), FF5733 (orange-red), 00FF00 (lime)</p>
+            </div>
+
+            <!-- RGB Input -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">RGB Color</label>
+                    <button id="copy-rgb" class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-xs font-medium transition-colors">
+                        Copy
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Red (0-255)</label>
+                        <input type="number" id="rgb-r" min="0" max="255" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 font-mono text-lg border-2 border-transparent focus:border-red-500 transition-all text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Green (0-255)</label>
+                        <input type="number" id="rgb-g" min="0" max="255" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 font-mono text-lg border-2 border-transparent focus:border-green-500 transition-all text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Blue (0-255)</label>
+                        <input type="number" id="rgb-b" min="0" max="255" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 font-mono text-lg border-2 border-transparent focus:border-blue-500 transition-all text-center">
+                    </div>
+                </div>
+                <div class="mt-3 text-center">
+                    <span class="text-xs text-gray-400">rgb(<span id="rgb-display" class="font-mono">59, 130, 246</span>)</span>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error-msg" class="hidden px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-medium"></div>
+
+            <!-- Quick Colors -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800">
+                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Quick Colors</label>
+                <div class="flex flex-wrap gap-2">
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #000000" data-hex="000000" title="Black"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #FFFFFF" data-hex="FFFFFF" title="White"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #EF4444" data-hex="EF4444" title="Red"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #F97316" data-hex="F97316" title="Orange"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #EAB308" data-hex="EAB308" title="Yellow"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #22C55E" data-hex="22C55E" title="Green"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #3B82F6" data-hex="3B82F6" title="Blue"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #8B5CF6" data-hex="8B5CF6" title="Purple"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #EC4899" data-hex="EC4899" title="Pink"></button>
+                    <button class="quick-color w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-700 hover:scale-110 transition-transform" style="background-color: #6B7280" data-hex="6B7280" title="Gray"></button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-6 space-y-3">
+            <p>🔒 100% Private: All conversions happen client-side in your browser.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>•</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard!
+    </div>
+
+    <script>
+        // DOM Elements
+        const hexInput = document.getElementById('hex-input');
+        const rgbR = document.getElementById('rgb-r');
+        const rgbG = document.getElementById('rgb-g');
+        const rgbB = document.getElementById('rgb-b');
+        const rgbDisplay = document.getElementById('rgb-display');
+        const colorPicker = document.getElementById('color-picker');
+        const colorPreview = document.getElementById('color-preview');
+        const errorMsg = document.getElementById('error-msg');
+        const toast = document.getElementById('toast');
+
+        // Conversion Functions
+        function hexToRgb(hex) {
+            // Remove # if present
+            hex = hex.replace(/^#/, '');
+
+            // Validate hex format
+            if (!/^[0-9A-Fa-f]{6}$/.test(hex)) {
+                return null;
+            }
+
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+
+            return { r, g, b };
+        }
+
+        function rgbToHex(r, g, b) {
+            const toHex = (n) => {
+                const hex = Math.round(Math.max(0, Math.min(255, n))).toString(16).toUpperCase();
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            return toHex(r) + toHex(g) + toHex(b);
+        }
+
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.classList.remove('hidden');
+            setTimeout(() => errorMsg.classList.add('hidden'), 3000);
+        }
+
+        function clearError() {
+            errorMsg.classList.add('hidden');
+        }
+
+        // Update Functions
+        function updateFromHex() {
+            clearError();
+            const hex = hexInput.value.trim();
+
+            if (!hex) {
+                colorPreview.style.backgroundColor = '#CCCCCC';
+                return;
+            }
+
+            const rgb = hexToRgb(hex);
+
+            if (!rgb) {
+                showError('Invalid hex color format. Use 6-digit hex code (e.g., 3B82F6)');
+                return;
+            }
+
+            // Update RGB inputs
+            rgbR.value = rgb.r;
+            rgbG.value = rgb.g;
+            rgbB.value = rgb.b;
+            rgbDisplay.textContent = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+
+            // Update preview and picker
+            const hexColor = '#' + hex;
+            colorPreview.style.backgroundColor = hexColor;
+            colorPicker.value = hexColor;
+        }
+
+        function updateFromRgb() {
+            clearError();
+            const r = parseInt(rgbR.value) || 0;
+            const g = parseInt(rgbG.value) || 0;
+            const b = parseInt(rgbB.value) || 0;
+
+            // Validate RGB values
+            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+                showError('RGB values must be between 0 and 255');
+                return;
+            }
+
+            const hex = rgbToHex(r, g, b);
+
+            // Update hex input
+            hexInput.value = hex;
+            rgbDisplay.textContent = `${r}, ${g}, ${b}`;
+
+            // Update preview and picker
+            const hexColor = '#' + hex;
+            colorPreview.style.backgroundColor = hexColor;
+            colorPicker.value = hexColor;
+        }
+
+        function setColor(hex) {
+            hexInput.value = hex;
+            updateFromHex();
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 2000);
+        }
+
+        // Event Listeners
+        hexInput.addEventListener('input', updateFromHex);
+
+        rgbR.addEventListener('input', updateFromRgb);
+        rgbG.addEventListener('input', updateFromRgb);
+        rgbB.addEventListener('input', updateFromRgb);
+
+        colorPicker.addEventListener('input', (e) => {
+            const hex = e.target.value.substring(1).toUpperCase();
+            setColor(hex);
+        });
+
+        // Copy buttons
+        document.getElementById('copy-hex').addEventListener('click', () => {
+            const hexValue = '#' + hexInput.value.toUpperCase();
+            navigator.clipboard.writeText(hexValue).then(() => {
+                showToast('Hex color copied!');
+            });
+        });
+
+        document.getElementById('copy-rgb').addEventListener('click', () => {
+            const r = rgbR.value || 0;
+            const g = rgbG.value || 0;
+            const b = rgbB.value || 0;
+            const rgbValue = `rgb(${r}, ${g}, ${b})`;
+            navigator.clipboard.writeText(rgbValue).then(() => {
+                showToast('RGB color copied!');
+            });
+        });
+
+        // Quick color buttons
+        document.querySelectorAll('.quick-color').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const hex = btn.dataset.hex;
+                setColor(hex);
+            });
+        });
+
+        // Initialize with default color
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+
+        setColor('3B82F6'); // Start with blue
+    </script>
+</body>
+</html>
