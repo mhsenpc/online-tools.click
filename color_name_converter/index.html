@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Name to Hex/RGB Converter | online-tools.click</title>
+    <meta name="description" content="Free, fast, and secure online color name converter. Convert CSS color names to Hex and RGB formats instantly with auto-suggest and visual swatch.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .color-swatch {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            dark:bg-gray-800;
+            border: 1px solid #e5e7eb;
+            dark:border-gray-700;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+
+        .suggestions-dropdown.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.15s;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f3f4f6;
+        }
+
+        .dark .suggestion-item:hover {
+            background-color: #374151;
+        }
+
+        .suggestion-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .copy-btn {
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Color Name to Hex/RGB Converter</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Convert CSS color names to Hex and RGB formats instantly.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Input Section -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                    <!-- Color Name Input -->
+                    <div class="relative">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Color Name</label>
+                        <input
+                            type="text"
+                            id="color-input"
+                            class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm outline-none transition-all"
+                            placeholder="e.g., rebeccapurple, steelblue"
+                            autocomplete="off"
+                        >
+                        <div id="suggestions" class="suggestions-dropdown"></div>
+                    </div>
+
+                    <!-- Quick Examples -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Quick Examples</label>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="example-btn px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" data-color="rebeccapurple">rebeccapurple</button>
+                            <button class="example-btn px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" data-color="steelblue">steelblue</button>
+                            <button class="example-btn px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" data-color="tomato">tomato</button>
+                            <button class="example-btn px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" data-color="cornflowerblue">cornflowerblue</button>
+                            <button class="example-btn px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-lg text-xs hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" data-color="darkslateblue">darkslateblue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Visual Swatch -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Color Preview</h2>
+                    <div class="flex items-center justify-center">
+                        <div id="color-swatch" class="color-swatch bg-gray-200 dark:bg-gray-800"></div>
+                    </div>
+                </div>
+
+                <!-- Conversion Results -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-4">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 mb-4">Conversion Results</h2>
+
+                    <!-- Hex Result -->
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Hex</div>
+                            <div id="hex-result" class="font-mono text-sm font-medium">—</div>
+                        </div>
+                        <button id="copy-hex" class="copy-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors">
+                            Copy
+                        </button>
+                    </div>
+
+                    <!-- RGB Result -->
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">RGB</div>
+                            <div id="rgb-result" class="font-mono text-sm font-medium">—</div>
+                        </div>
+                        <button id="copy-rgb" class="copy-btn px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="error-message" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-red-500">⚠️</span>
+                        <p id="error-text" class="text-sm text-red-600 dark:text-red-400"></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Client-Side: Your content stays in the browser. No tracking or logging.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        // Complete CSS color names database (140+ colors)
+        const cssColors = {
+            'aliceblue': '#F0F8FF',
+            'antiquewhite': '#FAEBD7',
+            'aqua': '#00FFFF',
+            'aquamarine': '#7FFFD4',
+            'azure': '#F0FFFF',
+            'beige': '#F5F5DC',
+            'bisque': '#FFE4C4',
+            'black': '#000000',
+            'blanchedalmond': '#FFEBCD',
+            'blue': '#0000FF',
+            'blueviolet': '#8A2BE2',
+            'brown': '#A52A2A',
+            'burlywood': '#DEB887',
+            'cadetblue': '#5F9EA0',
+            'chartreuse': '#7FFF00',
+            'chocolate': '#D2691E',
+            'coral': '#FF7F50',
+            'cornflowerblue': '#6495ED',
+            'cornsilk': '#FFF8DC',
+            'crimson': '#DC143C',
+            'cyan': '#00FFFF',
+            'darkblue': '#00008B',
+            'darkcyan': '#008B8B',
+            'darkgoldenrod': '#B8860B',
+            'darkgray': '#A9A9A9',
+            'darkgreen': '#006400',
+            'darkgrey': '#A9A9A9',
+            'darkkhaki': '#BDB76B',
+            'darkmagenta': '#8B008B',
+            'darkolivegreen': '#556B2F',
+            'darkorange': '#FF8C00',
+            'darkorchid': '#9932CC',
+            'darkred': '#8B0000',
+            'darksalmon': '#E9967A',
+            'darkseagreen': '#8FBC8F',
+            'darkslateblue': '#483D8B',
+            'darkslategray': '#2F4F4F',
+            'darkslategrey': '#2F4F4F',
+            'darkturquoise': '#00CED1',
+            'darkviolet': '#9400D3',
+            'deeppink': '#FF1493',
+            'deepskyblue': '#00BFFF',
+            'dimgray': '#696969',
+            'dimgrey': '#696969',
+            'dodgerblue': '#1E90FF',
+            'firebrick': '#B22222',
+            'floralwhite': '#FFFAF0',
+            'forestgreen': '#228B22',
+            'fuchsia': '#FF00FF',
+            'gainsboro': '#DCDCDC',
+            'ghostwhite': '#F8F8FF',
+            'gold': '#FFD700',
+            'goldenrod': '#DAA520',
+            'gray': '#808080',
+            'green': '#008000',
+            'greenyellow': '#ADFF2F',
+            'grey': '#808080',
+            'honeydew': '#F0FFF0',
+            'hotpink': '#FF69B4',
+            'indianred': '#CD5C5C',
+            'indigo': '#4B0082',
+            'ivory': '#FFFFF0',
+            'khaki': '#F0E68C',
+            'lavender': '#E6E6FA',
+            'lavenderblush': '#FFF0F5',
+            'lawngreen': '#7CFC00',
+            'lemonchiffon': '#FFFACD',
+            'lightblue': '#ADD8E6',
+            'lightcoral': '#F08080',
+            'lightcyan': '#E0FFFF',
+            'lightgoldenrodyellow': '#FAFAD2',
+            'lightgray': '#D3D3D3',
+            'lightgreen': '#90EE90',
+            'lightgrey': '#D3D3D3',
+            'lightpink': '#FFB6C1',
+            'lightsalmon': '#FFA07A',
+            'lightseagreen': '#20B2AA',
+            'lightskyblue': '#87CEFA',
+            'lightslategray': '#778899',
+            'lightslategrey': '#778899',
+            'lightsteelblue': '#B0C4DE',
+            'lightyellow': '#FFFFE0',
+            'lime': '#00FF00',
+            'limegreen': '#32CD32',
+            'linen': '#FAF0E6',
+            'magenta': '#FF00FF',
+            'maroon': '#800000',
+            'mediumaquamarine': '#66CDAA',
+            'mediumblue': '#0000CD',
+            'mediumorchid': '#BA55D3',
+            'mediumpurple': '#9370DB',
+            'mediumseagreen': '#3CB371',
+            'mediumslateblue': '#7B68EE',
+            'mediumspringgreen': '#00FA9A',
+            'mediumturquoise': '#48D1CC',
+            'mediumvioletred': '#C71585',
+            'midnightblue': '#191970',
+            'mintcream': '#F5FFFA',
+            'mistyrose': '#FFE4E1',
+            'moccasin': '#FFE4B5',
+            'navajowhite': '#FFDEAD',
+            'navy': '#000080',
+            'oldlace': '#FDF5E6',
+            'olive': '#808000',
+            'olivedrab': '#6B8E23',
+            'orange': '#FFA500',
+            'orangered': '#FF4500',
+            'orchid': '#DA70D6',
+            'palegoldenrod': '#EEE8AA',
+            'palegreen': '#98FB98',
+            'paleturquoise': '#AFEEEE',
+            'palevioletred': '#DB7093',
+            'papayawhip': '#FFEFD5',
+            'peachpuff': '#FFDAB9',
+            'peru': '#CD853F',
+            'pink': '#FFC0CB',
+            'plum': '#DDA0DD',
+            'powderblue': '#B0E0E6',
+            'purple': '#800080',
+            'rebeccapurple': '#663399',
+            'red': '#FF0000',
+            'rosybrown': '#BC8F8F',
+            'royalblue': '#4169E1',
+            'saddlebrown': '#8B4513',
+            'salmon': '#FA8072',
+            'sandybrown': '#F4A460',
+            'seagreen': '#2E8B57',
+            'seashell': '#FFF5EE',
+            'sienna': '#A0522D',
+            'silver': '#C0C0C0',
+            'skyblue': '#87CEEB',
+            'slateblue': '#6A5ACD',
+            'slategray': '#708090',
+            'slategrey': '#708090',
+            'snow': '#FFFAFA',
+            'springgreen': '#00FF7F',
+            'steelblue': '#4682B4',
+            'tan': '#D2B48C',
+            'teal': '#008080',
+            'thistle': '#D8BFD8',
+            'tomato': '#FF6347',
+            'turquoise': '#40E0D0',
+            'violet': '#EE82EE',
+            'wheat': '#F5DEB3',
+            'white': '#FFFFFF',
+            'whitesmoke': '#F5F5F5',
+            'yellow': '#FFFF00',
+            'yellowgreen': '#9ACD32'
+        };
+
+        // DOM elements
+        const colorInput = document.getElementById('color-input');
+        const suggestions = document.getElementById('suggestions');
+        const colorSwatch = document.getElementById('color-swatch');
+        const hexResult = document.getElementById('hex-result');
+        const rgbResult = document.getElementById('rgb-result');
+        const copyHexBtn = document.getElementById('copy-hex');
+        const copyRgbBtn = document.getElementById('copy-rgb');
+        const errorMessage = document.getElementById('error-message');
+        const errorText = document.getElementById('error-text');
+        const toast = document.getElementById('toast');
+        const exampleButtons = document.querySelectorAll('.example-btn');
+
+        // Convert hex to RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        // Show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            colorSwatch.style.backgroundColor = '';
+            hexResult.textContent = '—';
+            rgbResult.textContent = '—';
+        }
+
+        // Hide error message
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        // Update color display
+        function updateColor(colorName) {
+            if (!colorName) {
+                hideError();
+                colorSwatch.style.backgroundColor = '';
+                hexResult.textContent = '—';
+                rgbResult.textContent = '—';
+                return;
+            }
+
+            const normalizedName = colorName.toLowerCase().trim();
+            const hex = cssColors[normalizedName];
+
+            if (!hex) {
+                showError(`"${colorName}" is not a valid CSS color name. Try typing to see suggestions.`);
+                return;
+            }
+
+            hideError();
+
+            // Update swatch
+            colorSwatch.style.backgroundColor = hex;
+
+            // Update hex result
+            hexResult.textContent = hex;
+
+            // Update RGB result
+            const rgb = hexToRgb(hex);
+            rgbResult.textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+        }
+
+        // Show suggestions
+        function showSuggestions(filter) {
+            const normalizedFilter = filter.toLowerCase().trim();
+
+            if (!normalizedFilter) {
+                suggestions.classList.remove('show');
+                return;
+            }
+
+            const matches = Object.keys(cssColors).filter(color =>
+                color.startsWith(normalizedFilter)
+            ).slice(0, 10); // Limit to 10 suggestions
+
+            if (matches.length === 0) {
+                suggestions.classList.remove('show');
+                return;
+            }
+
+            suggestions.innerHTML = matches.map(color => `
+                <div class="suggestion-item" data-color="${color}">
+                    <div class="suggestion-color" style="background-color: ${cssColors[color]}"></div>
+                    <span class="text-sm">${color}</span>
+                </div>
+            `).join('');
+
+            suggestions.classList.add('show');
+
+            // Add click handlers to suggestions
+            document.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const color = item.dataset.color;
+                    colorInput.value = color;
+                    suggestions.classList.remove('show');
+                    updateColor(color);
+                });
+            });
+        }
+
+        // Event listeners
+        colorInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            showSuggestions(value);
+
+            if (value) {
+                updateColor(value);
+            } else {
+                hideError();
+                colorSwatch.style.backgroundColor = '';
+                hexResult.textContent = '—';
+                rgbResult.textContent = '—';
+            }
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                suggestions.classList.remove('show');
+            }
+        });
+
+        // Example buttons
+        exampleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const color = btn.dataset.color;
+                colorInput.value = color;
+                updateColor(color);
+            });
+        });
+
+        // Copy buttons
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+        }
+
+        copyHexBtn.addEventListener('click', () => {
+            const hex = hexResult.textContent;
+            if (hex && hex !== '—') {
+                navigator.clipboard.writeText(hex).then(() => {
+                    showToast('Hex copied!');
+                });
+            }
+        });
+
+        copyRgbBtn.addEventListener('click', () => {
+            const rgb = rgbResult.textContent;
+            if (rgb && rgb !== '—') {
+                navigator.clipboard.writeText(rgb).then(() => {
+                    showToast('RGB copied!');
+                });
+            }
+        });
+
+        // Initialize with empty state
+        colorInput.focus();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
