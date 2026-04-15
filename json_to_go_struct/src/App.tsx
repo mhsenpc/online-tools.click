@@ -5,15 +5,46 @@ function App() {
   const [goStruct, setGoStruct] = useState('');
 
   const generateGoStruct = (obj: any, name: string): string => {
-    let struct = `type ${name} struct {\n`;
-    for (const key in obj) {
-      const val = obj[key];
-      const type = Array.isArray(val) ? `[]${typeof val[0]}` : typeof val;
-      const goType = type === 'number' ? 'float64' : type.charAt(0).toUpperCase() + type.slice(1);
-      struct += `  ${key.charAt(0).toUpperCase() + key.slice(1)} ${goType} \`json:"${key}"\`\n`;
-    }
-    struct += '}';
-    return struct;
+    let structs: string[] = [];
+    
+    const parse = (obj: any, name: string): string => {
+      let struct = `type ${name} struct {\n`;
+      for (const key in obj) {
+        const val = obj[key];
+        let goType = 'interface{}';
+
+        if (val === null) {
+          goType = 'interface{}';
+        } else if (Array.isArray(val)) {
+          if (val.length > 0) {
+            const itemType = typeof val[0];
+            if (itemType === 'object') {
+              const subName = key.charAt(0).toUpperCase() + key.slice(1) + 'Item';
+              structs.push(parse(val[0], subName));
+              goType = `[]${subName}`;
+            } else {
+              goType = `[]${itemType === 'number' ? 'float64' : itemType.charAt(0).toUpperCase() + itemType.slice(1)}`;
+            }
+          } else {
+            goType = '[]interface{}';
+          }
+        } else if (typeof val === 'object') {
+          const subName = key.charAt(0).toUpperCase() + key.slice(1);
+          structs.push(parse(val, subName));
+          goType = subName;
+        } else {
+          const type = typeof val;
+          goType = type === 'number' ? 'float64' : type.charAt(0).toUpperCase() + type.slice(1);
+        }
+
+        struct += `  ${key.charAt(0).toUpperCase() + key.slice(1)} ${goType} \`json:"${key}"\`\n`;
+      }
+      struct += '}';
+      return struct;
+    };
+
+    const rootStruct = parse(obj, name);
+    return [rootStruct, ...structs].join('\n\n');
   };
 
   const convert = () => {
