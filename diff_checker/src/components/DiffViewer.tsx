@@ -81,7 +81,21 @@ const DiffViewer: React.FC<DiffViewerProps> = ({ diffLines, viewMode }) => {
                 {line.type === 'addition' ? '+' : line.type === 'deletion' ? '-' : ' '}
               </div>
               <div className="diff-content font-mono">
-                {line.content || ' '}
+                {line.words && line.words.length > 0 ? (
+                  line.words.map((word, wordIdx) => (
+                    <span
+                      key={wordIdx}
+                      className={clsx(
+                        word.added && "diff-word-addition",
+                        word.removed && "diff-word-deletion"
+                      )}
+                    >
+                      {word.value}
+                    </span>
+                  ))
+                ) : (
+                  line.content || ' '
+                )}
               </div>
             </div>
           ))}
