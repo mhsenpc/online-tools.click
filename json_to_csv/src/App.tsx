@@ -5,6 +5,8 @@ function App() {
   const [csvOutput, setCsvOutput] = useState('')
   const [error, setError] = useState('')
 
+  const [delimiter, setDelimiter] = useState(',')
+
   const flattenObject = (obj: any, prefix = ''): any => {
     return Object.keys(obj).reduce((acc: any, k) => {
       const pre = prefix.length ? prefix + '.' : '';
@@ -29,9 +31,14 @@ function App() {
       const headers = Array.from(new Set(flattenedData.flatMap((item) => Object.keys(item))))
       
       const csv = [
-        headers.join(','),
+        headers.join(delimiter),
         ...flattenedData.map((item) => 
-          headers.map((h) => JSON.stringify(item[h] ?? '')).join(',')
+          headers.map((h) => {
+            const val = item[h] ?? '';
+            // Escape double quotes and wrap in quotes
+            const stringVal = typeof val === 'string' ? val : JSON.stringify(val);
+            return `"${stringVal.replace(/"/g, '""')}"`;
+          }).join(delimiter)
         )
       ].join('\n')
 
@@ -60,6 +67,16 @@ function App() {
         onChange={(e) => setJsonInput(e.target.value)}
         placeholder='Paste JSON array here, e.g. [{"name": "John", "age": 30}]'
       />
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Delimiter: 
+          <select value={delimiter} onChange={(e) => setDelimiter(e.target.value)}>
+            <option value=",">Comma (,)</option>
+            <option value=";">Semicolon (;)</option>
+            <option value="\t">Tab</option>
+          </select>
+        </label>
+      </div>
       <button onClick={convertToCSV}>Convert to CSV</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {csvOutput && (
