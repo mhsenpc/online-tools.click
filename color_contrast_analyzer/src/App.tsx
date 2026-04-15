@@ -18,8 +18,10 @@ function App() {
     };
   };
 
-  const getSuggestions = () => {
-    const suggestions = [];
+  type Suggestion = { fg: string, bg: string, label: string };
+
+  const getSuggestions = (): Suggestion[] => {
+    const suggestions: Suggestion[] = [];
     const checkRatio = (f: any, b: any) => tinycolor.readability(f, b);
     
     // Try to lighten/darken FG
@@ -35,7 +37,7 @@ function App() {
     return suggestions;
   };
   
-  const suggestions = getSuggestions();
+  const suggestions: Suggestion[] = getSuggestions();
   const status = getStatus(ratio);
 
   return (
