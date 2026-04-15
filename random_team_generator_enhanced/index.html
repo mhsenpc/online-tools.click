@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Team Generator | online-tools.click</title>
+    <meta name="description" content="Randomly group a list of names into balanced teams. Free, fast, and client-side tool.">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Random Team Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Quickly shuffle and split names into teams.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Names (one per line)</label>
+                        <textarea id="names-input" rows="8" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 text-sm outline-none transition-all" placeholder="Alice&#10;Bob&#10;Charlie&#10;Dave"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Number of Teams</label>
+                        <input type="number" id="team-count" value="2" min="1" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 text-sm outline-none transition-all">
+                    </div>
+
+                    <button id="btn-generate" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                        Generate Teams
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Generated Teams</h2>
+                    <button id="btn-copy" class="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-tighter transition-colors">Copy to Clipboard</button>
+                </div>
+                <div id="output-area" class="w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-sm leading-relaxed outline-none focus:border-blue-500 transition-all shadow-inner overflow-y-auto min-height-[300px]">
+                    <p class="text-gray-400">Results will appear here...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Client-Side: Your data stays in the browser.</p>
+        </footer>
+    </div>
+
+    <script>
+        const namesInput = document.getElementById('names-input');
+        const teamCountInput = document.getElementById('team-count');
+        const btnGenerate = document.getElementById('btn-generate');
+        const outputArea = document.getElementById('output-area');
+        const btnCopy = document.getElementById('btn-copy');
+
+        btnGenerate.addEventListener('click', () => {
+            const names = namesInput.value.split('\n').map(n => n.trim()).filter(n => n);
+            const teamCount = parseInt(teamCountInput.value);
+            
+            if (names.length === 0 || teamCount < 1) {
+                outputArea.innerHTML = '<p class="text-red-500">Please provide names and a valid team count.</p>';
+                return;
+            }
+
+            // Shuffle
+            const shuffled = [...names].sort(() => Math.random() - 0.5);
+            const teams = Array.from({ length: teamCount }, () => []);
+
+            // Distribute
+            shuffled.forEach((name, i) => {
+                teams[i % teamCount].push(name);
+            });
+
+            // Display
+            let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+            teams.forEach((team, i) => {
+                html += `
+                    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
+                        <h3 class="font-bold text-blue-600 dark:text-blue-400 mb-2">Team ${i + 1} (${team.length})</h3>
+                        <ul class="list-disc list-inside text-sm">
+                            ${team.map(n => `<li>${n}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            outputArea.innerHTML = html;
+        });
+
+        btnCopy.addEventListener('click', () => {
+            const text = outputArea.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard!');
+            });
+        });
+    </script>
+</body>
+</html>
