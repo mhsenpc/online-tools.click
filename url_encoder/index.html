@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder/Decoder | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online URL encoder and decoder. Encode URLs or decode encoded URLs instantly. Handles special characters, spaces, and query parameters.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-editor: #ffffff;
+            --text-editor: #1a1a1a;
+        }
+        .dark {
+            --bg-editor: #0d1117;
+            --text-editor: #c9d1d9;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .editor-textarea {
+            background-color: var(--bg-editor);
+            color: var(--text-editor);
+            caret-color: #3b82f6;
+            resize: none;
+            outline: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+</head>
+<body class="h-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                online-tools.click
+            </a>
+            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+            <h1 class="text-lg font-semibold">URL Encoder/Decoder</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="btn-theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <svg id="sun-icon" class="hidden w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                <svg id="moon-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="flex items-center gap-4 px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-500">Mode:</span>
+            <button id="mode-encode-btn" class="px-2 py-1 text-xs rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">Encode</button>
+            <button id="mode-decode-btn" class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium">Decode</button>
+        </div>
+        <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+        <div id="encode-options" class="flex items-center gap-3">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" id="opt-full-url" class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                <span class="text-xs text-gray-600 dark:text-gray-400">Encode full URL (preserve scheme)</span>
+            </label>
+        </div>
+        <button id="btn-copy" class="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors ml-auto">Copy Output</button>
+        <button id="btn-clear" class="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 transition-colors">Clear</button>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="px-6 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-900/30">
+        <p id="info-text" class="text-xs text-blue-700 dark:text-blue-300">
+            <span class="font-semibold">Encode:</span> Converts special characters to %XX format. Use for query parameters and form data.
+        </p>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex h-full flex-1 overflow-hidden">
+        <div class="flex flex-col md:flex-row w-full h-full">
+            <!-- Input -->
+            <section class="w-full md:w-1/2 flex flex-col h-1/2 md:h-full border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800">
+                <div class="px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">Input</div>
+                <textarea id="input-area" class="editor-textarea flex-1 p-6 font-mono text-sm leading-relaxed" placeholder="Enter URL or text here..."></textarea>
+            </section>
+
+            <!-- Output -->
+            <section class="w-full md:w-1/2 flex flex-col h-1/2 md:h-full bg-white dark:bg-gray-950">
+                <div class="px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">Output</div>
+                <textarea id="output-area" class="editor-textarea flex-1 p-6 font-mono text-sm leading-relaxed" readonly placeholder="Results will appear here..."></textarea>
+            </section>
+        </div>
+    </main>
+
+    <!-- Stats Bar -->
+    <div class="px-6 py-1.5 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+        <div class="flex items-center gap-4">
+            <span id="input-stats">Input: 0 chars</span>
+            <span id="output-stats">Output: 0 chars</span>
+            <span id="encoding-status" class="ml-auto text-gray-400"></span>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        const inputArea = document.getElementById('input-area');
+        const outputArea = document.getElementById('output-area');
+        const modeEncodeBtn = document.getElementById('mode-encode-btn');
+        const modeDecodeBtn = document.getElementById('mode-decode-btn');
+        const optFullUrl = document.getElementById('opt-full-url');
+        const infoText = document.getElementById('info-text');
+        const toast = document.getElementById('toast');
+        const inputStats = document.getElementById('input-stats');
+        const outputStats = document.getElementById('output-stats');
+        const encodingStatus = document.getElementById('encoding-status');
+
+        let currentMode = 'encode';
+
+        // --- Core Logic ---
+        function encodeURL(str, preserveScheme = false) {
+            if (preserveScheme) {
+                // Preserve the URL scheme (http:// or https://)
+                const schemeMatch = str.match(/^(https?:\/\/)/i);
+                if (schemeMatch) {
+                    const scheme = schemeMatch[1];
+                    const rest = str.slice(scheme.length);
+                    return scheme + encodeURIComponent(rest);
+                }
+            }
+            return encodeURIComponent(str);
+        }
+
+        function decodeURL(str) {
+            try {
+                return decodeURIComponent(str);
+            } catch (e) {
+                // Handle malformed URI components
+                return str;
+            }
+        }
+
+        function process() {
+            const input = inputArea.value;
+            if (!input) {
+                outputArea.value = '';
+                updateStats();
+                return;
+            }
+
+            try {
+                if (currentMode === 'encode') {
+                    const preserveScheme = optFullUrl.checked;
+                    outputArea.value = encodeURL(input, preserveScheme);
+                    encodingStatus.textContent = '';
+                    encodingStatus.className = 'ml-auto text-green-600 dark:text-green-400';
+                } else {
+                    outputArea.value = decodeURL(input);
+                    encodingStatus.textContent = '✓ Valid URL encoding';
+                    encodingStatus.className = 'ml-auto text-green-600 dark:text-green-400';
+                }
+            } catch (e) {
+                outputArea.value = '';
+                encodingStatus.textContent = '⚠️ Error: ' + e.message;
+                encodingStatus.className = 'ml-auto text-red-600 dark:text-red-400';
+            }
+
+            updateStats();
+        }
+
+        function updateStats() {
+            const inputLen = inputArea.value.length;
+            const outputLen = outputArea.value.length;
+            inputStats.textContent = `Input: ${inputLen.toLocaleString()} chars`;
+            outputStats.textContent = `Output: ${outputLen.toLocaleString()} chars`;
+        }
+
+        // --- Events ---
+        inputArea.addEventListener('input', process);
+        optFullUrl.addEventListener('change', process);
+
+        modeEncodeBtn.onclick = () => {
+            currentMode = 'encode';
+            document.getElementById('encode-options').classList.remove('opacity-30', 'pointer-events-none');
+            modeEncodeBtn.className = 'px-2 py-1 text-xs rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium';
+            modeDecodeBtn.className = 'px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium';
+            infoText.innerHTML = '<span class="font-semibold">Encode:</span> Converts special characters to %XX format. Use for query parameters and form data.';
+            process();
+        };
+
+        modeDecodeBtn.onclick = () => {
+            currentMode = 'decode';
+            document.getElementById('encode-options').classList.add('opacity-30', 'pointer-events-none');
+            modeDecodeBtn.className = 'px-2 py-1 text-xs rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium';
+            modeEncodeBtn.className = 'px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium';
+            infoText.innerHTML = '<span class="font-semibold">Decode:</span> Converts %XX encoded characters back to their original form. Use to read encoded URLs.';
+            process();
+        };
+
+        document.getElementById('btn-clear').onclick = () => {
+            inputArea.value = '';
+            outputArea.value = '';
+            encodingStatus.textContent = '';
+            updateStats();
+        };
+
+        document.getElementById('btn-copy').onclick = () => {
+            if (!outputArea.value) return;
+            navigator.clipboard.writeText(outputArea.value).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+
+        // --- Theme ---
+        const themeBtn = document.getElementById('btn-theme-toggle');
+        themeBtn.onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('url_encoder_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcons();
+        };
+
+        function updateThemeIcons() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.getElementById('sun-icon').classList.remove('hidden');
+                document.getElementById('moon-icon').classList.add('hidden');
+            } else {
+                document.getElementById('sun-icon').classList.add('hidden');
+                document.getElementById('moon-icon').classList.remove('hidden');
+            }
+        }
+
+        // --- Init ---
+        const savedTheme = localStorage.getItem('url_encoder_theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcons();
+
+        // Set initial sample
+        inputArea.value = "https://example.com/search?q=hello world&category=tech";
+        process();
+    </script>
+</body>
+</html>
