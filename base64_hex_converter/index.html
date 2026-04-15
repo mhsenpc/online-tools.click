@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hex ↔ Base64 Converter — Free Online Tool</title>
+  <meta name="description" content="Free online Hex to Base64 and Base64 to Hex converter. Convert binary data between Hexadecimal and Base64 formats instantly. 100% private — runs in your browser." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+    if (localStorage.getItem('dark_mode') === 'dark' || (localStorage.getItem('dark_mode') === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🔄</span>
+      <div>
+        <h1 class="text-xl font-bold leading-tight">Hex ↔ Base64 Converter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs in your browser</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <section class="flex flex-wrap items-center gap-4">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="radio" name="mode" value="hex2b64" class="accent-blue-600" checked />
+        <span class="text-sm">Hex → Base64</span>
+      </label>
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input type="radio" name="mode" value="b642hex" class="accent-blue-600" />
+        <span class="text-sm">Base64 → Hex</span>
+      </label>
+    </section>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section class="flex flex-col gap-2">
+        <label for="input" class="font-medium text-sm">Input</label>
+        <textarea id="input" rows="12" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 transition-colors" placeholder="Enter Hex or Base64 here..."></textarea>
+      </section>
+      <section class="flex flex-col gap-2">
+        <label for="output" class="font-medium text-sm">Output</label>
+        <textarea id="output" rows="12" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 transition-colors" readonly placeholder="Result will appear here..."></textarea>
+      </section>
+    </div>
+
+    <div id="error" class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+    </div>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const error = document.getElementById('error');
+
+    function hexToBytes(hex) {
+      hex = hex.replace(/\s+/g, '');
+      if (hex.length % 2 !== 0) throw new Error("Invalid hex string length");
+      let bytes = new Uint8Array(hex.length / 2);
+      for (let i = 0; i < hex.length; i += 2) {
+        bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+      }
+      return bytes;
+    }
+
+    function bytesToHex(bytes) {
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function bytesToBase64(bytes) {
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    }
+
+    function base64ToBytes(base64) {
+      return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    }
+
+    function convert() {
+      error.classList.add('hidden');
+      const val = input.value.trim();
+      if (!val) { output.value = ''; return; }
+      const mode = document.querySelector('input[name="mode"]:checked').value;
+      try {
+        if (mode === 'hex2b64') {
+          output.value = bytesToBase64(hexToBytes(val));
+        } else {
+          output.value = bytesToHex(base64ToBytes(val));
+        }
+      } catch (e) {
+        output.value = '';
+        error.textContent = e.message;
+        error.classList.remove('hidden');
+      }
+    }
+
+    input.addEventListener('input', convert);
+    document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener('change', convert));
+  </script>
+</body>
+</html>
