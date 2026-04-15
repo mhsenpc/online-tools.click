@@ -17,7 +17,8 @@ function App() {
           kb: base,
           mb: Math.pow(base, 2),
           gb: Math.pow(base, 3),
-          tb: Math.pow(base, 4)
+          tb: Math.pow(base, 4),
+          pb: Math.pow(base, 5)
         };
       },
       labels: {
@@ -25,7 +26,22 @@ function App() {
         kb: (binary: boolean) => binary ? 'KiB' : 'KB',
         mb: (binary: boolean) => binary ? 'MiB' : 'MB',
         gb: (binary: boolean) => binary ? 'GiB' : 'GB',
-        tb: (binary: boolean) => binary ? 'TiB' : 'TB'
+        tb: (binary: boolean) => binary ? 'TiB' : 'TB',
+        pb: (binary: boolean) => binary ? 'PiB' : 'PB'
+      }
+    },
+    network: {
+      getUnits: () => ({
+        bps: 1,
+        kbps: 1000,
+        mbps: 1000000,
+        gbps: 1000000000
+      }),
+      labels: {
+        bps: 'bits/s',
+        kbps: 'Kbps',
+        mbps: 'Mbps',
+        gbps: 'Gbps'
       }
     },
     css: {
@@ -44,7 +60,11 @@ function App() {
       if (from === 'em' && to === 'px') return val * baseFontSize;
       return val;
     }
-    const units = categories.data.getUnits(isBinary);
+    
+    const units = category === 'data' 
+      ? categories.data.getUnits(isBinary)
+      : (categories.network as any).getUnits();
+
     const val = parseFloat(value.toString());
     if (isNaN(val)) return 0;
     
@@ -59,6 +79,9 @@ function App() {
     if (cat === 'data') {
       setFrom('b');
       setTo('kb');
+    } else if (cat === 'network') {
+      setFrom('bps');
+      setTo('kbps');
     } else {
       setFrom('px');
       setTo('rem');
@@ -73,6 +96,7 @@ function App() {
         <label>Category: </label>
         <select onChange={handleCategoryChange} value={category} style={{ padding: '0.5rem' }}>
           <option value="data">Data Size</option>
+          <option value="network">Network Speed</option>
           <option value="css">CSS Units</option>
         </select>
       </div>
@@ -98,7 +122,11 @@ function App() {
             ? Object.keys(categories.data.getUnits(isBinary)).map(u => 
                 <option value={u} key={u}>{u === 'b' ? 'Bytes' : (categories.data.labels as any)[u](isBinary)}</option>
               )
-            : Object.keys(categories.css.units).map(u => 
+            : category === 'network'
+              ? Object.keys((categories.network as any).getUnits()).map(u =>
+                  <option value={u} key={u}>{(categories.network.labels as any)[u]}</option>
+                )
+              : Object.keys(categories.css.units).map(u => 
                 <option value={u} key={u}>{(categories.css.labels as any)[u]}</option>
               )
           }
@@ -109,7 +137,11 @@ function App() {
             ? Object.keys(categories.data.getUnits(isBinary)).map(u => 
                 <option value={u} key={u}>{u === 'b' ? 'Bytes' : (categories.data.labels as any)[u](isBinary)}</option>
               )
-            : Object.keys(categories.css.units).map(u => 
+            : category === 'network'
+              ? Object.keys((categories.network as any).getUnits()).map(u =>
+                  <option value={u} key={u}>{(categories.network.labels as any)[u]}</option>
+                )
+              : Object.keys(categories.css.units).map(u => 
                 <option value={u} key={u}>{(categories.css.labels as any)[u]}</option>
               )
           }
