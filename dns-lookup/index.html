@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DNS Records Lookup</title>
+</head>
+<body>
+    <h1>DNS Records Lookup</h1>
+    <input type="text" id="domain-input" placeholder="example.com">
+    <select id="type-input">
+        <option value="A">A</option>
+        <option value="AAAA">AAAA</option>
+        <option value="MX">MX</option>
+        <option value="TXT">TXT</option>
+    </select>
+    <button id="lookup-btn">Lookup</button>
+    <pre id="output-display"></pre>
+    <script type="module" src="dist/bundle.js"></script>
+</body>
+</html>
