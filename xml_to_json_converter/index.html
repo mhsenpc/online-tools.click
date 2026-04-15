@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML to JSON Converter | Online Tools</title>
+    <meta name="description" content="Convert XML to JSON instantly. Client-side, privacy-focused.">
+    <meta property="og:title" content="XML to JSON Converter | Online Tools">
+    <meta property="og:description" content="Convert XML to JSON instantly. Client-side, privacy-focused.">
+    <meta property="og:url" content="https://online-tools.click/xml_to_json_converter/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="XML to JSON Converter | Online Tools">
+    <meta name="twitter:description" content="Convert XML to JSON instantly. Client-side, privacy-focused.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/xml_to_json_converter/">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "XML to JSON Converter",
+      "url": "https://online-tools.click/xml_to_json_converter/",
+      "description": "Convert XML to JSON instantly.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; line-height: 1.6; }
+        .navbar { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-secondary); }
+        .navbar-left { display: flex; align-items: center; gap: 1rem; }
+        .navbar-brand { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); text-decoration: none; }
+        .container { max-width: 1800px; margin: 0 auto; padding: 2rem; }
+        header { text-align: center; margin-bottom: 2rem; }
+        h1 { font-size: 2.5rem; font-weight: 600; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; }
+        .toolbar-group { display: flex; align-items: center; gap: 0.75rem; }
+        .btn { padding: 0.625rem 1.25rem; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: var(--text-primary); border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border: none; }
+        .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; min-height: 600px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--bg-tertiary); border-bottom: 1px solid var(--border-color); }
+        .panel-content { flex: 1; position: relative; overflow: hidden; }
+        textarea, .output-display { flex: 1; padding: 1rem; background: var(--bg-primary); color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.875rem; border: none; outline: none; resize: none; overflow: auto; white-space: pre; tab-size: 2; }
+        .status-bar { display: flex; justify-content: space-between; padding: 0.75rem 1.5rem; background: var(--bg-tertiary); border-top: 1px solid var(--border-color); font-size: 0.875rem; color: var(--text-secondary); }
+        .error-panel { display: none; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; margin-top: 1rem; color: var(--error); }
+        .error-panel.visible { display: block; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="https://online-tools.click" class="navbar-brand">Online Tools</a>
+            <span class="navbar-sep">/</span>
+            <span class="navbar-current">XML to JSON Converter</span>
+        </div>
+        <div class="navbar-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </nav>
+    <div class="container">
+        <header>
+            <h1>XML to JSON Converter</h1>
+            <p class="subtitle">Convert XML to JSON instantly</p>
+        </header>
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="btn btn-primary" id="convertBtn">Convert</button>
+            </div>
+            <div class="toolbar-group">
+                <label><input type="checkbox" id="includeAttrs" checked> Include Attributes</label>
+            </div>
+            <div class="toolbar-group">
+                <select id="indentSelect">
+                    <option value="2">2 spaces</option>
+                    <option value="4" selected>4 spaces</option>
+                </select>
+            </div>
+        </div>
+        <div class="panels">
+            <div class="panel">
+                <div class="panel-header"><span class="panel-title">XML Input</span></div>
+                <div class="panel-content"><textarea id="inputXml" placeholder="Paste your XML here..."></textarea></div>
+                <div class="status-bar"><span id="inputStats">0 characters</span></div>
+            </div>
+            <div class="panel">
+                <div class="panel-header"><span class="panel-title">JSON Output</span></div>
+                <div class="panel-content"><textarea id="outputJson" readonly></textarea></div>
+                <div class="status-bar"><span id="outputStats">Ready</span></div>
+            </div>
+        </div>
+        <div class="error-panel" id="errorPanel"></div>
+    </div>
+    <script>
+        const inputXml = document.getElementById('inputXml');
+        const outputJson = document.getElementById('outputJson');
+        const convertBtn = document.getElementById('convertBtn');
+        const includeAttrs = document.getElementById('includeAttrs');
+        const indentSelect = document.getElementById('indentSelect');
+        const errorPanel = document.getElementById('errorPanel');
+
+        convertBtn.addEventListener('click', () => {
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(inputXml.value, 'text/xml');
+                const parseError = xmlDoc.getElementsByTagName('parsererror');
+                if (parseError.length > 0) throw new Error(parseError[0].textContent);
+                
+                const json = xmlToJson(xmlDoc.documentElement, includeAttrs.checked);
+                outputJson.value = JSON.stringify(json, null, parseInt(indentSelect.value));
+                errorPanel.classList.remove('visible');
+            } catch (e) {
+                errorPanel.textContent = e.message;
+                errorPanel.classList.add('visible');
+            }
+        });
+
+        function xmlToJson(xml, includeAttrs) {
+            let obj = {};
+            if (xml.nodeType === 1) { // element
+                if (xml.attributes.length > 0 && includeAttrs) {
+                    obj["@attributes"] = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        let attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+                }
+            } else if (xml.nodeType === 3) { // text
+                obj = xml.nodeValue;
+            }
+
+            if (xml.hasChildNodes()) {
+                for (let i = 0; i < xml.childNodes.length; i++) {
+                    let item = xml.childNodes.item(i);
+                    let nodeName = item.nodeName;
+                    if (item.nodeType === 3 && !item.nodeValue.trim()) continue; // skip empty text
+
+                    if (typeof (obj[nodeName]) === "undefined") {
+                        obj[nodeName] = xmlToJson(item, includeAttrs);
+                    } else {
+                        if (typeof (obj[nodeName].push) === "undefined") {
+                            let old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item, includeAttrs));
+                    }
+                }
+            }
+            return obj;
+        }
+    </script>
+</body>
+</html>
