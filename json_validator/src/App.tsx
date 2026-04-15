@@ -15,18 +15,35 @@ function App() {
     try {
       const data = JSON.parse(jsonInput);
       if (schemaInput.trim()) {
-        const schema = JSON.parse(schemaInput);
-        const validate = ajv.compile(schema);
-        const valid = validate(data);
-        setIsValid(valid);
-        setResult(valid ? 'JSON is valid against the schema.' : JSON.stringify(validate.errors, null, 2));
+        try {
+          const schema = JSON.parse(schemaInput);
+          const validate = ajv.compile(schema);
+          const valid = validate(data);
+          setIsValid(valid);
+          setResult(valid ? 'JSON is valid against the schema.' : JSON.stringify(validate.errors, null, 2));
+        } catch (e: any) {
+          setIsValid(false);
+          setResult('Invalid Schema: ' + e.message);
+        }
       } else {
         setIsValid(true);
         setResult('JSON syntax is valid.');
       }
     } catch (e: any) {
       setIsValid(false);
-      setResult('Invalid JSON or Schema: ' + e.message);
+      let errorMessage = 'Invalid JSON: ' + e.message;
+      
+      // Try to find line and column if position is in the error message
+      const positionMatch = e.message.match(/position (\d+)/);
+      if (positionMatch) {
+        const position = parseInt(positionMatch[1], 10);
+        const lines = jsonInput.substring(0, position).split('\n');
+        const line = lines.length;
+        const column = lines[lines.length - 1].length + 1;
+        errorMessage = `Invalid JSON: ${e.message} (Line ${line}, Column ${column})`;
+      }
+      
+      setResult(errorMessage);
     }
   };
 
