@@ -250,6 +250,29 @@
             margin-bottom: 10px;
         }
 
+        .builder-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        .tab-btn {
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--accent-bg);
+            border-color: var(--accent-border);
+            color: var(--accent);
+        }
+
         .builder-card {
             background: var(--bg-input);
             border: 1px solid var(--border);
@@ -672,6 +695,13 @@
         <div class="panels">
             <div class="panel">
                 <div class="panel-label">Visual Builder</div>
+                <div class="builder-tabs" id="builder-tabs">
+                    <button class="tab-btn active" data-tab="minute">Minute</button>
+                    <button class="tab-btn" data-tab="hour">Hour</button>
+                    <button class="tab-btn" data-tab="dom">Day</button>
+                    <button class="tab-btn" data-tab="month">Month</button>
+                    <button class="tab-btn" data-tab="dow">Day of Week</button>
+                </div>
                 <div class="builder-card" id="builder-card"></div>
             </div>
             <div class="panel">
@@ -1297,26 +1327,34 @@
             ).join('');
         }
 
+        let currentTab = 'minute';
+
         function renderBuilder() {
-            builderCard.innerHTML = FIELDS.map(f => {
-                const s = builderState[f.key];
-                return `
-                    <div class="builder-field" data-field="${f.key}">
-                        <div class="field-label">${f.label}</div>
-                        <select class="field-type-select" data-field="${f.key}">
-                            <option value="every"${s.type === 'every' ? ' selected' : ''}>Every</option>
-                            <option value="step"${s.type === 'step' ? ' selected' : ''}>Every N</option>
-                            <option value="specific"${s.type === 'specific' ? ' selected' : ''}>Specific</option>
-                            <option value="range"${s.type === 'range' ? ' selected' : ''}>Range</option>
-                            <option value="custom"${s.type === 'custom' ? ' selected' : ''}>Custom</option>
-                        </select>
-                        <div class="field-inputs" data-field="${f.key}">
-                            ${renderFieldInputs(f.key, s, f)}
-                        </div>
-                        <div class="field-preview" data-field="${f.key}">${escapeHTML(fieldToExpression(builderState, f))}</div>
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === currentTab);
+            });
+
+            // Render active field
+            const f = FIELDS.find(field => field.key === currentTab);
+            const s = builderState[f.key];
+            
+            builderCard.innerHTML = `
+                <div class="builder-field" data-field="${f.key}">
+                    <div class="field-label">${f.label}</div>
+                    <select class="field-type-select" data-field="${f.key}">
+                        <option value="every"${s.type === 'every' ? ' selected' : ''}>Every</option>
+                        <option value="step"${s.type === 'step' ? ' selected' : ''}>Every N</option>
+                        <option value="specific"${s.type === 'specific' ? ' selected' : ''}>Specific</option>
+                        <option value="range"${s.type === 'range' ? ' selected' : ''}>Range</option>
+                        <option value="custom"${s.type === 'custom' ? ' selected' : ''}>Custom</option>
+                    </select>
+                    <div class="field-inputs" data-field="${f.key}">
+                        ${renderFieldInputs(f.key, s, f)}
                     </div>
-                `;
-            }).join('');
+                    <div class="field-preview" data-field="${f.key}">${escapeHTML(fieldToExpression(builderState, f))}</div>
+                </div>
+            `;
         }
 
         function renderFieldInputs(key, state, fieldDef) {
@@ -1339,13 +1377,32 @@
             }
         }
 
+        // Update field inputs
         function updateFieldInputs(key) {
+            if (key !== currentTab) return; // Only update if it's the active tab
+            
             const fieldDef = FIELDS.find(f => f.key === key);
             const s = builderState[key];
             const inputsContainer = builderCard.querySelector(`.field-inputs[data-field="${key}"]`);
             const preview = builderCard.querySelector(`.field-preview[data-field="${key}"]`);
             if (inputsContainer) inputsContainer.innerHTML = renderFieldInputs(key, s, fieldDef);
             if (preview) preview.textContent = fieldToExpression(builderState, fieldDef);
+        }
+
+        // Add event listener for tab switching
+        document.getElementById('builder-tabs').addEventListener('click', (e) => {
+            const btn = e.target.closest('.tab-btn');
+            if (!btn) return;
+            currentTab = btn.dataset.tab;
+            renderBuilder();
+        });
+
+        // Initialize init function to render the builder initially
+        function init() {
+            initPresets();
+            initTimezones();
+            renderBuilder(); // Add this
+            updateFromExpression();
         }
 
         function updateBuilderFromExpr(parsed) {
