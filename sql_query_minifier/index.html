@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Minifier | Online Tools</title>
+    <meta name="description" content="Free, client-side SQL query minifier. Remove comments and unnecessary whitespace from your SQL queries to reduce size.">
+    <meta property="og:title" content="SQL Query Minifier | Online Tools">
+    <meta property="og:description" content="Minify your SQL queries by removing comments and whitespace. Fast, private, client-side.">
+    <meta property="og:url" content="https://online-tools.click/sql_query_minifier/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SQL Query Minifier | Online Tools">
+    <meta name="twitter:description" content="Minify your SQL queries. Fast, private, client-side.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/sql_query_minifier/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --keyword: #ff79c6;
+            --string: #f1fa8c;
+            --number: #bd93f9;
+            --comment: #6272a4;
+            --function: #50fa7b;
+            --operator: #ff79c6;
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --success: #22c55e;
+            --info: #3b82f6;
+            --info-bg: rgba(59, 130, 246, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-section: 112px;
+            --space-group: 64px;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: var(--space-element);
+        }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-element);
+            margin-bottom: var(--space-element);
+        }
+
+        @media (max-width: 1024px) {
+            .editor-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-input);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-icon:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            background: var(--bg-input);
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 20px;
+            resize: none;
+            tab-size: 4;
+        }
+
+        .output-wrapper {
+            flex: 1;
+            position: relative;
+            min-height: 400px;
+            background: var(--bg-input);
+        }
+
+        .output-content {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            overflow: auto;
+            tab-size: 4;
+        }
+
+        .output-content .keyword {
+            color: var(--keyword);
+            font-weight: 500;
+        }
+
+        .output-content .string {
+            color: var(--string);
+        }
+
+        .output-content .number {
+            color: var(--number);
+        }
+
+        .output-content .function {
+            color: var(--function);
+        }
+
+        .output-content .operator {
+            color: var(--operator);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-input);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            padding: 16px 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-element);
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text);
+            font-family: var(--font-mono);
+        }
+
+        .stat-value.reduction {
+            color: var(--success);
+        }
+
+        .options {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--bg-input);
+            border-top: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .option label {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .error-message {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-element);
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .info-message {
+            background: var(--info-bg);
+            border: 1px solid var(--info);
+            color: var(--info);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-element);
+            font-size: 14px;
+            display: none;
+        }
+
+        .info-message.show {
+            display: block;
+        }
+
+        .examples {
+            margin-top: var(--space-element);
+            padding: 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+        }
+
+        .examples-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .example-item {
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .example-item:hover {
+            border-color: var(--border-focus);
+            color: var(--text);
+        }
+
+        .example-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">SQL Query Minifier</span>
+        </div>
+        <div class="header-right">
+            <a href="/">Back to Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="error-message" id="error-message"></div>
+        <div class="info-message" id="info-message"></div>
+
+        <div class="action-bar" style="margin-bottom: var(--space-element);">
+            <button class="btn-primary" id="minify-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+                Minify SQL
+            </button>
+            <button class="btn-secondary" id="clear-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Clear
+            </button>
+        </div>
+
+        <div class="stats-bar" id="stats-bar" style="display: none;">
+            <div class="stat-item">
+                <span>Original:</span>
+                <span class="stat-value" id="original-size">0</span>
+                <span>bytes</span>
+            </div>
+            <div class="stat-item">
+                <span>Minified:</span>
+                <span class="stat-value" id="minified-size">0</span>
+                <span>bytes</span>
+            </div>
+            <div class="stat-item">
+                <span>Reduction:</span>
+                <span class="stat-value reduction" id="reduction">0%</span>
+            </div>
+        </div>
+
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Input</span>
+                    <div class="panel-actions">
+                        <button class="btn-icon" id="paste-btn" title="Paste">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Paste
+                        </button>
+                    </div>
+                </div>
+                <div class="editor-wrapper">
+                    <textarea id="input-sql" placeholder="Paste your SQL query here...
+
+Example:
+SELECT *
+FROM users
+WHERE id = 1;"></textarea>
+                </div>
+            </div>
+
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Output</span>
+                    <div class="panel-actions">
+                        <button class="btn-icon" id="copy-btn" title="Copy to clipboard">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="output-wrapper">
+                    <div class="output-content" id="output-sql"></div>
+                </div>
+                <div class="options">
+                    <div class="option">
+                        <input type="checkbox" id="remove-comments" checked>
+                        <label for="remove-comments">Remove comments</label>
+                    </div>
+                    <div class="option">
+                        <input type="checkbox" id="compress-newlines" checked>
+                        <label for="compress-newlines">Compress newlines</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="examples">
+            <div class="examples-title">Example Queries</div>
+            <div class="example-item" data-example="simple">
+                SELECT * FROM users WHERE status = 'active'
+            </div>
+            <div class="example-item" data-example="with-comments">
+                -- Get all active users
+                SELECT id, name, email
+                FROM users
+                WHERE status = 'active'
+                ORDER BY created_at DESC
+            </div>
+            <div class="example-item" data-example="complex">
+                /* Complex query with multiple joins */
+                SELECT
+                    u.name,
+                    COUNT(o.id) as order_count,
+                    SUM(o.total) as total
+                FROM customers c
+                LEFT JOIN orders o ON c.id = o.customer_id
+                WHERE o.created_at >= '2024-01-01'
+                GROUP BY c.id, c.name
+                HAVING COUNT(o.id) > 5
+                ORDER BY total DESC
+            </div>
+            <div class="example-item" data-example="multiline">
+                SELECT
+                    u.name,
+                    u.email,
+                    o.total,
+                    o.created_at
+                FROM users u
+                INNER JOIN orders o ON u.id = o.user_id
+                WHERE o.status = 'completed'
+                AND o.total > 100
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // SQL Keywords for highlighting
+        const KEYWORDS = new Set([
+            'SELECT', 'FROM', 'WHERE', 'JOIN', 'INNER', 'LEFT', 'RIGHT', 'OUTER', 'ON',
+            'AND', 'OR', 'NOT', 'IN', 'LIKE', 'BETWEEN', 'IS', 'NULL', 'ORDER', 'BY',
+            'GROUP', 'HAVING', 'AS', 'DISTINCT', 'ALL', 'EXISTS', 'UNION', 'INTERSECT',
+            'EXCEPT', 'INSERT', 'INTO', 'VALUES', 'UPDATE', 'SET', 'DELETE', 'CREATE',
+            'TABLE', 'DROP', 'ALTER', 'INDEX', 'VIEW', 'CASE', 'WHEN', 'THEN', 'ELSE',
+            'END', 'LIMIT', 'OFFSET', 'ASC', 'DESC', 'WITH', 'RECURSIVE', 'OVER',
+            'PARTITION', 'ROW_NUMBER', 'RANK', 'DENSE_RANK', 'LAG', 'LEAD', 'FIRST',
+            'LAST', 'FILTER', 'WITHIN', 'DESCENDANT', 'ASCENDANT', 'NULLS', 'PRIMARY',
+            'KEY', 'FOREIGN', 'REFERENCES', 'UNIQUE', 'CHECK', 'DEFAULT', 'CASCADE',
+            'RESTRICT', 'NO', 'ACTION', 'SET', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP'
+        ]);
+
+        const FUNCTIONS = new Set([
+            'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'COALESCE', 'NULLIF', 'CAST', 'EXTRACT',
+            'DATE_TRUNC', 'NOW', 'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP',
+            'UPPER', 'LOWER', 'TRIM', 'SUBSTRING', 'CONCAT', 'LENGTH', 'POSITION',
+            'REPLACE', 'SPLIT_PART', 'REGEXP_REPLACE', 'ARRAY_AGG', 'JSON_AGG',
+            'ROW_TO_JSON', 'JSONB_BUILD_OBJECT', 'GENSERIAL'
+        ]);
+
+        // Minify SQL query
+        function minifySQL(input, options = {}) {
+            const {
+                removeComments = true,
+                compressNewlines = true
+            } = options;
+
+            if (!input.trim()) {
+                return '';
+            }
+
+            let result = input;
+
+            // Remove multi-line comments /* */
+            if (removeComments) {
+                result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+            }
+
+            // Remove single-line comments --
+            if (removeComments) {
+                result = result.replace(/--[^\n]*/g, '');
+            }
+
+            // Preserve string literals
+            const strings = [];
+            result = result.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, (match) => {
+                strings.push(match);
+                return `__STRING_${strings.length - 1}__`;
+            });
+
+            // Remove whitespace around operators and keywords
+            result = result
+                .replace(/\s+/g, ' ')  // Replace multiple spaces with single space
+                .replace(/\s*([(),;=<>!+-/*])\s*/g, '$1')  // Remove spaces around operators
+                .replace(/\s*\(\s*/g, '(')  // Remove spaces after (
+                .replace(/\s*\)\s*/g, ')')  // Remove spaces before )
+                .replace(/\s*,\s*/g, ',')  // Remove spaces around commas
+                .replace(/\s*;\s*/g, ';')  // Remove spaces around semicolons
+
+            // Handle newlines
+            if (compressNewlines) {
+                result = result.replace(/\s*;\s*/g, ';').replace(/;\s*/g, '; ');
+            } else {
+                result = result.replace(/;/g, ';\n');
+            }
+
+            // Restore string literals
+            result = result.replace(/__STRING_(\d+)__/g, (match, index) => {
+                return strings[parseInt(index)];
+            });
+
+            // Clean up any remaining weird spacing
+            result = result.trim();
+
+            return result;
+        }
+
+        // Highlight SQL syntax
+        function highlightSQL(sql) {
+            if (!sql) return '';
+
+            // Escape HTML first
+            let highlighted = sql
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Highlight strings
+            highlighted = highlighted.replace(/(["'])(?:(?=(\\?))\2.)*?\1/g, '<span class="string">$&</span>');
+
+            // Highlight numbers
+            highlighted = highlighted.replace(/\b\d+\b/g, '<span class="number">$&</span>');
+
+            // Highlight keywords (case-insensitive)
+            const keywordPattern = new RegExp(`\\b(${Array.from(KEYWORDS).join('|')})\\b`, 'gi');
+            highlighted = highlighted.replace(keywordPattern, '<span class="keyword">$1</span>');
+
+            // Highlight functions
+            const functionPattern = new RegExp(`\\b(${Array.from(FUNCTIONS).join('|')})\\s*\\(`, 'gi');
+            highlighted = highlighted.replace(functionPattern, '<span class="function">$1</span>(');
+
+            // Highlight operators
+            highlighted = highlighted.replace(/([=<>!]+)/g, '<span class="operator">$1</span>');
+
+            return highlighted;
+        }
+
+        // Calculate size reduction
+        function calculateStats(original, minified) {
+            const originalSize = new Blob([original]).size;
+            const minifiedSize = new Blob([minified]).size;
+            const reduction = originalSize > 0 ? ((originalSize - minifiedSize) / originalSize * 100).toFixed(1) : 0;
+
+            return {
+                original: originalSize,
+                minified: minifiedSize,
+                reduction: reduction
+            };
+        }
+
+        // DOM elements
+        const inputSQL = document.getElementById('input-sql');
+        const outputSQL = document.getElementById('output-sql');
+        const minifyBtn = document.getElementById('minify-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const pasteBtn = document.getElementById('paste-btn');
+        const removeCommentsInput = document.getElementById('remove-comments');
+        const compressNewlinesInput = document.getElementById('compress-newlines');
+        const errorMessage = document.getElementById('error-message');
+        const infoMessage = document.getElementById('info-message');
+        const statsBar = document.getElementById('stats-bar');
+        const originalSizeEl = document.getElementById('original-size');
+        const minifiedSizeEl = document.getElementById('minified-size');
+        const reductionEl = document.getElementById('reduction');
+        const exampleItems = document.querySelectorAll('.example-item');
+
+        // Minify button
+        minifyBtn.addEventListener('click', () => {
+            try {
+                const input = inputSQL.value;
+                const removeComments = removeCommentsInput.checked;
+                const compressNewlines = compressNewlinesInput.checked;
+
+                if (!input.trim()) {
+                    showError('Please enter a SQL query to minify');
+                    return;
+                }
+
+                const minified = minifySQL(input, { removeComments, compressNewlines });
+                outputSQL.innerHTML = highlightSQL(minified);
+
+                // Calculate and display stats
+                const stats = calculateStats(input, minified);
+                originalSizeEl.textContent = stats.original;
+                minifiedSizeEl.textContent = stats.minified;
+                reductionEl.textContent = stats.reduction + '%';
+                statsBar.style.display = 'flex';
+
+                // Show info message about safety
+                showInfo('SQL minified successfully! String literals and syntax preserved.');
+                hideError();
+            } catch (error) {
+                showError('Error minifying SQL: ' + error.message);
+            }
+        });
+
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            inputSQL.value = '';
+            outputSQL.innerHTML = '';
+            statsBar.style.display = 'none';
+            hideError();
+            hideInfo();
+        });
+
+        // Copy button
+        copyBtn.addEventListener('click', async () => {
+            const text = outputSQL.textContent;
+            if (!text) {
+                showError('No minified SQL to copy');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Copied!
+                `;
+                setTimeout(() => {
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        Copy
+                    `;
+                }, 2000);
+                hideError();
+            } catch (error) {
+                showError('Failed to copy to clipboard');
+            }
+        });
+
+        // Paste button
+        pasteBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputSQL.value = text;
+                hideError();
+            } catch (error) {
+                showError('Failed to paste from clipboard. Please use Ctrl+V');
+            }
+        });
+
+        // Example clicks
+        exampleItems.forEach(item => {
+            item.addEventListener('click', () => {
+                inputSQL.value = item.textContent;
+                minifyBtn.click();
+            });
+        });
+
+        // Auto-minify on option change if there's content
+        removeCommentsInput.addEventListener('change', () => {
+            if (inputSQL.value.trim()) {
+                minifyBtn.click();
+            }
+        });
+
+        compressNewlinesInput.addEventListener('change', () => {
+            if (inputSQL.value.trim()) {
+                minifyBtn.click();
+            }
+        });
+
+        // Error handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+
+        function showInfo(message) {
+            infoMessage.textContent = message;
+            infoMessage.classList.add('show');
+            setTimeout(() => {
+                hideInfo();
+            }, 3000);
+        }
+
+        function hideInfo() {
+            infoMessage.classList.remove('show');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to minify
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                minifyBtn.click();
+            }
+        });
+    </script>
+</body>
+</html>
