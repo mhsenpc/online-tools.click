@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bcrypt Password Hasher & Salter — Free Online Tool</title>
+  <meta name="description" content="Generate Bcrypt hashes for testing database authentication logic. Configurable cost factor, verification mode, and custom salts. 100% private — runs in your browser." />
+  <meta name="keywords" content="bcrypt, password hasher, salt generator, bcrypt verification, password hash, bcrypt calculator" />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Bcrypt Password Hasher & Salter",
+    "description": "Generate Bcrypt hashes with configurable cost factors and verification mode for testing authentication logic.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+    // Apply dark mode from localStorage or system preference before render
+    (function() {
+      const saved = localStorage.getItem('bcrypt_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    /* Custom focus ring style */
+    input:focus, textarea:focus { outline: none; }
+
+    /* Copy button feedback */
+    .copy-btn.copied {
+      background-color: #22c55e !important;
+      border-color: #22c55e !important;
+      color: white !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      .copy-btn.copied {
+        background-color: #16a34a !important;
+        border-color: #16a34a !important;
+      }
+    }
+
+    /* Mode toggle animation */
+    .mode-btn {
+      transition: all 0.2s ease;
+    }
+    .mode-btn.active {
+      background-color: #2563eb !important;
+      color: white !important;
+      border-color: #2563eb !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      .mode-btn.active {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+      }
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #2563eb;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+    }
+    @media (prefers-color-scheme: dark) {
+      .spinner {
+        border-color: #374151;
+        border-top-color: #3b82f6;
+      }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+
+  <!-- Load bcrypt-js library -->
+  <script src="https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js"></script>
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🔐</span>
+      <div class="flex-1">
+        <h1 class="text-xl font-bold leading-tight">Bcrypt Password Hasher & Salter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+      <!-- Dark mode toggle button -->
+      <button id="btn-dark-toggle"
+              class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Toggle dark mode"
+              title="Toggle dark/light mode">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Mode toggle -->
+    <section aria-label="Mode selection" class="flex flex-wrap items-center gap-3 px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <span class="font-medium text-sm">Mode:</span>
+      <div class="flex gap-2" role="radiogroup" aria-label="Select mode">
+        <button id="mode-hash" class="mode-btn active px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
+          Hash
+        </button>
+        <button id="mode-verify" class="mode-btn px-4 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm font-medium transition-colors">
+          Verify
+        </button>
+      </div>
+    </section>
+
+    <!-- Hash Mode Panel -->
+    <section id="panel-hash" aria-labelledby="hash-heading" class="space-y-4">
+      <h2 id="hash-heading" class="sr-only">Hash Password Mode</h2>
+
+      <!-- Cost factor slider -->
+      <div class="px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between mb-2">
+          <label for="cost-factor" class="font-medium text-sm">Cost Factor (Rounds):</label>
+          <output id="cost-value" for="cost-factor" class="text-sm font-mono bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">10</output>
+        </div>
+        <input
+          type="range"
+          id="cost-factor"
+          min="4"
+          max="31"
+          value="10"
+          class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          aria-describedby="cost-description"
+        />
+        <p id="cost-description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Higher values = more secure but slower. Recommended: 10-12.
+        </p>
+      </div>
+
+      <!-- Custom salt (optional) -->
+      <div class="px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between mb-2">
+          <label for="custom-salt" class="font-medium text-sm">Custom Salt (Optional):</label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" id="use-custom-salt" class="accent-blue-600 w-4 h-4" aria-label="Enable custom salt" />
+            <span class="text-sm">Use custom salt</span>
+          </label>
+        </div>
+        <input
+          type="text"
+          id="custom-salt"
+          class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          placeholder="Enter custom salt (22 characters, base64-encoded)"
+          disabled
+          aria-describedby="salt-description"
+        />
+        <p id="salt-description" class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Leave empty for auto-generated salt (recommended). Custom salt must be 22 characters, base64-encoded.
+        </p>
+      </div>
+
+      <!-- Password input -->
+      <div class="flex flex-col gap-2">
+        <label for="password-hash" class="font-medium text-sm">Password to Hash:</label>
+        <input
+          type="password"
+          id="password-hash"
+          class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Enter password to hash"
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Hash button -->
+      <button
+        id="btn-hash"
+        class="w-full px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <span id="hash-spinner" class="spinner hidden"></span>
+        <span id="hash-text">Generate Hash</span>
+      </button>
+
+      <!-- Hash output -->
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label for="hash-output" class="font-medium text-sm">Bcrypt Hash:</label>
+          <button id="btn-copy-hash" class="copy-btn text-xs px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors" aria-label="Copy hash to clipboard">
+            Copy Hash
+          </button>
+        </div>
+        <textarea
+          id="hash-output"
+          rows="3"
+          readonly
+          class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-850 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Your bcrypt hash will appear here…"
+          aria-live="polite"
+        ></textarea>
+      </div>
+    </section>
+
+    <!-- Verify Mode Panel -->
+    <section id="panel-verify" aria-labelledby="verify-heading" class="space-y-4 hidden">
+      <h2 id="verify-heading" class="sr-only">Verify Password Mode</h2>
+
+      <!-- Password input -->
+      <div class="flex flex-col gap-2">
+        <label for="password-verify" class="font-medium text-sm">Password to Verify:</label>
+        <input
+          type="password"
+          id="password-verify"
+          class="w-full px-3 py-2 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Enter password to verify"
+          autocomplete="off"
+        />
+      </div>
+
+      <!-- Hash input -->
+      <div class="flex flex-col gap-2">
+        <label for="hash-verify" class="font-medium text-sm">Bcrypt Hash to Compare:</label>
+        <textarea
+          id="hash-verify"
+          rows="3"
+          class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Paste the bcrypt hash to compare against…"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Verify button -->
+      <button
+        id="btn-verify"
+        class="w-full px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <span id="verify-spinner" class="spinner hidden"></span>
+        <span id="verify-text">Verify Password</span>
+      </button>
+
+      <!-- Verify result -->
+      <div
+        id="verify-result"
+        class="px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center"
+        aria-live="polite"
+      >
+        <p class="text-sm text-gray-500 dark:text-gray-400">Enter a password and hash, then click Verify</p>
+      </div>
+    </section>
+
+    <!-- Info panel -->
+    <section aria-labelledby="info-heading" class="px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+      <h2 id="info-heading" class="font-medium text-sm text-blue-900 dark:text-blue-200 mb-2">ℹ️ About Bcrypt</h2>
+      <ul class="text-xs text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
+        <li><strong>Bcrypt</strong> is a password hashing function designed to be slow and computationally expensive, making brute-force attacks difficult.</li>
+        <li><strong>Cost factor</strong> determines the number of rounds (2^n). Each increment doubles the computation time.</li>
+        <li><strong>Salting</strong> is built-in — each hash includes a unique salt to prevent rainbow table attacks.</li>
+        <li>This tool runs 100% in your browser using the <code class="bg-blue-100 dark:bg-blue-900 px-1 rounded">bcrypt-js</code> library. No data is sent to any server.</li>
+      </ul>
+    </section>
+
+    <!-- Performance warning -->
+    <section aria-labelledby="perf-heading" class="px-4 py-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
+      <h2 id="perf-heading" class="font-medium text-sm text-yellow-900 dark:text-yellow-200 mb-2">⚡ Performance Note</h2>
+      <p class="text-xs text-yellow-800 dark:text-yellow-300">
+        Hashing is performed using a Web Worker to avoid blocking the UI. Higher cost factors will take longer — a cost of 12 may take several seconds on modern hardware.
+      </p>
+    </section>
+
+  </main>
+
+  <script>
+    // ============================================
+    // Web Worker Code (as a blob)
+    // ============================================
+    const workerCode = `
+      importScripts('https://cdn.jsdelivr.net/npm/bcryptjs@2.4.3/dist/bcrypt.min.js');
+
+      self.onmessage = function(e) {
+        const { type, password, salt, cost } = e.data;
+
+        if (type === 'hash') {
+          try {
+            let saltRounds;
+            let saltToUse;
+
+            if (salt) {
+              // Use custom salt
+              saltToUse = salt;
+            } else {
+              // Generate salt with cost factor
+              saltRounds = parseInt(cost, 10);
+              saltToUse = dcodeIO.bcrypt.genSaltSync(saltRounds);
+            }
+
+            const hash = dcodeIO.bcrypt.hashSync(password, saltToUse);
+            self.postMessage({ type: 'hash', success: true, hash });
+          } catch (error) {
+            self.postMessage({ type: 'hash', success: false, error: error.message });
+          }
+        } else if (type === 'verify') {
+          try {
+            const result = dcodeIO.bcrypt.compareSync(password, salt); // salt is actually the hash
+            self.postMessage({ type: 'verify', success: true, match: result });
+          } catch (error) {
+            self.postMessage({ type: 'verify', success: false, error: error.message });
+          }
+        }
+      };
+    `;
+
+    // Create Web Worker from blob
+    const blob = new Blob([workerCode], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(blob);
+    let worker = null;
+
+    // ============================================
+    // DOM Elements
+    // ============================================
+    const modeHash = document.getElementById('mode-hash');
+    const modeVerify = document.getElementById('mode-verify');
+    const panelHash = document.getElementById('panel-hash');
+    const panelVerify = document.getElementById('panel-verify');
+
+    const costFactor = document.getElementById('cost-factor');
+    const costValue = document.getElementById('cost-value');
+    const useCustomSalt = document.getElementById('use-custom-salt');
+    const customSalt = document.getElementById('custom-salt');
+    const passwordHash = document.getElementById('password-hash');
+    const btnHash = document.getElementById('btn-hash');
+    const hashSpinner = document.getElementById('hash-spinner');
+    const hashText = document.getElementById('hash-text');
+    const hashOutput = document.getElementById('hash-output');
+    const btnCopyHash = document.getElementById('btn-copy-hash');
+
+    const passwordVerify = document.getElementById('password-verify');
+    const hashVerify = document.getElementById('hash-verify');
+    const btnVerify = document.getElementById('btn-verify');
+    const verifySpinner = document.getElementById('verify-spinner');
+    const verifyText = document.getElementById('verify-text');
+    const verifyResult = document.getElementById('verify-result');
+
+    const btnDarkToggle = document.getElementById('btn-dark-toggle');
+
+    // ============================================
+    // Dark Mode
+    // ============================================
+    function updateDarkMode() {
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('bcrypt_dark_mode', isDark ? 'dark' : 'light');
+    }
+
+    btnDarkToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      updateDarkMode();
+    });
+
+    // ============================================
+    // Mode Switching
+    // ============================================
+    function switchMode(mode) {
+      if (mode === 'hash') {
+        modeHash.classList.add('active');
+        modeVerify.classList.remove('active');
+        panelHash.classList.remove('hidden');
+        panelVerify.classList.add('hidden');
+      } else {
+        modeHash.classList.remove('active');
+        modeVerify.classList.add('active');
+        panelHash.classList.add('hidden');
+        panelVerify.classList.remove('hidden');
+      }
+    }
+
+    modeHash.addEventListener('click', () => switchMode('hash'));
+    modeVerify.addEventListener('click', () => switchMode('verify'));
+
+    // ============================================
+    // Cost Factor Slider
+    // ============================================
+    costFactor.addEventListener('input', () => {
+      costValue.textContent = costFactor.value;
+    });
+
+    // ============================================
+    // Custom Salt Toggle
+    // ============================================
+    useCustomSalt.addEventListener('change', () => {
+      customSalt.disabled = !useCustomSalt.checked;
+      if (!useCustomSalt.checked) {
+        customSalt.value = '';
+      }
+    });
+
+    // ============================================
+    // Web Worker Management
+    // ============================================
+    function createWorker() {
+      if (worker) {
+        worker.terminate();
+      }
+      worker = new Worker(workerUrl);
+    }
+
+    function terminateWorker() {
+      if (worker) {
+        worker.terminate();
+        worker = null;
+      }
+    }
+
+    // ============================================
+    // Hash Function
+    // ============================================
+    btnHash.addEventListener('click', () => {
+      const password = passwordHash.value;
+      const cost = costFactor.value;
+      const useCustom = useCustomSalt.checked;
+      const salt = useCustom ? customSalt.value : null;
+
+      if (!password) {
+        alert('Please enter a password to hash');
+        return;
+      }
+
+      if (useCustom && !salt) {
+        alert('Please enter a custom salt or disable the custom salt option');
+        return;
+      }
+
+      // Show loading state
+      btnHash.disabled = true;
+      hashSpinner.classList.remove('hidden');
+      hashText.textContent = 'Hashing...';
+
+      // Create worker and send message
+      createWorker();
+
+      worker.onmessage = function(e) {
+        const { type, success, hash, error } = e.data;
+
+        if (success) {
+          hashOutput.value = hash;
+        } else {
+          alert('Hashing failed: ' + error);
+          hashOutput.value = '';
+        }
+
+        // Reset loading state
+        btnHash.disabled = false;
+        hashSpinner.classList.add('hidden');
+        hashText.textContent = 'Generate Hash';
+        terminateWorker();
+      };
+
+      worker.onerror = function(error) {
+        alert('Worker error: ' + error.message);
+        btnHash.disabled = false;
+        hashSpinner.classList.add('hidden');
+        hashText.textContent = 'Generate Hash';
+        terminateWorker();
+      };
+
+      worker.postMessage({ type: 'hash', password, salt, cost });
+    });
+
+    // ============================================
+    // Verify Function
+    // ============================================
+    btnVerify.addEventListener('click', () => {
+      const password = passwordVerify.value;
+      const hash = hashVerify.value;
+
+      if (!password) {
+        alert('Please enter a password to verify');
+        return;
+      }
+
+      if (!hash) {
+        alert('Please enter a bcrypt hash to compare against');
+        return;
+      }
+
+      // Show loading state
+      btnVerify.disabled = true;
+      verifySpinner.classList.remove('hidden');
+      verifyText.textContent = 'Verifying...';
+
+      // Create worker and send message
+      createWorker();
+
+      worker.onmessage = function(e) {
+        const { type, success, match, error } = e.data;
+
+        if (success) {
+          if (match) {
+            verifyResult.innerHTML = `
+              <div class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-sm font-medium text-green-600 dark:text-green-400">Password Match!</span>
+              </div>
+            `;
+            verifyResult.className = 'px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-center';
+          } else {
+            verifyResult.innerHTML = `
+              <div class="flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-sm font-medium text-red-600 dark:text-red-400">Password Does Not Match</span>
+              </div>
+            `;
+            verifyResult.className = 'px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-center';
+          }
+        } else {
+          verifyResult.innerHTML = `<p class="text-sm text-red-600 dark:text-red-400">Verification failed: ${error}</p>`;
+          verifyResult.className = 'px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-center';
+        }
+
+        // Reset loading state
+        btnVerify.disabled = false;
+        verifySpinner.classList.add('hidden');
+        verifyText.textContent = 'Verify Password';
+        terminateWorker();
+      };
+
+      worker.onerror = function(error) {
+        verifyResult.innerHTML = `<p class="text-sm text-red-600 dark:text-red-400">Worker error: ${error.message}</p>`;
+        verifyResult.className = 'px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-center';
+        btnVerify.disabled = false;
+        verifySpinner.classList.add('hidden');
+        verifyText.textContent = 'Verify Password';
+        terminateWorker();
+      };
+
+      worker.postMessage({ type: 'verify', password, salt: hash });
+    });
+
+    // ============================================
+    // Copy Function
+    // ============================================
+    async function copyToClipboard(text, button) {
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+        button.textContent = 'Failed';
+        setTimeout(() => {
+          button.textContent = 'Copy Hash';
+        }, 2000);
+      }
+    }
+
+    btnCopyHash.addEventListener('click', () => {
+      if (hashOutput.value) {
+        copyToClipboard(hashOutput.value, btnCopyHash);
+      }
+    });
+
+    // ============================================
+    // Cleanup on page unload
+    // ============================================
+    window.addEventListener('beforeunload', terminateWorker);
+  </script>
+
+</body>
+</html>
