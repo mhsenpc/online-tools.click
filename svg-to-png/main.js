@@ -6,12 +6,16 @@ const widthInput = document.getElementById('width-input');
 const heightInput = document.getElementById('height-input');
 const bgInput = document.getElementById('bg-input');
 const preview = document.getElementById('preview');
-const dropZone = document.getElementById('drop-zone'); // Assuming a drop zone exists or I'll add one
+const dropZone = document.getElementById('drop-zone');
 
 const updatePreview = () => {
     const svgCode = svgInput.value;
     const blob = new Blob([svgCode], {type: 'image/svg+xml;charset=utf-8'});
     const url = URL.createObjectURL(blob);
+    preview.onload = () => {
+        widthInput.value = preview.naturalWidth;
+        heightInput.value = preview.naturalHeight;
+    };
     preview.src = url;
     preview.style.backgroundColor = bgInput.value === 'transparent' ? 'transparent' : bgInput.value;
 };
@@ -30,6 +34,14 @@ const handleFile = (file) => {
 
 fileInput.addEventListener('change', (e) => {
     handleFile(e.target.files[0]);
+});
+
+scaleInput.addEventListener('input', () => {
+    const scale = parseFloat(scaleInput.value) || 1;
+    if (preview.naturalWidth) {
+        widthInput.value = Math.round(preview.naturalWidth * scale);
+        heightInput.value = Math.round(preview.naturalHeight * scale);
+    }
 });
 
 // Drag and Drop support
