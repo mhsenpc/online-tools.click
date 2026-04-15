@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 ↔ Binary Converter | Online Tools</title>
+    <meta name="description" content="Convert between Base64 and Binary representations. Analyze encoded data streams with formatted output options. 100% client-side.">
+    <meta property="og:title" content="Base64 ↔ Binary Converter | Online Tools">
+    <meta property="og:description" content="Convert between Base64 and Binary representations. Analyze encoded data streams.">
+    <meta property="og:url" content="https://online-tools.click/base64_binary_converter/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Base64 ↔ Binary Converter | Online Tools">
+    <meta name="twitter:description" content="Convert between Base64 and Binary representations. 100% client-side.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/base64_binary_converter/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            background: var(--bg-input);
+            padding: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--bg-elevated);
+            color: var(--text);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .mode-btn:hover:not(.active) {
+            color: var(--text-secondary);
+        }
+
+        /* Converter Grid */
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 24px;
+            align-items: start;
+            margin-bottom: 32px;
+        }
+
+        .converter-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-btn:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        .action-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            background: #ff5522;
+            border-color: #ff5522;
+        }
+
+        .textarea-container {
+            position: relative;
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .conversion-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 120px;
+            color: var(--text-muted);
+        }
+
+        .conversion-arrow svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Options Panel */
+        .options-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .options-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .option-item:hover {
+            border-color: var(--border-focus);
+        }
+
+        .option-item.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .option-item input {
+            display: none;
+        }
+
+        .option-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .checkbox-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .option-item.active .checkbox-indicator {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .checkbox-indicator::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .option-item.active .checkbox-indicator::after {
+            opacity: 1;
+        }
+
+        /* Info Panel */
+        .info-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .info-item {
+            background: var(--bg-input);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        @media (max-width: 968px) {
+            .converter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .conversion-arrow {
+                transform: rotate(90deg);
+                padding: 20px 0;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            textarea {
+                min-height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">Base64 ↔ Binary</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Base64 ↔ Binary Converter</h1>
+            <p>Convert between Base64 and binary representations. Analyze encoded data streams with formatting options.</p>
+        </section>
+
+        <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="base64-to-binary">Base64 → Binary</button>
+            <button class="mode-btn" data-mode="binary-to-base64">Binary → Base64</button>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="converter-grid">
+            <div class="converter-panel">
+                <div class="panel-header">
+                    <span class="panel-title" id="input-title">Base64 Input</span>
+                    <div class="panel-actions">
+                        <button class="action-btn" id="paste-btn">Paste</button>
+                        <button class="action-btn" id="clear-input-btn">Clear</button>
+                    </div>
+                </div>
+                <div class="textarea-container">
+                    <textarea id="input-text" placeholder="Enter Base64 encoded text..." spellcheck="false"></textarea>
+                    <div class="char-count" id="input-count">0 chars</div>
+                </div>
+            </div>
+
+            <div class="conversion-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </div>
+
+            <div class="converter-panel">
+                <div class="panel-header">
+                    <span class="panel-title" id="output-title">Binary Output</span>
+                    <div class="panel-actions">
+                        <button class="action-btn primary" id="copy-btn">Copy</button>
+                    </div>
+                </div>
+                <div class="textarea-container">
+                    <textarea id="output-text" placeholder="Binary output will appear here..." readonly spellcheck="false"></textarea>
+                    <div class="char-count" id="output-count">0 bits</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="options-panel">
+            <div class="options-title">Output Options</div>
+            <div class="options-grid">
+                <label class="option-item active" id="group-bytes-option">
+                    <span class="option-label">Group into 8-bit bytes</span>
+                    <input type="checkbox" id="group-bytes" checked>
+                    <div class="checkbox-indicator"></div>
+                </label>
+                <label class="option-item" id="show-spaces-option">
+                    <span class="option-label">Show spaces between groups</span>
+                    <input type="checkbox" id="show-spaces" checked>
+                    <div class="checkbox-indicator"></div>
+                </label>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">Conversion Info</div>
+            <div class="info-content">
+                <div class="info-item">
+                    <div class="info-label">Original Length</div>
+                    <div class="info-value" id="original-length">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Decoded Bytes</div>
+                    <div class="info-value" id="decoded-bytes">0</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Binary Bits</div>
+                    <div class="info-value" id="binary-bits">0</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        // --- State ---
+        let mode = 'base64-to-binary';
+        let groupBytes = true;
+        let showSpaces = true;
+
+        // --- Elements ---
+        const inputText = document.getElementById('input-text');
+        const outputText = document.getElementById('output-text');
+        const inputTitle = document.getElementById('input-title');
+        const outputTitle = document.getElementById('output-title');
+        const inputCount = document.getElementById('input-count');
+        const outputCount = document.getElementById('output-count');
+        const errorMessage = document.getElementById('error-message');
+        const toast = document.getElementById('toast');
+        const originalLengthEl = document.getElementById('original-length');
+        const decodedBytesEl = document.getElementById('decoded-bytes');
+        const binaryBitsEl = document.getElementById('binary-bits');
+
+        // --- Conversion Functions ---
+        function base64ToBinary(base64) {
+            try {
+                // Remove whitespace and validate
+                const cleanBase64 = base64.trim();
+                if (!cleanBase64) {
+                    return { success: false, error: 'Please enter Base64 encoded text' };
+                }
+
+                // Validate Base64
+                if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleanBase64)) {
+                    return { success: false, error: 'Invalid Base64 format. Only A-Z, a-z, 0-9, +, / and = padding are allowed.' };
+                }
+
+                // Decode Base64 to binary string
+                const binaryString = atob(cleanBase64);
+                let binary = '';
+
+                for (let i = 0; i < binaryString.length; i++) {
+                    const byte = binaryString.charCodeAt(i);
+                    const byteBinary = byte.toString(2).padStart(8, '0');
+                    binary += byteBinary;
+                }
+
+                return {
+                    success: true,
+                    binary: binary,
+                    originalLength: cleanBase64.length,
+                    decodedBytes: binaryString.length,
+                    binaryBits: binary.length
+                };
+            } catch (e) {
+                return { success: false, error: 'Failed to decode Base64. Please check your input.' };
+            }
+        }
+
+        function binaryToBase64(binary) {
+            try {
+                // Remove whitespace and validate
+                const cleanBinary = binary.replace(/\s/g, '');
+                if (!cleanBinary) {
+                    return { success: false, error: 'Please enter binary data' };
+                }
+
+                // Validate binary
+                if (!/^[01]+$/.test(cleanBinary)) {
+                    return { success: false, error: 'Invalid binary format. Only 0 and 1 characters are allowed.' };
+                }
+
+                // Pad to make length divisible by 8
+                const paddedBinary = cleanBinary.padStart(Math.ceil(cleanBinary.length / 8) * 8, '0');
+
+                // Convert binary to bytes, then to Base64
+                const bytes = [];
+                for (let i = 0; i < paddedBinary.length; i += 8) {
+                    const byte = parseInt(paddedBinary.substr(i, 8), 2);
+                    bytes.push(byte);
+                }
+
+                const binaryString = String.fromCharCode(...bytes);
+                const base64 = btoa(binaryString);
+
+                return {
+                    success: true,
+                    base64: base64,
+                    originalLength: binary.length,
+                    decodedBytes: bytes.length,
+                    binaryBits: paddedBinary.length
+                };
+            } catch (e) {
+                return { success: false, error: 'Failed to encode to Base64. Please check your input.' };
+            }
+        }
+
+        function formatBinary(binary) {
+            if (!binary) return '';
+
+            let result = binary;
+
+            if (groupBytes) {
+                // Group into 8-bit bytes
+                const groups = [];
+                for (let i = 0; i < result.length; i += 8) {
+                    groups.push(result.substr(i, 8));
+                }
+                result = groups.join(showSpaces ? ' ' : '');
+            } else if (showSpaces) {
+                // Just add spaces every 8 bits for readability
+                const groups = [];
+                for (let i = 0; i < result.length; i += 8) {
+                    groups.push(result.substr(i, 8));
+                }
+                result = groups.join(' ');
+            }
+
+            return result;
+        }
+
+        function convert() {
+            const input = inputText.value;
+            showError('');
+
+            if (!input.trim()) {
+                outputText.value = '';
+                updateInfo(0, 0, 0);
+                return;
+            }
+
+            let result;
+            if (mode === 'base64-to-binary') {
+                result = base64ToBinary(input);
+                if (result.success) {
+                    outputText.value = formatBinary(result.binary);
+                    updateInfo(result.originalLength, result.decodedBytes, result.binaryBits);
+                } else {
+                    outputText.value = '';
+                    updateInfo(0, 0, 0);
+                    showError(result.error);
+                }
+            } else {
+                result = binaryToBase64(input);
+                if (result.success) {
+                    outputText.value = result.base64;
+                    updateInfo(result.originalLength, result.decodedBytes, result.binaryBits);
+                } else {
+                    outputText.value = '';
+                    updateInfo(0, 0, 0);
+                    showError(result.error);
+                }
+            }
+
+            updateCharCount();
+        }
+
+        function showError(message) {
+            if (message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('visible');
+            } else {
+                errorMessage.classList.remove('visible');
+            }
+        }
+
+        function updateInfo(original, bytes, bits) {
+            originalLengthEl.textContent = original.toLocaleString();
+            decodedBytesEl.textContent = bytes.toLocaleString();
+            binaryBitsEl.textContent = bits.toLocaleString();
+        }
+
+        function updateCharCount() {
+            const inputLength = inputText.value.length;
+            const outputLength = outputText.value.length;
+
+            inputCount.textContent = `${inputLength.toLocaleString()} chars`;
+            outputCount.textContent = mode === 'base64-to-binary'
+                ? `${outputLength.toLocaleString()} bits`
+                : `${outputLength.toLocaleString()} chars`;
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 2000);
+        }
+
+        // --- Event Handlers ---
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                mode = btn.dataset.mode;
+
+                // Update UI based on mode
+                if (mode === 'base64-to-binary') {
+                    inputTitle.textContent = 'Base64 Input';
+                    outputTitle.textContent = 'Binary Output';
+                    inputText.placeholder = 'Enter Base64 encoded text...';
+                    outputText.placeholder = 'Binary output will appear here...';
+                    document.getElementById('group-bytes-option').style.display = 'flex';
+                    document.getElementById('show-spaces-option').style.display = 'flex';
+                } else {
+                    inputTitle.textContent = 'Binary Input';
+                    outputTitle.textContent = 'Base64 Output';
+                    inputText.placeholder = 'Enter binary (0s and 1s)...';
+                    outputText.placeholder = 'Base64 output will appear here...';
+                    document.getElementById('group-bytes-option').style.display = 'none';
+                    document.getElementById('show-spaces-option').style.display = 'none';
+                }
+
+                // Clear and convert
+                inputText.value = '';
+                outputText.value = '';
+                showError('');
+                updateInfo(0, 0, 0);
+                updateCharCount();
+            });
+        });
+
+        inputText.addEventListener('input', convert);
+
+        document.getElementById('paste-btn').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputText.value = text;
+                convert();
+                showToast('Pasted from clipboard!');
+            } catch (err) {
+                showError('Failed to paste. Please check clipboard permissions.');
+            }
+        });
+
+        document.getElementById('clear-input-btn').addEventListener('click', () => {
+            inputText.value = '';
+            outputText.value = '';
+            showError('');
+            updateInfo(0, 0, 0);
+            updateCharCount();
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            if (!outputText.value) {
+                showError('Nothing to copy!');
+                return;
+            }
+            navigator.clipboard.writeText(outputText.value).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(() => {
+                showError('Failed to copy to clipboard.');
+            });
+        });
+
+        document.getElementById('group-bytes-option').addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') {
+                groupBytes = !groupBytes;
+                document.getElementById('group-bytes').checked = groupBytes;
+                e.currentTarget.classList.toggle('active', groupBytes);
+                if (mode === 'base64-to-binary') {
+                    convert();
+                }
+            }
+        });
+
+        document.getElementById('show-spaces-option').addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') {
+                showSpaces = !showSpaces;
+                document.getElementById('show-spaces').checked = showSpaces;
+                e.currentTarget.classList.toggle('active', showSpaces);
+                if (mode === 'base64-to-binary') {
+                    convert();
+                }
+            }
+        });
+
+        // Initialize
+        updateCharCount();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
