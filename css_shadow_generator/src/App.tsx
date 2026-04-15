@@ -102,6 +102,7 @@ function App() {
         type="range"
         min={min}
         max={max}
+        step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         style={{
