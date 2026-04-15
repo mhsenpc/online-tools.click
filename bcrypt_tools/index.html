@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bcrypt Password Hasher/Checker | online-tools.click</title>
+    <meta name="description" content="Free, secure online Bcrypt hasher and checker. Generate and verify Bcrypt hashes instantly in your browser. 100% client-side and private.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bcryptjs/2.4.3/bcrypt.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .editor-textarea {
+            background-color: var(--bg-card);
+            color: var(--text-main);
+            caret-color: #3b82f6;
+            resize: none;
+            outline: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+      gtag("config", "G-GHGXLWQR4V");
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Bcrypt Hasher & Checker</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Secure password hashing with configurable cost. 100% private and client-side.</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Hash Generation -->
+            <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-xl space-y-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider">Hash Generation</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Password to Hash</label>
+                    <textarea id="input-password" rows="3" class="editor-textarea w-full border-2 border-gray-100 dark:border-gray-800 focus:border-blue-500 rounded-2xl px-6 py-4 text-sm font-mono transition-all" placeholder="Enter password to generate Bcrypt hash..."></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Cost Factor (Rounds: <span id="rounds-display">10</span>)</label>
+                    <input id="cost-slider" type="range" min="4" max="12" value="10" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500">
+                    <div class="flex justify-between text-xs text-gray-400">
+                        <span>4 (Fast)</span>
+                        <span>12 (Secure)</span>
+                    </div>
+                </div>
+
+                <button id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors uppercase tracking-wider text-sm">
+                    Generate Hash
+                </button>
+
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Bcrypt Hash Result</label>
+                    <div class="relative group">
+                        <input id="output-hash" type="text" readonly class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent rounded-xl px-4 py-3 font-mono text-sm text-blue-600 dark:text-blue-400 outline-none break-all" placeholder="$2a$10$...">
+                        <button id="btn-copy-hash" class="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-400" title="Copy to clipboard">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-7 10l7-7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hash Verification -->
+            <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm space-y-6">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider">Hash Verification</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Plain Text Password</label>
+                        <input id="verify-password" type="text" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-mono outline-none" placeholder="Enter password to verify...">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Bcrypt Hash to Compare</label>
+                        <textarea id="verify-hash" rows="2" class="editor-textarea w-full border-2 border-gray-100 dark:border-gray-800 focus:border-blue-500 rounded-xl px-4 py-3 text-xs font-mono transition-all" placeholder="$2a$10$..."></textarea>
+                    </div>
+                </div>
+
+                <button id="btn-verify" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-colors uppercase tracking-wider text-sm">
+                    Verify Match
+                </button>
+
+                <div id="verify-result" class="hidden w-full h-full min-h-[60px] flex items-center justify-center rounded-xl font-bold text-sm uppercase tracking-widest">
+                    <!-- Result will be displayed here -->
+                </div>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/50 p-6">
+                <div class="flex items-start gap-3">
+                    <div class="text-blue-600 dark:text-blue-400 mt-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-blue-900 dark:text-blue-100 mb-1">🔒 100% Client-Side Security</h3>
+                        <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                            All Bcrypt operations are performed <strong>locally in your browser</strong> using JavaScript. No passwords or hashes are ever sent to any server. Your data never leaves your device.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Technical Content -->
+        <section class="mt-16 border-t border-gray-200 dark:border-gray-800 pt-12 space-y-10">
+            <article class="prose dark:prose-invert max-w-none">
+                <h2 class="text-2xl font-bold tracking-tight">What is Bcrypt?</h2>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <strong>Bcrypt</strong> is a password-hashing function designed by Niels Provos and David Mazieres, based on the Blowfish cipher. It incorporates a <strong>cost factor</strong> (also called work factor), which determines how much computational effort is required to compute the hash. This makes it resistant to brute-force attacks even as computing power increases.
+                </p>
+
+                <h3 class="text-xl font-bold tracking-tight mt-8">Why Use Bcrypt?</h3>
+                <ul class="text-gray-600 dark:text-gray-400 leading-relaxed space-y-2">
+                    <li><strong>Adaptive Hashing:</strong> The cost factor can be increased over time to keep pace with advances in hardware</li>
+                    <li><strong>Slow by Design:</strong> Intentionally computationally expensive to slow down brute-force attacks</li>
+                    <li><strong>Built-in Salt:</strong> Each hash includes a unique salt to prevent rainbow table attacks</li>
+                    <li><strong>Battle-Tested:</strong> Widely used and recommended for password hashing since 1999</li>
+                </ul>
+
+                <h3 class="text-xl font-bold tracking-tight mt-8">Cost Factor Explained</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    The cost factor is exponential. Each increment doubles the computation time:
+                </p>
+                <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mt-4">
+                    <table class="w-full text-sm font-mono">
+                        <thead>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-left py-2">Cost Factor</th>
+                                <th class="text-left py-2">Iterations</th>
+                                <th class="text-left py-2">Approx. Time</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 dark:text-gray-400">
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="py-2">10 (default)</td>
+                                <td class="py-2">1,024</td>
+                                <td class="py-2">~100ms</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="py-2">11</td>
+                                <td class="py-2">2,048</td>
+                                <td class="py-2">~200ms</td>
+                            </tr>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <td class="py-2">12</td>
+                                <td class="py-2">4,096</td>
+                                <td class="py-2">~400ms</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2">13</td>
+                                <td class="py-2">8,192</td>
+                                <td class="py-2">~800ms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed mt-4">
+                    <strong>Recommendation:</strong> Use a cost factor of 10-12 for most applications. Higher values provide better security but slower performance.
+                </p>
+            </article>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 pt-8 space-y-4">
+            <p>🔒 Privacy First: All Bcrypt operations are performed locally in your browser. No passwords or hashes are ever sent to our servers.</p>
+            <div class="flex justify-center gap-4">
+                <button id="btn-theme-toggle" class="hover:text-blue-500 transition-colors font-bold uppercase tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors font-bold uppercase tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        const inputPassword = document.getElementById('input-password');
+        const costSlider = document.getElementById('cost-slider');
+        const roundsDisplay = document.getElementById('rounds-display');
+        const btnGenerate = document.getElementById('btn-generate');
+        const outputHash = document.getElementById('output-hash');
+        const btnCopyHash = document.getElementById('btn-copy-hash');
+
+        const verifyPassword = document.getElementById('verify-password');
+        const verifyHash = document.getElementById('verify-hash');
+        const btnVerify = document.getElementById('btn-verify');
+        const verifyResult = document.getElementById('verify-result');
+
+        const toast = document.getElementById('toast');
+
+        // Update rounds display
+        costSlider.oninput = () => {
+            roundsDisplay.textContent = costSlider.value;
+        };
+
+        // Generate Bcrypt hash
+        btnGenerate.onclick = () => {
+            const password = inputPassword.value;
+            if (!password) {
+                showToast('Please enter a password');
+                return;
+            }
+
+            const cost = parseInt(costSlider.value);
+            btnGenerate.disabled = true;
+            btnGenerate.textContent = 'Generating...';
+
+            // Use bcryptjs
+            setTimeout(() => {
+                try {
+                    const salt = dcodeIO.bcrypt.genSync(cost);
+                    const hash = dcodeIO.bcrypt.hashSync(password, salt);
+                    outputHash.value = hash;
+                    showToast('Hash generated successfully');
+                } catch (error) {
+                    outputHash.value = 'Error generating hash';
+                    console.error(error);
+                } finally {
+                    btnGenerate.disabled = false;
+                    btnGenerate.textContent = 'Generate Hash';
+                }
+            }, 100);
+        };
+
+        // Verify Bcrypt hash
+        btnVerify.onclick = () => {
+            const password = verifyPassword.value;
+            const hash = verifyHash.value;
+
+            if (!password || !hash) {
+                showToast('Please enter both password and hash');
+                return;
+            }
+
+            btnVerify.disabled = true;
+            btnVerify.textContent = 'Verifying...';
+
+            setTimeout(() => {
+                try {
+                    const match = dcodeIO.bcrypt.compareSync(password, hash);
+                    verifyResult.classList.remove('hidden');
+
+                    if (match) {
+                        verifyResult.textContent = '✓ Password Match - Valid!';
+                        verifyResult.className = 'w-full h-full flex items-center justify-center rounded-xl font-bold text-sm uppercase tracking-widest bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400';
+                    } else {
+                        verifyResult.textContent = '✗ Password Mismatch - Invalid!';
+                        verifyResult.className = 'w-full h-full flex items-center justify-center rounded-xl font-bold text-sm uppercase tracking-widest bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400';
+                    }
+                } catch (error) {
+                    verifyResult.textContent = 'Error: Invalid hash format';
+                    verifyResult.className = 'w-full h-full flex items-center justify-center rounded-xl font-bold text-sm uppercase tracking-widest bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400';
+                } finally {
+                    btnVerify.disabled = false;
+                    btnVerify.textContent = 'Verify Match';
+                }
+            }, 100);
+        };
+
+        // Copy hash to clipboard
+        btnCopyHash.onclick = () => {
+            if (!outputHash.value || outputHash.value.startsWith('Error')) {
+                showToast('No hash to copy');
+                return;
+            }
+            navigator.clipboard.writeText(outputHash.value).then(() => {
+                showToast('Copied to clipboard');
+            });
+        };
+
+        // Toast notification
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+        }
+
+        // Theme toggle
+        document.getElementById('btn-theme-toggle').onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        };
+
+        // Initialize theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html>
