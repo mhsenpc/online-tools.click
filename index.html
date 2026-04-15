@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Tools | The All-in-One Utility Hub</title>
+    <meta name="description" content="Free online developer tools — cron expression generator, diff checker, regex tester, XML formatter and more. Fast, private, client-side.">
+    <meta property="og:title" content="Online Tools | The All-in-One Utility Hub">
+    <meta property="og:description" content="Free online developer tools — cron generator, diff checker, regex tester, XML formatter and more.">
+    <meta property="og:url" content="https://online-tools.click/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Online Tools | The All-in-One Utility Hub">
+    <meta name="twitter:description" content="Free online developer tools — fast, private, client-side.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Online Tools",
+      "url": "https://online-tools.click/",
+      "description": "A curated collection of developer-focused utilities. Private, secure, and fast."
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bento:wght@400;700&family=Instrument+Sans:wght@400;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --fg: #ffffff;
+            --accent: #ff3e00;
+            --surface: #111111;
+            --border: rgba(255, 255, 255, 0.1);
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'Instrument Sans', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--fg);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Background Effect --- */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .gradient-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 62, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- Layout --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 6rem 0;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 2rem;
+            color: var(--accent);
+            opacity: 0;
+            animation: fadeIn 0.8s forwards;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            line-height: 1.0;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 1s 0.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-desc {
+            font-size: 1.25rem;
+            max-width: 600px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeIn 1s 0.5s forwards;
+        }
+
+        /* --- Grid Section --- */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 8rem;
+        }
+
+        .tool-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .tool-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tool-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-8px);
+            background: #161616;
+        }
+
+        .tool-card::after {
+            content: '→';
+            position: absolute;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            font-size: 1.5rem;
+            color: var(--accent);
+            transform: translateX(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover::after {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .tool-icon {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .tool-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .tool-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            max-width: 80%;
+        }
+
+        /* --- Footer --- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 0;
+            text-align: center;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                height: auto;
+                padding: 8rem 0 4rem;
+            }
+            h1 { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="gradient-glow"></div>
+
+    <div class="container">
+        <header>
+            <div class="logo">Online Tools</div>
+            <h1>Simple tools<br>for complex<br>workflows.</h1>
+            <p class="hero-desc">
+                A curated collection of developer-focused utilities. 
+                Private, secure, and fast.
+            </p>
+        </header>
+
+        <section class="tools-grid">
+            <!-- Tool: DNS Lookup Tool -->
+            <a href="/dns_lookup_tool/" class="tool-card">
+                <span class="tool-icon">🌐</span>
+                <h3>DNS Lookup Tool</h3>
+                <p>Lookup DNS records for any domain with ease.</p>
+            </a>
+          
+            <!-- Tool: URL Parser -->
+            <a href="/url_parser/" class="tool-card">
+                <span class="tool-icon">🔗</span>
+                <h3>URL Parser</h3>
+                <p>Decompose URLs and edit query parameters easily.</p>
+            </a>
+
+            <!-- Tool: Cron Expression Generator -->
+            <a href="/cron_expression_generator/" class="tool-card">
+                <span class="tool-icon">🕒</span>
+                <h3>Cron Generator</h3>
+                <p>Human-readable cron expressions without the headache.</p>
+            </a>
+
+            <!-- Tool: Diff Checker -->
+            <a href="/diff_checker/" class="tool-card">
+                <span class="tool-icon">🌓</span>
+                <h3>Diff Checker</h3>
+                <p>Compare text, JSON, or code with side-by-side highlighting.</p>
+            </a>
+
+            <!-- Tool: Regex Tester -->
+            <a href="/regex_tester/" class="tool-card">
+                <span class="tool-icon">🔍</span>
+                <h3>Regex Tester</h3>
+                <p>Real-time regular expression testing and explanation.</p>
+            </a>
+
+            <!-- Tool: XML Formatter -->
+            <a href="/xml_formatter/" class="tool-card">
+                <span class="tool-icon">📦</span>
+                <h3>XML Formatter</h3>
+                <p>Clean, pretty-print, and validate messy XML data.</p>
+            </a>
+
+            <!-- Tool: JSON Viewer -->
+            <a href="/json_viewer/" class="tool-card">
+                <span class="tool-icon">📜</span>
+                <h3>JSON Viewer</h3>
+                <p>The best way to visualize, format, and explore nested JSON.</p>
+            </a>
+
+            <!-- Tool: Markdown Editor -->
+            <a href="/markdown_editor/" class="tool-card">
+                <span class="tool-icon">📝</span>
+                <h3>Markdown Editor</h3>
+                <p>Real-time GFM editor with side-by-side preview and export.</p>
+            </a>
+
+            <!-- Tool: Password Generator -->
+            <a href="/password_generator/" class="tool-card">
+                <span class="tool-icon">🔑</span>
+                <h3>Password Generator</h3>
+                <p>Secure, client-side generation of random passwords and passphrases.</p>
+            </a>
+
+            <!-- Tool: UUID Generator -->
+            <a href="/uuid_generator/" class="tool-card">
+                <span class="tool-icon">🆔</span>
+                <h3>UUID Generator</h3>
+                <p>Generate RFC-compliant UUID v1, v4, and v7 identifiers.</p>
+            </a>
+
+            <!-- Tool: JWT Decoder -->
+            <a href="/jwt_decoder/" class="tool-card">
+                <span class="tool-icon">🔐</span>
+                <h3>JWT Decoder</h3>
+                <p>Decode and verify JSON Web Tokens with full UTF-8 support.</p>
+            </a>
+
+            <!-- Tool: Base64 Tool -->
+            <a href="/base64/" class="tool-card">
+                <span class="tool-icon">📦</span>
+                <h3>Base64 Tool</h3>
+                <p>Fast text and file encoding with URL-safe support.</p>
+            </a>
+
+            <!-- Tool: Image Compressor -->
+            <a href="/image_compressor/" class="tool-card">
+                <span class="tool-icon">🖼️</span>
+                <h3>Image Optimizer</h3>
+                <p>Client-side image compression and resizing without data leaks.</p>
+            </a>
+
+            <!-- Tool: QR Code Generator -->
+            <a href="/qr_generator/" class="tool-card">
+                <span class="tool-icon">📱</span>
+                <h3>QR Generator</h3>
+                <p>Create custom QR codes for URLs, WiFi, and vCards instantly.</p>
+            </a>
+
+            <!-- Tool: Hash Generator -->
+            <a href="/hash_generator/" class="tool-card">
+                <span class="tool-icon">🧱</span>
+                <h3>Hash Generator</h3>
+                <p>Securely compute SHA-256, SHA-512, and SHA-1 hashes.</p>
+            </a>
+
+            <!-- Tool: MD5 Tools -->
+            <a href="/md5_tools/" class="tool-card">
+                <span class="tool-icon">⚡</span>
+                <h3>MD5 Tools</h3>
+                <p>Fast MD5 generation and integrity verification.</p>
+            </a>
+
+            <!-- Tool: Epoch Converter -->
+            <a href="/epoch_converter/" class="tool-card">
+                <span class="tool-icon">🕰️</span>
+                <h3>Epoch Converter</h3>
+                <p>Bidirectional Unix timestamp to human-readable time conversion.</p>
+            </a>
+
+            <!-- Tool: HTML Entity Tools -->
+            <a href="/html_entities/" class="tool-card">
+                <span class="tool-icon">🔣</span>
+                <h3>HTML Entities</h3>
+                <p>Encode and decode HTML entities for web development.</p>
+            </a>
+
+            <!-- Tool: CSS Minifier -->
+            <a href="/css_minifier/" class="tool-card">
+                <span class="tool-icon">🎨</span>
+                <h3>CSS Minifier</h3>
+                <p>Optimize and beautify CSS code for production.</p>
+            </a>
+
+            <!-- Tool: Color Picker -->
+            <a href="/color_picker/" class="tool-card">
+                <span class="tool-icon">🌈</span>
+                <h3>Color Picker</h3>
+                <p>Visual color selection and multi-format conversion with contrast checking.</p>
+            </a>
+
+            <!-- Tool: ASCII Art Generator -->
+            <a href="/ascii_art_generator/" class="tool-card">
+                <span class="tool-icon">🎨</span>
+                <h3>ASCII Art Generator</h3>
+                <p>Convert text into stylized ASCII art banners instantly.</p>
+            </a>
+
+            <!-- Tool: Lorem Ipsum -->
+            <a href="/lorem_ipsum/" class="tool-card">
+                <span class="tool-icon">🖋️</span>
+                <h3>Lorem Ipsum</h3>
+                <p>Generate clean placeholder text for your design and development projects.</p>
+            </a>
+
+            <!-- Tool: Mock API Generator -->
+            <a href="/mock_api_generator/" class="tool-card">
+                <span class="tool-icon">🛠️</span>
+                <h3>Mock API Generator</h3>
+                <p>Build and export mock JSON structures instantly.</p>
+            </a>
+        </section>
+
+        <footer>
+            &copy; 2026 Online-Tools.Click &bull; Built for precision
+        </footer>
+    </div>
+
+    <script>
+        // Simple intersection observer for reveal animation
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.tool-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Mouse glow effect
+        const glow = document.querySelector('.gradient-glow');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            glow.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255, 62, 0, 0.15) 0%, transparent 50%)`;
+        });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>

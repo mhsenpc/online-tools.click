@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JWT Decoder/Verifier — Free Online Tool</title>
+  <meta name="description" content="Free online JWT decoder and verifier. Decode JSON Web Tokens, verify signatures, and create JWTs. Supports HS256, HS384, HS512 algorithms. 100% private — runs in your browser." />
+  <meta name="keywords" content="jwt decode, jwt verify, json web token, jwt decoder online, jwt verifier" />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "JWT Decoder/Verifier",
+    "description": "Free online JWT decoder and verifier with signature validation.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+    }
+  </script>
+
+  <style>
+    /* Custom focus ring style */
+    textarea:focus, input:focus, select:focus { outline: none; }
+    .valid-jwt   { border-color: #22c55e !important; }
+    .invalid-jwt { border-color: #ef4444 !important; }
+    .verified    { border-color: #22c55e !important; }
+    .failed-verify { border-color: #ef4444 !important; }
+  </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🔐</span>
+      <div>
+        <h1 class="text-xl font-bold leading-tight">JWT Decoder / Verifier / Encoder</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Mode tabs -->
+    <div class="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-1 overflow-x-auto">
+      <button id="tab-decode"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900 whitespace-nowrap"
+              aria-selected="true" role="tab">
+        Decode
+      </button>
+      <button id="tab-verify"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900 whitespace-nowrap"
+              aria-selected="false" role="tab">
+        Verify
+      </button>
+      <button id="tab-encode"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900 whitespace-nowrap"
+              aria-selected="false" role="tab">
+        Encode
+      </button>
+    </div>
+
+    <!-- ===== DECODE PANEL ===== -->
+    <div id="panel-decode">
+
+      <!-- JWT Input -->
+      <section aria-labelledby="decode-input-label" class="space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <label id="decode-input-label" for="decode-jwt" class="font-medium text-sm">JWT Token</label>
+          <span id="decode-status" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite"></span>
+        </div>
+        <textarea
+          id="decode-jwt"
+          rows="6"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Paste your JWT token here…"
+          aria-label="JWT token input"
+          spellcheck="false"
+        ></textarea>
+
+        <!-- Decode buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+          <button id="btn-decode"
+                  class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                  aria-label="Decode JWT">
+            Decode
+          </button>
+          <button id="btn-decode-clear"
+                  class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                  aria-label="Clear decode input">
+            Clear
+          </button>
+          <button id="btn-decode-example"
+                  class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                  aria-label="Load example JWT">
+            Load Example
+          </button>
+        </div>
+      </section>
+
+      <hr class="border-gray-200 dark:border-gray-700" />
+
+      <!-- Decoded Output -->
+      <div id="decoded-output" class="hidden space-y-4">
+        <!-- Header -->
+        <section aria-labelledby="header-label" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 id="header-label" class="font-medium text-sm">Header</h2>
+            <button id="btn-copy-header"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy header">
+              Copy
+            </button>
+          </div>
+          <pre id="decoded-header" class="w-full p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all" aria-live="polite"></pre>
+        </section>
+
+        <!-- Payload -->
+        <section aria-labelledby="payload-label" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 id="payload-label" class="font-medium text-sm">Payload</h2>
+            <button id="btn-copy-payload"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy payload">
+              Copy
+            </button>
+          </div>
+          <pre id="decoded-payload" class="w-full p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all" aria-live="polite"></pre>
+        </section>
+
+        <!-- Signature -->
+        <section aria-labelledby="signature-label" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 id="signature-label" class="font-medium text-sm">Signature</h2>
+            <button id="btn-copy-signature"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy signature">
+              Copy
+            </button>
+          </div>
+          <pre id="decoded-signature" class="w-full p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all" aria-live="polite"></pre>
+        </section>
+
+        <!-- Claims Validation -->
+        <section aria-labelledby="claims-validation-label" class="space-y-3">
+          <h2 id="claims-validation-label" class="font-medium text-sm">Claims Validation</h2>
+
+          <!-- Expected Issuer Input -->
+          <div class="space-y-1">
+            <label for="expected-issuer" class="text-xs text-gray-600 dark:text-gray-400">Expected Issuer (optional)</label>
+            <input
+              id="expected-issuer"
+              type="text"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+              placeholder="e.g., https://example.com"
+              aria-label="Expected issuer for validation"
+            />
+          </div>
+
+          <!-- Expected Audience Input -->
+          <div class="space-y-1">
+            <label for="expected-audience" class="text-xs text-gray-600 dark:text-gray-400">Expected Audience (optional)</label>
+            <input
+              id="expected-audience"
+              type="text"
+              class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+              placeholder="e.g., my-api-audience"
+              aria-label="Expected audience for validation"
+            />
+          </div>
+
+          <!-- Validation Results -->
+          <div id="claims-validation-results" class="space-y-2">
+            <!-- Results will be dynamically inserted here -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Error message -->
+      <div id="decode-error" role="alert" aria-live="assertive"
+           class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+      </div>
+
+    </div><!-- end #panel-decode -->
+
+    <!-- ===== VERIFY PANEL ===== -->
+    <div id="panel-verify" class="hidden space-y-4">
+
+      <!-- JWT Input for verification -->
+      <section aria-labelledby="verify-input-label" class="space-y-2">
+        <label id="verify-input-label" for="verify-jwt" class="font-medium text-sm">JWT Token</label>
+        <textarea
+          id="verify-jwt"
+          rows="6"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Paste your JWT token here…"
+          aria-label="JWT token to verify"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <!-- Secret/Key Input -->
+      <section aria-labelledby="verify-secret-label" class="space-y-2">
+        <label id="verify-secret-label" for="verify-secret" class="font-medium text-sm">Secret or Public Key</label>
+        <input
+          id="verify-secret"
+          type="text"
+          class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Enter your secret key or public key…"
+          aria-label="Secret or public key for verification"
+        />
+        <p id="verify-key-help" class="text-xs text-gray-500 dark:text-gray-400">
+          <strong>HMAC:</strong> Use the shared secret key. <strong>RSA/ECDSA:</strong> Use the public key in PEM format (include the -----BEGIN PUBLIC KEY----- header).
+        </p>
+      </section>
+
+      <!-- Algorithm selection -->
+      <section aria-labelledby="verify-algo-label" class="space-y-2">
+        <label id="verify-algo-label" for="verify-algorithm" class="font-medium text-sm">Algorithm</label>
+        <select id="verify-algorithm"
+                class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                aria-label="Signature algorithm">
+          <optgroup label="HMAC (Symmetric)">
+            <option value="HS256">HS256 - HMAC using SHA-256</option>
+            <option value="HS384">HS384 - HMAC using SHA-384</option>
+            <option value="HS512">HS512 - HMAC using SHA-512</option>
+          </optgroup>
+          <optgroup label="RSA (Asymmetric)">
+            <option value="RS256">RS256 - RSASSA-PKCS1-v1_5 using SHA-256</option>
+            <option value="RS384">RS384 - RSASSA-PKCS1-v1_5 using SHA-384</option>
+            <option value="RS512">RS512 - RSASSA-PKCS1-v1_5 using SHA-512</option>
+          </optgroup>
+          <optgroup label="ECDSA (Asymmetric)">
+            <option value="ES256">ES256 - ECDSA using P-256 and SHA-256</option>
+            <option value="ES384">ES384 - ECDSA using P-384 and SHA-384</option>
+            <option value="ES512">ES512 - ECDSA using P-521 and SHA-512</option>
+          </optgroup>
+        </select>
+      </section>
+
+      <!-- Verify buttons -->
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="btn-verify"
+                class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                aria-label="Verify JWT signature">
+          Verify Signature
+        </button>
+        <button id="btn-verify-clear"
+                class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                aria-label="Clear verify inputs">
+          Clear
+        </button>
+        <button id="btn-verify-example"
+                class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                aria-label="Load example JWT for verification">
+          Load Example
+        </button>
+      </div>
+
+      <!-- Verification result -->
+      <div id="verify-result" role="status" aria-live="polite"
+           class="hidden px-4 py-3 rounded-lg border text-sm">
+      </div>
+
+      <!-- Decoded content (shown after verification) -->
+      <div id="verify-decoded" class="hidden space-y-4">
+        <hr class="border-gray-200 dark:border-gray-700" />
+        <h3 class="font-medium text-sm">Decoded Content</h3>
+        <section aria-labelledby="verify-header-label" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 id="verify-header-label" class="font-medium text-xs text-gray-600 dark:text-gray-400">Header</h4>
+            <button id="btn-copy-verify-header"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy verify header">
+              Copy
+            </button>
+          </div>
+          <pre id="verify-header" class="w-full p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all"></pre>
+        </section>
+        <section aria-labelledby="verify-payload-label" class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 id="verify-payload-label" class="font-medium text-xs text-gray-600 dark:text-gray-400">Payload</h4>
+            <button id="btn-copy-verify-payload"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy verify payload">
+              Copy
+            </button>
+          </div>
+          <pre id="verify-payload" class="w-full p-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all"></pre>
+        </section>
+      </div>
+
+      <!-- Verify error -->
+      <div id="verify-error" role="alert" aria-live="assertive"
+           class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+      </div>
+
+    </div><!-- end #panel-verify -->
+
+    <!-- ===== ENCODE PANEL ===== -->
+    <div id="panel-encode" class="hidden space-y-4">
+
+      <!-- Header Input -->
+      <section aria-labelledby="encode-header-label" class="space-y-2">
+        <div class="flex items-center justify-between">
+          <label id="encode-header-label" for="encode-header-json" class="font-medium text-sm">Header (JSON)</label>
+          <button id="btn-header-template"
+                  class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                  aria-label="Load default header template">
+            Load Template
+          </button>
+        </div>
+        <textarea
+          id="encode-header-json"
+          rows="4"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder='{"alg": "HS256", "typ": "JWT"}'
+          aria-label="JWT header JSON"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <!-- Payload Input -->
+      <section aria-labelledby="encode-payload-label" class="space-y-2">
+        <label id="encode-payload-label" for="encode-payload-json" class="font-medium text-sm">Payload (JSON)</label>
+        <textarea
+          id="encode-payload-json"
+          rows="8"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder='{"sub": "1234567890", "name": "John Doe", "iat": 1516239022}'
+          aria-label="JWT payload JSON"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <!-- Secret Input -->
+      <section aria-labelledby="encode-secret-label" class="space-y-2">
+        <label id="encode-secret-label" for="encode-secret" class="font-medium text-sm">Secret Key</label>
+        <input
+          id="encode-secret"
+          type="text"
+          class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="your-256-bit-secret"
+          aria-label="Secret key for signing"
+        />
+      </section>
+
+      <!-- Algorithm selection -->
+      <section aria-labelledby="encode-algo-label" class="space-y-2">
+        <label id="encode-algo-label" for="encode-algorithm" class="font-medium text-sm">Algorithm</label>
+        <select id="encode-algorithm"
+                class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+                aria-label="Signature algorithm">
+          <optgroup label="HMAC (Symmetric - requires secret key)">
+            <option value="HS256">HS256 - HMAC using SHA-256</option>
+            <option value="HS384">HS384 - HMAC using SHA-384</option>
+            <option value="HS512">HS512 - HMAC using SHA-512</option>
+          </optgroup>
+          <optgroup label="RSA/ECDSA (Asymmetric - requires private key, not supported in browser)">
+            <option value="RS256" disabled>RS256 - RSASSA-PKCS1-v1_5 using SHA-256 (disabled)</option>
+            <option value="RS384" disabled>RS384 - RSASSA-PKCS1-v1_5 using SHA-384 (disabled)</option>
+            <option value="RS512" disabled>RS512 - RSASSA-PKCS1-v1_5 using SHA-512 (disabled)</option>
+            <option value="ES256" disabled>ES256 - ECDSA using P-256 and SHA-256 (disabled)</option>
+            <option value="ES384" disabled>ES384 - ECDSA using P-384 and SHA-384 (disabled)</option>
+            <option value="ES512" disabled>ES512 - ECDSA using P-521 and SHA-512 (disabled)</option>
+          </optgroup>
+        </select>
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          <strong>Note:</strong> RSA and ECDSA encoding requires private keys and is not supported in the browser environment for security reasons. Use the HMAC algorithms for encoding, or use a server-side library for RSA/ECDSA.
+        </p>
+      </section>
+
+      <!-- Encode buttons -->
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="btn-encode"
+                class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                aria-label="Encode and sign JWT">
+          Encode & Sign
+        </button>
+        <button id="btn-encode-clear"
+                class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                aria-label="Clear encode inputs">
+          Clear
+        </button>
+        <button id="btn-encode-example"
+                class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+                aria-label="Load example payload">
+          Load Example
+        </button>
+      </div>
+
+      <!-- Encode error -->
+      <div id="encode-error" role="alert" aria-live="assertive"
+           class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+      </div>
+
+      <hr class="border-gray-200 dark:border-gray-700" />
+
+      <!-- Encoded Output -->
+      <section aria-labelledby="encoded-output-label" class="space-y-2">
+        <div class="flex items-center justify-between">
+          <h2 id="encoded-output-label" class="font-medium text-sm">Encoded JWT</h2>
+          <div class="flex items-center gap-2">
+            <span id="encode-output-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite"></span>
+            <button id="btn-copy-encoded"
+                    class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy encoded JWT">
+              Copy
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="encoded-output"
+          rows="6"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Your encoded JWT will appear here…"
+          aria-label="Encoded JWT output"
+          spellcheck="false"
+          readonly
+        ></textarea>
+      </section>
+
+    </div><!-- end #panel-encode -->
+
+    <!-- Privacy note -->
+    <p class="text-xs text-gray-400 dark:text-gray-500">
+      🔒 Your data never leaves this page. All JWT operations happen locally in your browser using vanilla JavaScript.
+    </p>
+
+  </main>
+
+  <!-- ===== Script ===== -->
+  <script>
+    (() => {
+      'use strict';
+
+      // ── Tab Switching ──────────────────────────────────────────────
+      const tabs = {
+        decode: { tab: document.getElementById('tab-decode'), panel: document.getElementById('panel-decode') },
+        verify: { tab: document.getElementById('tab-verify'), panel: document.getElementById('panel-verify') },
+        encode: { tab: document.getElementById('tab-encode'), panel: document.getElementById('panel-encode') },
+      };
+
+      function activateTab(mode) {
+        Object.entries(tabs).forEach(([key, { tab, panel }]) => {
+          if (key === mode) {
+            tab.setAttribute('aria-selected', 'true');
+            tab.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900 whitespace-nowrap';
+            panel.classList.remove('hidden');
+          } else {
+            tab.setAttribute('aria-selected', 'false');
+            tab.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900 whitespace-nowrap';
+            panel.classList.add('hidden');
+          }
+        });
+      }
+
+      tabs.decode.tab.addEventListener('click', () => activateTab('decode'));
+      tabs.verify.tab.addEventListener('click', () => activateTab('verify'));
+      tabs.encode.tab.addEventListener('click', () => activateTab('encode'));
+
+      // ── Utility Functions ────────────────────────────────────────────
+      function base64UrlDecode(str) {
+        // Add padding if needed
+        str = str.replace(/-/g, '+').replace(/_/g, '/');
+        while (str.length % 4) str += '=';
+        try {
+          return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+        } catch (e) {
+          return atob(str);
+        }
+      }
+
+      function base64UrlEncode(str) {
+        const encoded = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+          function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+          }));
+        return encoded
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
+      }
+
+      function formatJSON(obj) {
+        return JSON.stringify(obj, null, 2);
+      }
+
+      function showError(elementId, message) {
+        const el = document.getElementById(elementId);
+        el.textContent = message;
+        el.classList.remove('hidden');
+      }
+
+      function hideError(elementId) {
+        const el = document.getElementById(elementId);
+        el.textContent = '';
+        el.classList.add('hidden');
+      }
+
+      function copyToClipboard(text, buttonElement = null) {
+        if (navigator.clipboard) {
+          return navigator.clipboard.writeText(text).then(() => {
+            if (buttonElement) {
+              showCopyFeedback(buttonElement);
+            }
+          });
+        }
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          if (buttonElement) {
+            showCopyFeedback(buttonElement);
+          }
+          return Promise.resolve();
+        } catch (err) {
+          document.body.removeChild(textarea);
+          return Promise.reject(err);
+        }
+      }
+
+      function showCopyFeedback(button) {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('bg-green-100', 'dark:bg-green-900', 'text-green-700', 'dark:text-green-300');
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('bg-green-100', 'dark:bg-green-900', 'text-green-700', 'dark:text-green-300');
+        }, 1500);
+      }
+
+      // ── Claims Validation Functions ─────────────────────────────────────
+      function formatTimestamp(timestamp) {
+        if (!timestamp) return null;
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleString();
+      }
+
+      function formatRelativeTime(timestamp) {
+        if (!timestamp) return null;
+        const now = Math.floor(Date.now() / 1000);
+        const diff = timestamp - now;
+        const absDiff = Math.abs(diff);
+
+        if (absDiff < 60) return `${diff}s`;
+        if (absDiff < 3600) return `${Math.floor(diff / 60)}m`;
+        if (absDiff < 86400) return `${Math.floor(diff / 3600)}h`;
+        return `${Math.floor(diff / 86400)}d`;
+      }
+
+      function validateClaims(payload, expectedIssuer, expectedAudience) {
+        const results = [];
+        const now = Math.floor(Date.now() / 1000);
+
+        // Check for standard claims
+        const hasStandardClaims = Object.keys(payload).some(key =>
+          ['exp', 'nbf', 'iss', 'aud', 'iat'].includes(key)
+        );
+
+        if (!hasStandardClaims) {
+          return [{
+            claim: 'Standard Claims',
+            status: 'info',
+            message: 'No standard JWT claims present in token'
+          }];
+        }
+
+        // exp (expiration) claim
+        if (payload.exp !== undefined) {
+          const isExpired = now >= payload.exp;
+          results.push({
+            claim: 'exp (Expiration)',
+            status: isExpired ? 'error' : 'success',
+            message: isExpired
+              ? `Token expired ${formatRelativeTime(payload.exp)} ago (${formatTimestamp(payload.exp)})`
+              : `Token valid for another ${formatRelativeTime(payload.exp)} (${formatTimestamp(payload.exp)})`
+          });
+        }
+
+        // nbf (not before) claim
+        if (payload.nbf !== undefined) {
+          const isActive = now >= payload.nbf;
+          results.push({
+            claim: 'nbf (Not Before)',
+            status: isActive ? 'success' : 'warning',
+            message: isActive
+              ? `Token active since ${formatTimestamp(payload.nbf)}`
+              : `Token not valid until ${formatTimestamp(payload.nbf)} (${formatRelativeTime(payload.nbf)} from now)`
+          });
+        }
+
+        // iat (issued at) claim
+        if (payload.iat !== undefined) {
+          results.push({
+            claim: 'iat (Issued At)',
+            status: 'info',
+            message: `Issued ${formatTimestamp(payload.iat)} (${formatRelativeTime(payload.iat)} ago)`
+          });
+        }
+
+        // iss (issuer) claim
+        if (payload.iss !== undefined) {
+          if (expectedIssuer) {
+            const isMatch = payload.iss === expectedIssuer;
+            results.push({
+              claim: 'iss (Issuer)',
+              status: isMatch ? 'success' : 'error',
+              message: isMatch
+                ? `Issuer matches: "${payload.iss}"`
+                : `Issuer mismatch: expected "${expectedIssuer}", got "${payload.iss}"`
+            });
+          } else {
+            results.push({
+              claim: 'iss (Issuer)',
+              status: 'info',
+              message: `Issuer: "${payload.iss}"`
+            });
+          }
+        }
+
+        // aud (audience) claim
+        if (payload.aud !== undefined) {
+          const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
+          if (expectedAudience) {
+            const isMatch = audiences.includes(expectedAudience);
+            results.push({
+              claim: 'aud (Audience)',
+              status: isMatch ? 'success' : 'error',
+              message: isMatch
+                ? `Audience matches: "${expectedAudience}"`
+                : `Audience mismatch: expected "${expectedAudience}", got [${audiences.map(a => `"${a}"`).join(', ')}]`
+            });
+          } else {
+            results.push({
+              claim: 'aud (Audience)',
+              status: 'info',
+              message: `Audience: [${audiences.map(a => `"${a}"`).join(', ')}]`
+            });
+          }
+        }
+
+        return results;
+      }
+
+      function renderClaimsValidationResults(results) {
+        const container = document.getElementById('claims-validation-results');
+
+        if (!results || results.length === 0) {
+          container.innerHTML = '';
+          return;
+        }
+
+        const statusStyles = {
+          success: 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300',
+          error: 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300',
+          warning: 'border-yellow-300 dark:border-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300',
+          info: 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+        };
+
+        const statusIcons = {
+          success: '✓',
+          error: '✗',
+          warning: '⚠',
+          info: 'ℹ'
+        };
+
+        container.innerHTML = results.map(result => `
+          <div class="px-3 py-2 rounded-lg border text-sm ${statusStyles[result.status]}">
+            <span class="font-medium">${statusIcons[result.status]} ${result.claim}</span>
+            <span class="ml-2">${result.message}</span>
+          </div>
+        `).join('');
+      }
+
+      // ── JWT Decoding ──────────────────────────────────────────────────
+      const decodeJwt = document.getElementById('decode-jwt');
+      const decodedOutput = document.getElementById('decoded-output');
+      const decodedHeader = document.getElementById('decoded-header');
+      const decodedPayload = document.getElementById('decoded-payload');
+      const decodedSignature = document.getElementById('decoded-signature');
+      const decodeStatus = document.getElementById('decode-status');
+
+      function decodeJWT() {
+        hideError('decode-error');
+        decodedOutput.classList.add('hidden');
+
+        const jwt = decodeJwt.value.trim();
+        if (!jwt) {
+          showError('decode-error', 'Please enter a JWT token.');
+          return;
+        }
+
+        const parts = jwt.split('.');
+        if (parts.length !== 3) {
+          showError('decode-error', 'Invalid JWT format. A JWT must have 3 parts separated by dots.');
+          return;
+        }
+
+        try {
+          const [headerB64, payloadB64, signatureB64] = parts;
+
+          // Decode header
+          const headerJson = base64UrlDecode(headerB64);
+          const header = JSON.parse(headerJson);
+
+          // Auto-select algorithm in verify panel if header contains "alg"
+          if (header.alg) {
+            const verifyAlgorithm = document.getElementById('verify-algorithm');
+            // Check if the algorithm exists in the dropdown
+            const optionExists = Array.from(verifyAlgorithm.options).some(
+              option => option.value === header.alg
+            );
+            if (optionExists) {
+              verifyAlgorithm.value = header.alg;
+            }
+          }
+
+          // Decode payload
+          const payloadJson = base64UrlDecode(payloadB64);
+          const payload = JSON.parse(payloadJson);
+
+          // Display results
+          decodedHeader.textContent = formatJSON(header);
+          decodedPayload.textContent = formatJSON(payload);
+          decodedSignature.textContent = signatureB64;
+
+          // Validate claims
+          const expectedIssuer = document.getElementById('expected-issuer').value.trim();
+          const expectedAudience = document.getElementById('expected-audience').value.trim();
+          const validationResults = validateClaims(payload, expectedIssuer, expectedAudience);
+          renderClaimsValidationResults(validationResults);
+
+          decodedOutput.classList.remove('hidden');
+          decodeStatus.textContent = '✓ Valid JWT structure';
+          decodeJwt.classList.add('valid-jwt');
+          setTimeout(() => decodeJwt.classList.remove('valid-jwt'), 800);
+
+        } catch (err) {
+          if (err instanceof SyntaxError) {
+            showError('decode-error', 'Invalid JSON in JWT header or payload. The token may be corrupted or improperly encoded.');
+          } else {
+            showError('decode-error', `Failed to decode JWT: ${err.message}`);
+          }
+          decodeJwt.classList.add('invalid-jwt');
+          setTimeout(() => decodeJwt.classList.remove('invalid-jwt'), 800);
+        }
+      }
+
+      document.getElementById('btn-decode').addEventListener('click', decodeJWT);
+
+      // Re-validate claims when expected issuer/audience changes
+      document.getElementById('expected-issuer').addEventListener('input', () => {
+        if (!decodedOutput.classList.contains('hidden')) {
+          decodeJWT();
+        }
+      });
+
+      document.getElementById('expected-audience').addEventListener('input', () => {
+        if (!decodedOutput.classList.contains('hidden')) {
+          decodeJWT();
+        }
+      });
+
+      document.getElementById('btn-decode-clear').addEventListener('click', () => {
+        decodeJwt.value = '';
+        decodedOutput.classList.add('hidden');
+        hideError('decode-error');
+        decodeStatus.textContent = '';
+        document.getElementById('expected-issuer').value = '';
+        document.getElementById('expected-audience').value = '';
+        document.getElementById('claims-validation-results').innerHTML = '';
+      });
+
+      // Example JWTs for testing
+      const exampleJWTs = {
+        basic: {
+          jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+          secret: 'your-256-bit-secret',
+          description: 'Basic JWT with standard claims (sub, name, iat)'
+        },
+        advanced: {
+          jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE5NDk3NjU1MDIsIm5iZiI6MTUxNjIzOTAyMiwiaXNzIjoiaHR0cHM6Ly9leGFtcGxlLmNvbSIsImF1ZCI6Im15LWFwaS1hdWRpZW5jZSIsInJvbGVzIjpbImFkbWluLCJ1c2VyIl19.Mj-zA4XkRCDtXOq3c3a4R_EYWA2QTmE_v2hHYRqYvFQ',
+          secret: 'your-256-bit-secret',
+          description: 'Advanced JWT with expiration, issuer, audience, roles'
+        },
+        hs384: {
+          jwt: 'eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.WethGSkLfYZdZLxZZH9zJFFqQxjxLW9vZQJzJJFjX6dCQqJvKLKK7kNrCqOqLjZ',
+          secret: 'your-384-bit-secret-longer-required',
+          description: 'JWT signed with HS384 algorithm'
+        },
+        hs512: {
+          jwt: 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Xw7hN4tJKN_JJKJKJJFJJFJFJFJFJFJFJFJFJFJFJFJFJFJFJFJFJFJJFJFJQ',
+          secret: 'your-512-bit-secret-even-longer-required-for-hs512',
+          description: 'JWT signed with HS512 algorithm'
+        }
+      };
+
+      let currentExampleIndex = 0;
+
+      document.getElementById('btn-decode-example').addEventListener('click', () => {
+        const examples = Object.values(exampleJWTs);
+        const example = examples[currentExampleIndex % examples.length];
+        currentExampleIndex++;
+
+        decodeJwt.value = example.jwt;
+
+        // Update expected issuer/audience for advanced example
+        if (example.description.includes('Advanced')) {
+          document.getElementById('expected-issuer').value = 'https://example.com';
+          document.getElementById('expected-audience').value = 'my-api-audience';
+        } else {
+          document.getElementById('expected-issuer').value = '';
+          document.getElementById('expected-audience').value = '';
+        }
+
+        decodeJWT();
+      });
+
+      // Copy buttons for decode panel
+      document.getElementById('btn-copy-header').addEventListener('click', function() {
+        copyToClipboard(decodedHeader.textContent, this);
+      });
+      document.getElementById('btn-copy-payload').addEventListener('click', function() {
+        copyToClipboard(decodedPayload.textContent, this);
+      });
+      document.getElementById('btn-copy-signature').addEventListener('click', function() {
+        copyToClipboard(decodedSignature.textContent, this);
+      });
+
+      // ── JWT Verification ───────────────────────────────────────────────
+      const verifyJwt = document.getElementById('verify-jwt');
+      const verifySecret = document.getElementById('verify-secret');
+      const verifyAlgorithm = document.getElementById('verify-algorithm');
+      const verifyResult = document.getElementById('verify-result');
+      const verifyDecoded = document.getElementById('verify-decoded');
+      const verifyHeader = document.getElementById('verify-header');
+      const verifyPayload = document.getElementById('verify-payload');
+
+      // Simple HMAC implementation for verification
+      async function hmacSha256(message, secret) {
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(secret);
+        const messageData = encoder.encode(message);
+
+        const cryptoKey = await crypto.subtle.importKey(
+          'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+        );
+
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+        return new Uint8Array(signature);
+      }
+
+      async function hmacSha384(message, secret) {
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(secret);
+        const messageData = encoder.encode(message);
+
+        const cryptoKey = await crypto.subtle.importKey(
+          'raw', keyData, { name: 'HMAC', hash: 'SHA-384' }, false, ['sign']
+        );
+
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+        return new Uint8Array(signature);
+      }
+
+      async function hmacSha512(message, secret) {
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(secret);
+        const messageData = encoder.encode(message);
+
+        const cryptoKey = await crypto.subtle.importKey(
+          'raw', keyData, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']
+        );
+
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+        return new Uint8Array(signature);
+      }
+
+      // RSA signature verification functions
+      async function importRsaPublicKey(pem) {
+        // Remove PEM headers and newlines
+        const pemContents = pem
+          .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+          .replace(/-----END PUBLIC KEY-----/g, '')
+          .replace(/\s/g, '');
+
+        // Decode base64
+        const binaryDerString = atob(pemContents);
+        const binaryDer = new Uint8Array(binaryDerString.length);
+        for (let i = 0; i < binaryDerString.length; i++) {
+          binaryDer[i] = binaryDerString.charCodeAt(i);
+        }
+
+        return crypto.subtle.importKey(
+          'spki',
+          binaryDer.buffer,
+          { name: 'RSASSA-PKCS1-v1_5', hash: { name: 'SHA-256' } },
+          false,
+          ['verify']
+        );
+      }
+
+      async function verifyRsa(message, signatureB64, publicKeyPem, hashAlgorithm) {
+        try {
+          const publicKey = await importRsaPublicKey(publicKeyPem);
+          const messageData = new TextEncoder().encode(message);
+
+          // Decode signature from base64url
+          const signature = decodeBase64Url(signatureB64);
+
+          const hashAlgo = {
+            'RS256': 'SHA-256',
+            'RS384': 'SHA-384',
+            'RS512': 'SHA-512'
+          }[hashAlgorithm];
+
+          // Re-import key with correct hash algorithm
+          const pemContents = publicKeyPem
+            .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+            .replace(/-----END PUBLIC KEY-----/g, '')
+            .replace(/\s/g, '');
+          const binaryDerString = atob(pemContents);
+          const binaryDer = new Uint8Array(binaryDerString.length);
+          for (let i = 0; i < binaryDerString.length; i++) {
+            binaryDer[i] = binaryDerString.charCodeAt(i);
+          }
+
+          const keyWithCorrectHash = await crypto.subtle.importKey(
+            'spki',
+            binaryDer.buffer,
+            { name: 'RSASSA-PKCS1-v1_5', hash: { name: hashAlgo } },
+            false,
+            ['verify']
+          );
+
+          return await crypto.subtle.verify(
+            'RSASSA-PKCS1-v1_5',
+            keyWithCorrectHash,
+            signature,
+            messageData
+          );
+        } catch (err) {
+          throw new Error(`RSA verification failed: ${err.message}`);
+        }
+      }
+
+      // ECDSA signature verification functions
+      async function importEcdsaPublicKey(pem, namedCurve) {
+        // Remove PEM headers and newlines
+        const pemContents = pem
+          .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+          .replace(/-----END PUBLIC KEY-----/g, '')
+          .replace(/\s/g, '');
+
+        // Decode base64
+        const binaryDerString = atob(pemContents);
+        const binaryDer = new Uint8Array(binaryDerString.length);
+        for (let i = 0; i < binaryDerString.length; i++) {
+          binaryDer[i] = binaryDerString.charCodeAt(i);
+        }
+
+        return crypto.subtle.importKey(
+          'spki',
+          binaryDer.buffer,
+          { name: 'ECDSA', namedCurve: namedCurve },
+          false,
+          ['verify']
+        );
+      }
+
+      async function verifyEcdsa(message, signatureB64, publicKeyPem, hashAlgorithm) {
+        try {
+          const curveMap = {
+            'ES256': 'P-256',
+            'ES384': 'P-384',
+            'ES512': 'P-521'
+          };
+          const namedCurve = curveMap[hashAlgorithm];
+
+          const publicKey = await importEcdsaPublicKey(publicKeyPem, namedCurve);
+          const messageData = new TextEncoder().encode(message);
+
+          // Decode signature from base64url
+          const signature = decodeBase64Url(signatureB64);
+
+          const hashAlgo = {
+            'ES256': 'SHA-256',
+            'ES384': 'SHA-384',
+            'ES512': 'SHA-512'
+          }[hashAlgorithm];
+
+          return await crypto.subtle.verify(
+            { name: 'ECDSA', hash: { name: hashAlgo } },
+            publicKey,
+            signature,
+            messageData
+          );
+        } catch (err) {
+          throw new Error(`ECDSA verification failed: ${err.message}`);
+        }
+      }
+
+      function decodeBase64Url(base64url) {
+        // Convert base64url to base64
+        let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+
+        // Add padding if needed
+        while (base64.length % 4) {
+          base64 += '=';
+        }
+
+        // Decode base64 to binary
+        const binaryString = atob(base64);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        return bytes.buffer;
+      }
+
+      function arrayBufferToBase64Url(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (const byte of bytes) binary += String.fromCharCode(byte);
+        return btoa(binary)
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=/g, '');
+      }
+
+      async function verifyJWT() {
+        hideError('verify-error');
+        verifyResult.classList.add('hidden');
+        verifyDecoded.classList.add('hidden');
+
+        const jwt = verifyJwt.value.trim();
+        const secret = verifySecret.value.trim();
+        const algorithm = verifyAlgorithm.value;
+
+        if (!jwt) {
+          showError('verify-error', 'Please enter a JWT token.');
+          return;
+        }
+
+        if (!secret) {
+          showError('verify-error', 'Please enter a secret or public key.');
+          return;
+        }
+
+        const parts = jwt.split('.');
+        if (parts.length !== 3) {
+          showError('verify-error', 'Invalid JWT format. A JWT must have 3 parts separated by dots.');
+          return;
+        }
+
+        try {
+          const [headerB64, payloadB64, signatureB64] = parts;
+          const dataToSign = `${headerB64}.${payloadB64}`;
+
+          // Decode and display header/payload
+          const headerJson = base64UrlDecode(headerB64);
+          const header = JSON.parse(headerJson);
+          const payloadJson = base64UrlDecode(payloadB64);
+          const payload = JSON.parse(payloadJson);
+
+          verifyHeader.textContent = formatJSON(header);
+          verifyPayload.textContent = formatJSON(payload);
+
+          // Verify signature based on algorithm type
+          let isValid;
+          const algorithmType = algorithm.substring(0, 2);
+
+          if (algorithmType === 'HS') {
+            // HMAC algorithms
+            let computedSignature;
+            switch (algorithm) {
+              case 'HS256':
+                computedSignature = await hmacSha256(dataToSign, secret);
+                break;
+              case 'HS384':
+                computedSignature = await hmacSha384(dataToSign, secret);
+                break;
+              case 'HS512':
+                computedSignature = await hmacSha512(dataToSign, secret);
+                break;
+              default:
+                throw new Error('Unsupported HMAC algorithm');
+            }
+            const computedSigB64 = arrayBufferToBase64Url(computedSignature);
+            isValid = computedSigB64 === signatureB64;
+
+          } else if (algorithmType === 'RS') {
+            // RSA algorithms
+            isValid = await verifyRsa(dataToSign, signatureB64, secret, algorithm);
+
+          } else if (algorithmType === 'ES') {
+            // ECDSA algorithms
+            isValid = await verifyEcdsa(dataToSign, signatureB64, secret, algorithm);
+
+          } else {
+            throw new Error(`Unsupported algorithm: ${algorithm}`);
+          }
+
+          // Display result
+          verifyResult.classList.remove('hidden');
+          if (isValid) {
+            verifyResult.className = 'px-4 py-3 rounded-lg border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm';
+            verifyResult.innerHTML = '<strong title="The cryptographic signature matches the content">✓ Signature Verified</strong><br><span class="text-xs">The JWT signature is valid and was signed with the provided ' + algorithmType.toUpperCase() + ' key. The token has not been tampered with.</span>';
+            verifyJwt.classList.add('verified');
+            setTimeout(() => verifyJwt.classList.remove('verified'), 800);
+          } else {
+            verifyResult.className = 'px-4 py-3 rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm';
+            verifyResult.innerHTML = '<strong title="The cryptographic signature does not match">✗ Verification Failed</strong><br><span class="text-xs">The JWT signature is invalid. Possible reasons: wrong key, wrong algorithm, or the token was modified after signing.</span>';
+            verifyJwt.classList.add('failed-verify');
+            setTimeout(() => verifyJwt.classList.remove('failed-verify'), 800);
+          }
+
+          verifyDecoded.classList.remove('hidden');
+
+        } catch (err) {
+          if (err.message.includes('RSA verification failed')) {
+            showError('verify-error', 'RSA verification failed. Please check that: (1) the public key is in correct PEM format with -----BEGIN PUBLIC KEY----- header, (2) the RSA algorithm matches the token (RS256/RS384/RS512), (3) the key is the correct public key for this token.');
+          } else if (err.message.includes('ECDSA verification failed')) {
+            showError('verify-error', 'ECDSA verification failed. Please check that: (1) the public key is in correct PEM format with -----BEGIN PUBLIC KEY----- header, (2) the ECDSA algorithm matches the token (ES256/ES384/ES512), (3) the key is the correct public key for this token.');
+          } else if (err instanceof SyntaxError) {
+            showError('verify-error', 'Invalid JSON in JWT header or payload. The token may be corrupted or improperly encoded.');
+          } else {
+            showError('verify-error', `Verification error: ${err.message}`);
+          }
+        }
+      }
+
+      document.getElementById('btn-verify').addEventListener('click', verifyJWT);
+
+      document.getElementById('btn-verify-clear').addEventListener('click', () => {
+        verifyJwt.value = '';
+        verifySecret.value = '';
+        verifyResult.classList.add('hidden');
+        verifyDecoded.classList.add('hidden');
+        hideError('verify-error');
+      });
+
+      // Auto-select algorithm when JWT is pasted in verify panel
+      verifyJwt.addEventListener('input', () => {
+        const jwt = verifyJwt.value.trim();
+        if (jwt && jwt.split('.').length === 3) {
+          try {
+            const headerB64 = jwt.split('.')[0];
+            const headerJson = base64UrlDecode(headerB64);
+            const header = JSON.parse(headerJson);
+
+            if (header.alg) {
+              const verifyAlgorithm = document.getElementById('verify-algorithm');
+              const optionExists = Array.from(verifyAlgorithm.options).some(
+                option => option.value === header.alg
+              );
+              if (optionExists) {
+                verifyAlgorithm.value = header.alg;
+              }
+            }
+          } catch (err) {
+            // Ignore parsing errors - user may still be typing
+          }
+        }
+      });
+
+      // Update key input label and help text based on algorithm selection
+      function updateVerifyKeyInput() {
+        const algorithm = verifyAlgorithm.value;
+        const secretInput = document.getElementById('verify-secret');
+        const keyHelp = document.getElementById('verify-key-help');
+
+        const algorithmType = algorithm.substring(0, 2);
+
+        if (algorithmType === 'HS') {
+          // HMAC algorithms
+          secretInput.placeholder = 'Enter your shared secret key…';
+          keyHelp.innerHTML = '<strong>HMAC (Symmetric):</strong> Use the shared secret key that was used to sign the token.';
+        } else if (algorithmType === 'RS') {
+          // RSA algorithms
+          secretInput.placeholder = '-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG...\\n-----END PUBLIC KEY-----';
+          keyHelp.innerHTML = '<strong>RSA (Asymmetric):</strong> Use the RSA public key in PEM format. Must include the -----BEGIN PUBLIC KEY----- header.';
+        } else if (algorithmType === 'ES') {
+          // ECDSA algorithms
+          secretInput.placeholder = '-----BEGIN PUBLIC KEY-----\\nMFkwEQYHKoZI...\\n-----END PUBLIC KEY-----';
+          keyHelp.innerHTML = '<strong>ECDSA (Asymmetric):</strong> Use the ECDSA public key in PEM format. Must include the -----BEGIN PUBLIC KEY----- header.';
+        }
+      }
+
+      // Initialize and listen for algorithm changes
+      verifyAlgorithm.addEventListener('change', updateVerifyKeyInput);
+      updateVerifyKeyInput(); // Initialize on page load
+
+      // Example JWTs for verify panel
+      let currentVerifyExampleIndex = 0;
+
+      document.getElementById('btn-verify-example').addEventListener('click', () => {
+        const examples = Object.values(exampleJWTs);
+        const example = examples[currentVerifyExampleIndex % examples.length];
+        currentVerifyExampleIndex++;
+
+        verifyJwt.value = example.jwt;
+        verifySecret.value = example.secret;
+
+        // Set algorithm based on example description
+        if (example.description.includes('HS384')) {
+          verifyAlgorithm.value = 'HS384';
+        } else if (example.description.includes('HS512')) {
+          verifyAlgorithm.value = 'HS512';
+        } else {
+          verifyAlgorithm.value = 'HS256';
+        }
+
+        // Trigger verification
+        verifyJWT();
+      });
+
+      // Copy buttons for verify panel
+      document.getElementById('btn-copy-verify-header').addEventListener('click', function() {
+        copyToClipboard(verifyHeader.textContent, this);
+      });
+      document.getElementById('btn-copy-verify-payload').addEventListener('click', function() {
+        copyToClipboard(verifyPayload.textContent, this);
+      });
+
+      // ── JWT Encoding ───────────────────────────────────────────────────
+      const encodeHeader = document.getElementById('encode-header-json');
+      const encodePayload = document.getElementById('encode-payload-json');
+      const encodeSecret = document.getElementById('encode-secret');
+      const encodeAlgorithm = document.getElementById('encode-algorithm');
+      const encodedOutput = document.getElementById('encoded-output');
+      const encodeOutputCount = document.getElementById('encode-output-count');
+
+      document.getElementById('btn-header-template').addEventListener('click', () => {
+        const template = {
+          alg: encodeAlgorithm.value,
+          typ: 'JWT'
+        };
+        encodeHeader.value = JSON.stringify(template, null, 2);
+        hideError('encode-error');
+      });
+
+      // Real-time JSON validation for encode inputs
+      encodeHeader.addEventListener('input', () => {
+        const headerText = encodeHeader.value.trim();
+        if (headerText) {
+          try {
+            JSON.parse(headerText);
+            encodeHeader.classList.remove('border-red-500', 'dark:border-red-500');
+            encodeHeader.classList.add('border-gray-300', 'dark:border-gray-600');
+          } catch (err) {
+            encodeHeader.classList.remove('border-gray-300', 'dark:border-gray-600');
+            encodeHeader.classList.add('border-red-500', 'dark:border-red-500');
+          }
+        }
+      });
+
+      encodePayload.addEventListener('input', () => {
+        const payloadText = encodePayload.value.trim();
+        if (payloadText) {
+          try {
+            JSON.parse(payloadText);
+            encodePayload.classList.remove('border-red-500', 'dark:border-red-500');
+            encodePayload.classList.add('border-gray-300', 'dark:border-gray-600');
+          } catch (err) {
+            encodePayload.classList.remove('border-gray-300', 'dark:border-gray-600');
+            encodePayload.classList.add('border-red-500', 'dark:border-red-500');
+          }
+        }
+      });
+
+      async function encodeJWT() {
+        hideError('encode-error');
+        encodedOutput.value = '';
+        encodeOutputCount.textContent = '';
+
+        const headerText = encodeHeader.value.trim();
+        const payloadText = encodePayload.value.trim();
+        const secret = encodeSecret.value.trim();
+        const algorithm = encodeAlgorithm.value;
+
+        if (!headerText) {
+          showError('encode-error', 'Please enter a header (JSON).');
+          return;
+        }
+
+        if (!payloadText) {
+          showError('encode-error', 'Please enter a payload (JSON).');
+          return;
+        }
+
+        if (!secret) {
+          showError('encode-error', 'Please enter a secret key.');
+          return;
+        }
+
+        // Parse header JSON with specific error handling
+        let header;
+        try {
+          header = JSON.parse(headerText);
+        } catch (err) {
+          if (err instanceof SyntaxError) {
+            showError('encode-error', 'Invalid JSON in the Header field. Please check for missing commas, unmatched brackets, or trailing commas.');
+          } else {
+            showError('encode-error', `Header parsing error: ${err.message}`);
+          }
+          return;
+        }
+
+        // Parse payload JSON with specific error handling
+        let payload;
+        try {
+          payload = JSON.parse(payloadText);
+        } catch (err) {
+          if (err instanceof SyntaxError) {
+            showError('encode-error', 'Invalid JSON in the Payload field. Please check for missing commas, unmatched brackets, or trailing commas.');
+          } else {
+            showError('encode-error', `Payload parsing error: ${err.message}`);
+          }
+          return;
+        }
+
+        try {
+          const headerB64 = base64UrlEncode(JSON.stringify(header));
+          const payloadB64 = base64UrlEncode(JSON.stringify(payload));
+          const dataToSign = `${headerB64}.${payloadB64}`;
+
+          let signature;
+          switch (algorithm) {
+            case 'HS256':
+              signature = await hmacSha256(dataToSign, secret);
+              break;
+            case 'HS384':
+              signature = await hmacSha384(dataToSign, secret);
+              break;
+            case 'HS512':
+              signature = await hmacSha512(dataToSign, secret);
+              break;
+            default:
+              throw new Error('Unsupported algorithm');
+          }
+
+          const signatureB64 = arrayBufferToBase64Url(signature);
+          const jwt = `${dataToSign}.${signatureB64}`;
+
+          encodedOutput.value = jwt;
+          const len = jwt.length;
+          encodeOutputCount.textContent = len === 1 ? '1 char' : `${len.toLocaleString()} chars`;
+
+        } catch (err) {
+          showError('encode-error', `Encoding error: ${err.message}`);
+        }
+      }
+
+      document.getElementById('btn-encode').addEventListener('click', encodeJWT);
+
+      document.getElementById('btn-encode-clear').addEventListener('click', () => {
+        encodeHeader.value = '';
+        encodePayload.value = '';
+        encodeSecret.value = '';
+        encodedOutput.value = '';
+        encodeOutputCount.textContent = '';
+        hideError('encode-error');
+      });
+
+      // Example payloads for encode panel
+      const examplePayloads = {
+        basic: {
+          sub: '1234567890',
+          name: 'John Doe',
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + 3600
+        },
+        advanced: {
+          sub: '1234567890',
+          name: 'Jane Smith',
+          email: 'jane.smith@example.com',
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + 7200,
+          nbf: Math.floor(Date.now() / 1000),
+          iss: 'https://example.com',
+          aud: 'my-api-audience',
+          roles: ['admin', 'user']
+        },
+        minimal: {
+          data: 'test',
+          timestamp: Date.now()
+        }
+      };
+
+      const exampleSecrets = {
+        HS256: 'your-256-bit-secret',
+        HS384: 'your-384-bit-secret-longer-required',
+        HS512: 'your-512-bit-secret-even-longer-required-for-hs512'
+      };
+
+      let currentEncodeExampleIndex = 0;
+
+      document.getElementById('btn-encode-example').addEventListener('click', () => {
+        const payloads = Object.values(examplePayloads);
+        const payload = payloads[currentEncodeExampleIndex % payloads.length];
+        currentEncodeExampleIndex++;
+
+        encodePayload.value = JSON.stringify(payload, null, 2);
+        encodeSecret.value = exampleSecrets[encodeAlgorithm.value];
+        document.getElementById('btn-header-template').click();
+      });
+
+      document.getElementById('btn-copy-encoded').addEventListener('click', function() {
+        const text = encodedOutput.value;
+        if (text) {
+          copyToClipboard(text, this);
+        }
+      });
+
+      // Update header template when algorithm changes
+      encodeAlgorithm.addEventListener('change', () => {
+        if (encodeHeader.value) {
+          try {
+            const header = JSON.parse(encodeHeader.value);
+            header.alg = encodeAlgorithm.value;
+            encodeHeader.value = JSON.stringify(header, null, 2);
+          } catch {
+            // Ignore if current header is invalid JSON
+          }
+        }
+
+        // Update secret key input based on algorithm
+        updateEncodeKeyInput();
+      });
+
+      // Update encode key input based on algorithm selection
+      function updateEncodeKeyInput() {
+        const algorithm = encodeAlgorithm.value;
+        const secretInput = document.getElementById('encode-secret');
+
+        const algorithmType = algorithm.substring(0, 2);
+
+        if (algorithmType === 'HS') {
+          // HMAC algorithms
+          secretInput.placeholder = 'your-256-bit-secret';
+        } else {
+          // RSA/ECDSA algorithms (disabled in dropdown)
+          secretInput.placeholder = 'Private key (not supported in browser)';
+        }
+      }
+
+      // Initialize on page load
+      updateEncodeKeyInput();
+
+    })();
+  </script>
+
+</body>
+</html>

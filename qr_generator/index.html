@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online QR code generator. Generate QR codes for URLs, text, WiFi, and more instantly. 100% client-side.">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+        }
+        .dark {
+            --bg-card: #111827;
+        }
+        
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        #qrcode img {
+            margin: 0 auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .dark #qrcode img {
+            border: 8px solid white; /* Ensure visibility in dark mode */
+        }
+    </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">QR Code Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Create custom QR codes instantly. Secure and private.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left: Controls -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Input Type Selector -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-1 flex gap-1 shadow-sm">
+                    <button data-type="text" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-sm transition-all">URL / Text</button>
+                    <button data-type="wifi" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">WiFi</button>
+                    <button data-type="vcard" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">vCard</button>
+                    <button data-type="email" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Email</button>
+                    <button data-type="phone" class="type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">Phone</button>
+                </div>
+
+                <!-- Dynamic Form Area -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm space-y-6">
+                    <!-- URL/Text Form -->
+                    <div id="form-text" class="form-section space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Content</label>
+                        <textarea id="input-text" rows="4" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm outline-none transition-all" placeholder="Enter URL or text here..."></textarea>
+                    </div>
+
+                    <!-- WiFi Form (Hidden) -->
+                    <div id="form-wifi" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">WiFi Settings</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input id="wifi-ssid" type="text" class="bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Network Name (SSID)">
+                            <input id="wifi-pass" type="password" class="bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Password">
+                        </div>
+                        <select id="wifi-enc" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500 appearance-none">
+                            <option value="WPA">WPA/WPA2 (Most Common)</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">No Password</option>
+                        </select>
+                    </div>
+
+                    <!-- vCard Form (Hidden) -->
+                    <div id="form-vcard" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Contact Info</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <input id="vcard-fn" type="text" class="bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="First Name">
+                            <input id="vcard-ln" type="text" class="bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Last Name">
+                        </div>
+                        <input id="vcard-tel" type="tel" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Phone Number">
+                        <input id="vcard-email" type="email" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Email Address">
+                    </div>
+
+                    <!-- Email Form (Hidden) -->
+                    <div id="form-email" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Email Settings</label>
+                        <input id="email-to" type="email" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Recipient Email">
+                        <input id="email-subject" type="text" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Subject">
+                        <textarea id="email-body" rows="3" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Message Body"></textarea>
+                    </div>
+
+                    <!-- Phone Form (Hidden) -->
+                    <div id="form-phone" class="form-section hidden space-y-4">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Phone Number</label>
+                        <input id="phone-num" type="tel" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm outline-none border-2 border-transparent focus:border-blue-500" placeholder="Phone Number (e.g. +123456789)">
+                    </div>
+
+                    <!-- Appearance -->
+                    <div class="pt-6 border-t border-gray-100 dark:border-gray-800 space-y-6">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Customization</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Size (px)</span>
+                                <input id="opt-size" type="number" value="256" step="32" min="128" max="1024" class="w-full bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-sm outline-none">
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Correction</span>
+                                <select id="opt-level" class="w-full bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2 text-sm outline-none">
+                                    <option value="L">L (7%)</option>
+                                    <option value="M" selected>M (15%)</option>
+                                    <option value="Q">Q (25%)</option>
+                                    <option value="H">H (30%)</option>
+                                </select>
+                            </div>
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">Color</span>
+                                <input id="opt-color" type="color" value="#000000" class="w-full h-9 bg-gray-50 dark:bg-gray-800 rounded-lg p-1 outline-none cursor-pointer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Preview -->
+            <div class="lg:col-span-5">
+                <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden flex flex-col h-full sticky top-12">
+                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-800">
+                        <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Live Preview</h2>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col items-center justify-center p-10 bg-gray-50/50 dark:bg-gray-800/30">
+                        <div id="qrcode" class="transition-all duration-300"></div>
+                        <div id="preview-placeholder" class="text-center space-y-4">
+                            <div class="text-6xl">📱</div>
+                            <p class="text-gray-400 text-sm font-medium">QR code will appear here</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
+                        <button id="btn-download" disabled class="w-full py-4 bg-gray-200 dark:bg-gray-800 text-gray-400 rounded-2xl font-bold cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download PNG
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Private: QR generation is performed entirely in your browser. Your data is never transmitted to any server.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors font-medium uppercase tracking-tighter">Toggle Dark Mode</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors font-medium uppercase tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- State ---
+        let currentType = 'text';
+        let qr = null;
+
+        // --- Elements ---
+        const qrContainer = document.getElementById('qrcode');
+        const placeholder = document.getElementById('preview-placeholder');
+        const btnDownload = document.getElementById('btn-download');
+        const typeBtns = document.querySelectorAll('.type-btn');
+        const formSections = document.querySelectorAll('.form-section');
+
+        // Inputs
+        const inputText = document.getElementById('input-text');
+        const wifiSSID = document.getElementById('wifi-ssid');
+        const wifiPass = document.getElementById('wifi-pass');
+        const wifiEnc = document.getElementById('wifi-enc');
+        const vcardFN = document.getElementById('vcard-fn');
+        const vcardLN = document.getElementById('vcard-ln');
+        const vcardTel = document.getElementById('vcard-tel');
+        const vcardEmail = document.getElementById('vcard-email');
+
+        const emailTo = document.getElementById('email-to');
+        const emailSubject = document.getElementById('email-subject');
+        const emailBody = document.getElementById('email-body');
+        const phoneNum = document.getElementById('phone-num');
+
+        // Options
+        const optSize = document.getElementById('opt-size');
+        const optLevel = document.getElementById('opt-level');
+        const optColor = document.getElementById('opt-color');
+
+        // --- Logic ---
+        function getQRData() {
+            if (currentType === 'text') {
+                return inputText.value.trim();
+            } else if (currentType === 'wifi') {
+                if (!wifiSSID.value) return '';
+                return `WIFI:S:${wifiSSID.value};T:${wifiEnc.value};P:${wifiPass.value};;`;
+            } else if (currentType === 'vcard') {
+                if (!vcardFN.value && !vcardLN.value) return '';
+                return `BEGIN:VCARD\nVERSION:3.0\nN:${vcardLN.value};${vcardFN.value};;;\nFN:${vcardFN.value} ${vcardLN.value}\nTEL;TYPE=CELL:${vcardTel.value}\nEMAIL:${vcardEmail.value}\nEND:VCARD`;
+            } else if (currentType === 'email') {
+                if (!emailTo.value) return '';
+                return `MATMSG:TO:${emailTo.value};SUB:${emailSubject.value};BODY:${emailBody.value};;`;
+            } else if (currentType === 'phone') {
+                if (!phoneNum.value) return '';
+                return `tel:${phoneNum.value}`;
+            }
+            return '';
+        }
+
+        function generateQR() {
+            const data = getQRData();
+            qrContainer.innerHTML = '';
+            
+            if (!data) {
+                placeholder.classList.remove('hidden');
+                btnDownload.disabled = true;
+                btnDownload.className = "w-full py-4 bg-gray-200 dark:bg-gray-800 text-gray-400 rounded-2xl font-bold cursor-not-allowed transition-all flex items-center justify-center gap-2";
+                return;
+            }
+
+            placeholder.classList.add('hidden');
+            btnDownload.disabled = false;
+            btnDownload.className = "w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2";
+
+            qr = new QRCode(qrContainer, {
+                text: data,
+                width: parseInt(optSize.value) || 256,
+                height: parseInt(optSize.value) || 256,
+                colorDark: optColor.value,
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel[optLevel.value]
+            });
+        }
+
+        // --- Events ---
+        typeBtns.forEach(btn => {
+            btn.onclick = () => {
+                currentType = btn.dataset.type;
+                
+                // UI Toggle
+                typeBtns.forEach(b => b.className = "type-btn flex-1 py-2 text-xs font-bold rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all");
+                btn.className = "type-btn flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-sm transition-all";
+                
+                formSections.forEach(s => s.classList.add('hidden'));
+                document.getElementById(`form-${currentType}`).classList.remove('hidden');
+                
+                generateQR();
+            };
+        });
+
+        const allInputs = [inputText, wifiSSID, wifiPass, wifiEnc, vcardFN, vcardLN, vcardTel, vcardEmail, emailTo, emailSubject, emailBody, phoneNum, optSize, optLevel, optColor];
+        allInputs.forEach(input => {
+            input.addEventListener('input', generateQR);
+        });
+
+        btnDownload.onclick = () => {
+            const img = qrContainer.querySelector('img');
+            if (!img) return;
+            const link = document.createElement('a');
+            link.download = `qrcode-${Date.now()}.png`;
+            link.href = img.src;
+            link.click();
+        };
+
+        // --- Init ---
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        generateQR();
+    </script>
+</body>
+</html>
