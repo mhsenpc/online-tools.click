@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Join Visualizer & Generator | Online Tools</title>
+    <meta name="description" content="Visualize and generate SQL JOIN syntax between two tables.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border: rgba(255, 255, 255, 0.12);
+            --primary: #ff79c6;
+        }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .panel { background: var(--bg-elevated); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: var(--text-secondary); }
+        input, select { width: 100%; padding: 10px; background: #141414; border: 1px solid var(--border); color: var(--text); border-radius: 6px; }
+        .preview { font-family: 'JetBrains Mono', monospace; background: #000; padding: 15px; border-radius: 6px; margin-top: 20px; }
+        #venn-diagram { display: flex; justify-content: center; margin-top: 20px; }
+        .circle { width: 100px; height: 100px; border: 2px solid var(--text); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .circle.active { background: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL Join Visualizer & Generator</h1>
+        
+        <div class="panel">
+            <div class="form-group">
+                <label>Table A</label>
+                <input type="text" id="table-a" placeholder="users" value="users">
+            </div>
+            <div class="form-group">
+                <label>Join Column A</label>
+                <input type="text" id="column-a" placeholder="id" value="id">
+            </div>
+            <div class="form-group">
+                <label>Table B</label>
+                <input type="text" id="table-b" placeholder="orders" value="orders">
+            </div>
+            <div class="form-group">
+                <label>Join Column B</label>
+                <input type="text" id="column-b" placeholder="user_id" value="user_id">
+            </div>
+            <div class="form-group">
+                <label>Join Type</label>
+                <select id="join-type">
+                    <option value="INNER JOIN">INNER JOIN</option>
+                    <option value="LEFT JOIN">LEFT JOIN</option>
+                    <option value="RIGHT JOIN">RIGHT JOIN</option>
+                    <option value="FULL OUTER JOIN">FULL OUTER JOIN</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="preview" id="sql-output"></div>
+        <div id="venn-diagram"></div>
+    </div>
+
+    <script>
+        const inputs = ['table-a', 'column-a', 'table-b', 'column-b', 'join-type'];
+        inputs.forEach(id => document.getElementById(id).addEventListener('input', update));
+
+        function update() {
+            const tableA = document.getElementById('table-a').value || 'table_a';
+            const colA = document.getElementById('column-a').value || 'col_a';
+            const tableB = document.getElementById('table-b').value || 'table_b';
+            const colB = document.getElementById('column-b').value || 'col_b';
+            const joinType = document.getElementById('join-type').value;
+
+            const sql = `SELECT * \nFROM ${tableA}\n${joinType} ${tableB} \nON ${tableA}.${colA} = ${tableB}.${colB};`;
+            document.getElementById('sql-output').textContent = sql;
+            
+            // Basic visualization logic could be added here
+        }
+        update();
+    </script>
+</body>
+</html>
