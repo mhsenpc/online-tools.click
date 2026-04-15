@@ -408,6 +408,12 @@
                 aria-label="Download decoded file">
           ↓ Download File
         </button>
+
+        <div id="file-preview-section" class="hidden mt-4">
+          <p class="font-medium text-sm mb-2">Image Preview:</p>
+          <img id="file-preview" class="max-w-xs border border-gray-300 dark:border-gray-600 rounded" alt="Decoded preview" />
+        </div>
+
         <span id="file-decode-info" role="status" aria-live="polite"
               class="hidden text-xs text-gray-500 dark:text-gray-400 ml-2"></span>
       </section>
@@ -1208,13 +1214,24 @@
         // Create and trigger download
         const blob = new Blob([bytes], { type: finalMime });
         const url  = URL.createObjectURL(blob);
+
+        // Preview logic
+        const previewSection = document.getElementById('file-preview-section');
+        const previewImg = document.getElementById('file-preview');
+        if (finalMime.startsWith('image/')) {
+          previewImg.src = url;
+          previewSection.classList.remove('hidden');
+        } else {
+          previewSection.classList.add('hidden');
+        }
+
         const a    = document.createElement('a');
         a.href     = url;
         a.download = fileName;
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 5000);
 
         fileDecodeInfo.textContent = `Downloaded: ${fileName} · ${fmtBytes(bytes.length)} · ${finalMime}`;
         fileDecodeInfo.classList.remove('hidden');
