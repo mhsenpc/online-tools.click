@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrum Planning Poker | غلام</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+    <div class="max-w-4xl mx-auto p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-600 mb-2">Scrum Planning Poker</h1>
+            <p class="text-gray-600">ساده، سریع و بدون دردسر برای تیم‌های چابک 🤠</p>
+        </header>
+
+        <div id="setup" class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-xl font-semibold mb-4 text-blue-500">شروع بازی</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="text" id="userName" placeholder="نام شما" class="p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none">
+                <input type="text" id="sessionId" placeholder="شناسه سشن (مثلاً: team-alpha)" class="p-2 border rounded focus:ring-2 focus:ring-blue-400 outline-none">
+            </div>
+            <button onclick="joinGame()" class="w-full mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">بزن بریم!</button>
+        </div>
+
+        <div id="game" class="hidden">
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3 mb-10">
+                <!-- Cards for voting -->
+                <script>
+                    const points = [1, 2, 3, 5, 8, 13, 21, '?', '☕', '∞'];
+                    document.write(points.map(p => `
+                        <button onclick="vote('${p}')" class="card bg-white p-4 rounded-lg shadow border-2 border-transparent hover:border-blue-500 text-2xl font-bold text-blue-600 focus:bg-blue-600 focus:text-white">${p}</button>
+                    `).join(''));
+                </script>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-blue-500">وضعیت تیم</h3>
+                    <div class="space-x-2 space-x-reverse">
+                        <button onclick="showCards()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">نمایش آرا</button>
+                        <button onclick="resetGame()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">شروع مجدد</button>
+                    </div>
+                </div>
+                <div id="userList" class="space-y-3">
+                    <!-- Users and votes will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = { name: '', id: Math.random().toString(36).substr(2, 9) };
+        let currentSession = '';
+        let timer;
+
+        async function joinGame() {
+            const nameInput = document.getElementById('userName').value;
+            const sessionInput = document.getElementById('sessionId').value;
+            if(!nameInput || !sessionInput) return alert('نام و شناسه سشن رو بنویس!');
+            
+            currentUser.name = nameInput;
+            currentSession = sessionInput;
+            
+            try {
+                const res = await fetch('/api/scrum-poker/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sessionId: currentSession, userName: currentUser.name, userId: currentUser.id })
+                });
+                
+                if (res.ok) {
+                    document.getElementById('setup').classList.add('hidden');
+                    document.getElementById('game').classList.remove('hidden');
+                    startPolling();
+                }
+            } catch (e) {
+                alert('خطا در اتصال به سرور 🤠');
+            }
+        }
+
+        function startPolling() {
+            updateStatus();
+            timer = setInterval(updateStatus, 2000);
+        }
+
+        async function updateStatus() {
+            try {
+                const res = await fetch(`/api/scrum-poker/status?sessionId=${currentSession}`);
+                const data = await res.json();
+                
+                const list = document.getElementById('userList');
+                list.innerHTML = Object.entries(data.users).map(([uid, user]) => `
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded border">
+                        <span class="font-medium">${user.name} ${uid === currentUser.id ? '(شما)' : ''}</span>
+                        <span class="text-xl font-bold ${user.vote ? 'text-green-600' : 'text-gray-400'}">
+                            ${data.revealed ? (user.vote || '؟') : (user.vote ? '✅' : '⏳')}
+                        </span>
+                    </div>
+                `).join('');
+            } catch (e) {
+                console.error('Polling error', e);
+            }
+        }
+
+        async function vote(val) {
+            await fetch('/api/scrum-poker/vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: currentSession, userId: currentUser.id, vote: val })
+            });
+            updateStatus();
+        }
+
+        async function showCards() {
+            await fetch('/api/scrum-poker/reveal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: currentSession })
+            });
+            updateStatus();
+        }
+
+        async function resetGame() {
+            await fetch('/api/scrum-poker/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: currentSession })
+            });
+            updateStatus();
+        }
+    </script>
+</body>
+</html>
