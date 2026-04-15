@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Validator & Schema Checker | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online JSON validator and schema checker. Validate JSON syntax, verify against JSON Schema, and format/beautify JSON instantly.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.12.0/ajv2020.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-editor: #ffffff;
+            --text-editor: #1a1a1a;
+            --border-editor: #e5e7eb;
+            --line-num-bg: #f9fafb;
+            --line-num-text: #9ca3af;
+        }
+        .dark {
+            --bg-editor: #0d1117;
+            --text-editor: #c9d1d9;
+            --border-editor: #30363d;
+            --line-num-bg: #0d1117;
+            --line-num-text: #484f58;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .editor-textarea {
+            background-color: var(--bg-editor);
+            color: var(--text-editor);
+            caret-color: #3b82f6;
+            resize: none;
+            outline: none;
+            border-color: var(--border-editor);
+        }
+
+        .line-numbers {
+            background-color: var(--line-num-bg);
+            color: var(--line-num-text);
+            border-color: var(--border-editor);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+        /* Status badges */
+        .status-valid { background-color: #dcfce7; color: #166534; }
+        .dark .status-valid { background-color: rgba(22, 101, 52, 0.3); color: #4ade80; }
+
+        .status-invalid { background-color: #fee2e2; color: #991b1b; }
+        .dark .status-invalid { background-color: rgba(153, 27, 27, 0.3); color: #f87171; }
+
+        /* Error highlight */
+        .error-line {
+            background-color: #fef2f2;
+            border-left: 3px solid #ef4444;
+        }
+        .dark .error-line {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</head>
+<body class="h-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                online-tools.click
+            </a>
+            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+            <h1 class="text-lg font-semibold">JSON Validator & Schema Checker</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="btn-theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <svg id="sun-icon" class="hidden w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                <svg id="moon-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div id="status-bar" class="flex items-center gap-3 px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div id="validation-status" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+            No JSON loaded
+        </div>
+        <div id="error-message" class="text-xs text-red-600 dark:text-red-400 flex-1"></div>
+        <div id="stats" class="text-xs text-gray-500 dark:text-gray-400"></div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex flex-col h-full flex-1 overflow-hidden">
+        <!-- JSON Input Section -->
+        <div class="flex flex-col h-2/3 border-b border-gray-200 dark:border-gray-800">
+            <!-- Toolbar -->
+            <div class="flex items-center gap-3 px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <div class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest">JSON Input</div>
+                <button id="btn-prettify" class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium transition-colors">
+                    Prettify
+                </button>
+                <button id="btn-minify" class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium transition-colors">
+                    Minify
+                </button>
+                <button id="btn-clear-json" class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium transition-colors">
+                    Clear
+                </button>
+                <label class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium transition-colors cursor-pointer">
+                    Load File
+                    <input type="file" id="file-input" accept=".json" class="hidden">
+                </label>
+            </div>
+
+            <!-- Editor with line numbers -->
+            <div class="flex flex-1 overflow-hidden">
+                <div id="line-numbers" class="line-numbers w-12 py-4 text-right pr-3 text-xs font-mono leading-6 border-r overflow-hidden select-none">
+                    <div class="px-2">1</div>
+                </div>
+                <textarea id="json-input" class="editor-textarea flex-1 p-4 font-mono text-sm leading-6 border-0" placeholder="Paste or type your JSON here..."></textarea>
+            </div>
+        </div>
+
+        <!-- Schema Input Section -->
+        <div class="flex flex-col h-1/3">
+            <!-- Toolbar -->
+            <div class="flex items-center gap-3 px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <div class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest">JSON Schema (Optional)</div>
+                <button id="btn-validate-schema" class="px-2 py-1 text-xs rounded bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium transition-colors">
+                    Validate Schema
+                </button>
+                <button id="btn-clear-schema" class="px-2 py-1 text-xs rounded hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 font-medium transition-colors">
+                    Clear
+                </button>
+                <label class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 ml-auto">
+                    <input type="checkbox" id="auto-validate" class="w-3.5 h-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    Auto-validate on type
+                </label>
+            </div>
+
+            <!-- Schema Input -->
+            <div class="flex flex-1 overflow-hidden">
+                <div id="schema-line-numbers" class="line-numbers w-12 py-4 text-right pr-3 text-xs font-mono leading-6 border-r overflow-hidden select-none">
+                    <div class="px-2">1</div>
+                </div>
+                <textarea id="schema-input" class="editor-textarea flex-1 p-4 font-mono text-sm leading-6 border-0" placeholder="Paste your JSON Schema here (Draft 7+ supported)..."></textarea>
+            </div>
+        </div>
+
+        <!-- Schema Validation Results -->
+        <div id="schema-results" class="hidden border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 p-4">
+            <div class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Schema Validation Results</div>
+            <div id="schema-errors" class="text-xs space-y-1"></div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        // DOM Elements
+        const jsonInput = document.getElementById('json-input');
+        const schemaInput = document.getElementById('schema-input');
+        const lineNumbers = document.getElementById('line-numbers');
+        const schemaLineNumbers = document.getElementById('schema-line-numbers');
+        const validationStatus = document.getElementById('validation-status');
+        const errorMessage = document.getElementById('error-message');
+        const stats = document.getElementById('stats');
+        const schemaResults = document.getElementById('schema-results');
+        const schemaErrors = document.getElementById('schema-errors');
+        const fileInput = document.getElementById('file-input');
+        const autoValidateCheckbox = document.getElementById('auto-validate');
+
+        let ajv = null;
+        let currentErrorLine = null;
+        let validationTimer = null;
+
+        // Initialize Ajv
+        try {
+            ajv = new Ajv2020({ allErrors: true, verbose: true });
+        } catch (e) {
+            console.error('Failed to initialize Ajv:', e);
+        }
+
+        // Theme Management
+        const themeToggleBtn = document.getElementById('btn-theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        function initTheme() {
+            const saved = localStorage.getItem('json_validator_theme');
+            if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+        initTheme();
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('json_validator_theme', isDark ? 'dark' : 'light');
+            sunIcon.classList.toggle('hidden', !isDark);
+            moonIcon.classList.toggle('hidden', isDark);
+        });
+
+        // Line Numbers Management
+        function updateLineNumbers(textarea, lineNumbersEl) {
+            const lines = textarea.value.split('\n').length;
+            let html = '';
+            for (let i = 1; i <= lines; i++) {
+                html += `<div class="px-2">${i}</div>`;
+            }
+            lineNumbersEl.innerHTML = html;
+        }
+
+        function syncScroll() {
+            lineNumbers.scrollTop = jsonInput.scrollTop;
+            schemaLineNumbers.scrollTop = schemaInput.scrollTop;
+        }
+
+        jsonInput.addEventListener('input', () => {
+            updateLineNumbers(jsonInput, lineNumbers);
+            validateJSON();
+            if (autoValidateCheckbox.checked) {
+                clearTimeout(validationTimer);
+                validationTimer = setTimeout(validateSchema, 500);
+            }
+        });
+        jsonInput.addEventListener('scroll', syncScroll);
+
+        schemaInput.addEventListener('input', () => {
+            updateLineNumbers(schemaInput, schemaLineNumbers);
+        });
+        schemaInput.addEventListener('scroll', syncScroll);
+
+        // JSON Validation
+        function validateJSON() {
+            const input = jsonInput.value.trim();
+
+            if (!input) {
+                validationStatus.textContent = 'No JSON loaded';
+                validationStatus.className = 'px-3 py-1 rounded-full text-xs font-medium bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400';
+                errorMessage.textContent = '';
+                stats.textContent = '';
+                return null;
+            }
+
+            try {
+                const parsed = JSON.parse(input);
+                const formatted = JSON.stringify(parsed, null, 2);
+                const size = new Blob([formatted]).size;
+
+                validationStatus.textContent = '✓ Valid JSON';
+                validationStatus.className = 'px-3 py-1 rounded-full text-xs font-medium status-valid';
+                errorMessage.textContent = '';
+                stats.textContent = `${formatSize(size)} • ${countObjects(parsed)} objects • ${countArrays(parsed)} arrays`;
+
+                currentErrorLine = null;
+                lineNumbers.querySelectorAll('.error-line').forEach(el => el.classList.remove('error-line'));
+
+                return parsed;
+            } catch (e) {
+                validationStatus.textContent = '✗ Invalid JSON';
+                validationStatus.className = 'px-3 py-1 rounded-full text-xs font-medium status-invalid';
+
+                const errorInfo = parseError(e, input);
+                errorMessage.textContent = errorInfo.message;
+                stats.textContent = '';
+
+                // Highlight error line
+                highlightErrorLine(errorInfo.line);
+
+                return null;
+            }
+        }
+
+        function parseError(error, input) {
+            const message = error.message;
+            const lineMatch = message.match(/line (\d+)/);
+            const positionMatch = message.match(/position (\d+)/);
+            const expectMatch = message.match(/Expecting '([^']+)'/);
+
+            let line = lineMatch ? parseInt(lineMatch[1]) : null;
+            let position = positionMatch ? parseInt(positionMatch[1]) : null;
+
+            if (position !== null && line === null) {
+                // Calculate line from position
+                const textUpToError = input.substring(0, position);
+                line = textUpToError.split('\n').length;
+            }
+
+            return {
+                message: message,
+                line: line,
+                position: position
+            };
+        }
+
+        function highlightErrorLine(lineNum) {
+            // Remove previous highlights
+            lineNumbers.querySelectorAll('.error-line').forEach(el => el.classList.remove('error-line'));
+
+            if (lineNum !== null) {
+                const lineEl = lineNumbers.children[lineNum - 1];
+                if (lineEl) {
+                    lineEl.classList.add('error-line');
+                }
+            }
+        }
+
+        // Schema Validation
+        document.getElementById('btn-validate-schema').addEventListener('click', validateSchema);
+
+        function validateSchema() {
+            const jsonText = jsonInput.value.trim();
+            const schemaText = schemaInput.value.trim();
+
+            if (!jsonText) {
+                showSchemaResults([{ message: 'Please enter JSON to validate', instancePath: '' }]);
+                return;
+            }
+
+            if (!schemaText) {
+                showSchemaResults([{ message: 'Please enter a JSON Schema', instancePath: '' }]);
+                return;
+            }
+
+            let jsonData;
+            let schemaData;
+
+            try {
+                jsonData = JSON.parse(jsonText);
+            } catch (e) {
+                showSchemaResults([{ message: 'Invalid JSON: ' + e.message, instancePath: '' }]);
+                return;
+            }
+
+            try {
+                schemaData = JSON.parse(schemaText);
+            } catch (e) {
+                showSchemaResults([{ message: 'Invalid schema: ' + e.message, instancePath: '' }]);
+                return;
+            }
+
+            if (!ajv) {
+                showSchemaResults([{ message: 'Schema validator not available', instancePath: '' }]);
+                return;
+            }
+
+            const validate = ajv.compile(schemaData);
+            const valid = validate(jsonData);
+
+            if (valid) {
+                showSchemaResults([{ message: '✓ JSON validates against schema', instancePath: '' }], true);
+            } else {
+                const errors = validate.errors.map(err => ({
+                    message: `${err.instancePath || 'root'}: ${err.message}`,
+                    instancePath: err.instancePath,
+                    keyword: err.keyword
+                }));
+                showSchemaResults(errors, false);
+            }
+        }
+
+        function showSchemaResults(errors, isValid = false) {
+            schemaResults.classList.remove('hidden');
+            schemaErrors.innerHTML = '';
+
+            if (isValid) {
+                schemaErrors.innerHTML = `<div class="text-green-600 dark:text-green-400 font-medium">${errors[0].message}</div>`;
+            } else {
+                errors.forEach(err => {
+                    const div = document.createElement('div');
+                    div.className = 'text-red-600 dark:text-red-400 font-mono';
+                    div.textContent = err.message;
+                    schemaErrors.appendChild(div);
+                });
+            }
+        }
+
+        // Utility Functions
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function countObjects(obj) {
+            let count = 0;
+            if (typeof obj === 'object' && obj !== null) {
+                if (Array.isArray(obj)) {
+                    obj.forEach(item => count += countObjects(item));
+                } else {
+                    count++;
+                    Object.values(obj).forEach(val => count += countObjects(val));
+                }
+            }
+            return count;
+        }
+
+        function countArrays(obj) {
+            let count = 0;
+            if (typeof obj === 'object' && obj !== null) {
+                if (Array.isArray(obj)) {
+                    count++;
+                    obj.forEach(item => count += countArrays(item));
+                } else {
+                    Object.values(obj).forEach(val => count += countArrays(val));
+                }
+            }
+            return count;
+        }
+
+        // Button Handlers
+        document.getElementById('btn-prettify').addEventListener('click', () => {
+            const input = jsonInput.value.trim();
+            if (!input) return;
+
+            try {
+                const parsed = JSON.parse(input);
+                jsonInput.value = JSON.stringify(parsed, null, 2);
+                updateLineNumbers(jsonInput, lineNumbers);
+                validateJSON();
+            } catch (e) {
+                errorMessage.textContent = 'Cannot prettify invalid JSON';
+            }
+        });
+
+        document.getElementById('btn-minify').addEventListener('click', () => {
+            const input = jsonInput.value.trim();
+            if (!input) return;
+
+            try {
+                const parsed = JSON.parse(input);
+                jsonInput.value = JSON.stringify(parsed);
+                updateLineNumbers(jsonInput, lineNumbers);
+                validateJSON();
+            } catch (e) {
+                errorMessage.textContent = 'Cannot minify invalid JSON';
+            }
+        });
+
+        document.getElementById('btn-clear-json').addEventListener('click', () => {
+            jsonInput.value = '';
+            updateLineNumbers(jsonInput, lineNumbers);
+            validateJSON();
+            schemaResults.classList.add('hidden');
+        });
+
+        document.getElementById('btn-clear-schema').addEventListener('click', () => {
+            schemaInput.value = '';
+            updateLineNumbers(schemaInput, schemaLineNumbers);
+            schemaResults.classList.add('hidden');
+        });
+
+        // File Input Handler
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.size > 1024 * 1024) {
+                alert('File size exceeds 1MB limit');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                jsonInput.value = event.target.result;
+                updateLineNumbers(jsonInput, lineNumbers);
+                validateJSON();
+            };
+            reader.onerror = () => {
+                errorMessage.textContent = 'Error reading file';
+            };
+            reader.readAsText(file);
+
+            // Reset file input
+            e.target.value = '';
+        });
+
+        // Initialize line numbers on load
+        updateLineNumbers(jsonInput, lineNumbers);
+        updateLineNumbers(schemaInput, schemaLineNumbers);
+    </script>
+</body>
+</html>
