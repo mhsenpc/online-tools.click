@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Join Generator | Online Tools</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: #aaaaaa;
+            --border: #333333;
+            --accent: #4a90e2;
+        }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: var(--bg-elevated); padding: 20px; border-radius: 8px; border: 1px solid var(--border); }
+        h1 { font-size: 24px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: var(--text-secondary); }
+        input, select { width: 100%; padding: 10px; background: #222; border: 1px solid var(--border); color: white; border-radius: 4px; }
+        #output { margin-top: 20px; padding: 15px; background: #000; border: 1px solid var(--border); font-family: monospace; white-space: pre-wrap; color: #50fa7b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL Join Generator</h1>
+        <div class="form-group">
+            <label>Table A</label>
+            <input type="text" id="tableA" placeholder="users" oninput="generate()">
+        </div>
+        <div class="form-group">
+            <label>Table B</label>
+            <input type="text" id="tableB" placeholder="orders" oninput="generate()">
+        </div>
+        <div class="form-group">
+            <label>Join Type</label>
+            <select id="joinType" onchange="generate()">
+                <option value="INNER JOIN">INNER JOIN</option>
+                <option value="LEFT JOIN">LEFT JOIN</option>
+                <option value="RIGHT JOIN">RIGHT JOIN</option>
+                <option value="FULL OUTER JOIN">FULL OUTER JOIN</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>On Condition (e.g. A.id = B.user_id)</label>
+            <input type="text" id="condition" placeholder="A.id = B.user_id" oninput="generate()">
+        </div>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function generate() {
+            const tableA = document.getElementById('tableA').value || 'table_a';
+            const tableB = document.getElementById('tableB').value || 'table_b';
+            const type = document.getElementById('joinType').value;
+            const condition = document.getElementById('condition').value || 'a.id = b.id';
+            
+            const query = `SELECT * \nFROM ${tableA} \n${type} ${tableB} \nON ${condition};`;
+            document.getElementById('output').textContent = query;
+        }
+        generate();
+    </script>
+</body>
+</html>
