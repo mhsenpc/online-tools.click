@@ -13,6 +13,12 @@ export default function App() {
   const [mode, setMode] = useState<'decode' | 'encode'>('decode');
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<[string, string][]>([]);
+  const [paramSearch, setParamSearch] = useState('');
+
+  const filteredParams = params.filter(([key, value]) => 
+    key.toLowerCase().includes(paramSearch.toLowerCase()) || 
+    value.toLowerCase().includes(paramSearch.toLowerCase())
+  );
 
   useEffect(() => {
     try {
@@ -89,13 +95,31 @@ export default function App() {
             
             {mode === 'decode' && params.length > 0 && (
                 <div className="border border-white/10 rounded-lg overflow-hidden">
-                    <h3 className="bg-white/5 p-3 text-sm font-bold border-b border-white/10">Query Parameters</h3>
+                    <div className="bg-white/5 p-3 border-b border-white/10 flex items-center justify-between">
+                        <h3 className="text-sm font-bold">Query Parameters</h3>
+                        <input 
+                            type="text"
+                            placeholder="Search params..."
+                            className="bg-[#050505] border border-white/10 rounded px-2 py-1 text-xs focus:outline-none focus:border-[#ff3e00]"
+                            value={paramSearch}
+                            onChange={(e) => setParamSearch(e.target.value)}
+                        />
+                    </div>
                     <table className="w-full text-sm font-mono">
                         <tbody>
-                            {params.map(([key, value], idx) => (
-                                <tr key={idx} className="border-b border-white/5 last:border-0">
+                            {filteredParams.map(([key, value], idx) => (
+                                <tr key={idx} className="border-b border-white/5 last:border-0 group">
                                     <td className="p-2 border-r border-white/5 font-semibold text-white/70">{key}</td>
-                                    <td className="p-2">{value}</td>
+                                    <td className="p-2 flex items-center justify-between">
+                                        <span>{value}</span>
+                                        <button 
+                                            onClick={() => navigator.clipboard.writeText(value)}
+                                            className="opacity-0 group-hover:opacity-100 hover:text-[#ff3e00]"
+                                            title="Copy value"
+                                        >
+                                            <Copy size={12} />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
