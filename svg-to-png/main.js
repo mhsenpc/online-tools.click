@@ -6,6 +6,7 @@ const widthInput = document.getElementById('width-input');
 const heightInput = document.getElementById('height-input');
 const bgInput = document.getElementById('bg-input');
 const preview = document.getElementById('preview');
+const dropZone = document.getElementById('drop-zone'); // Assuming a drop zone exists or I'll add one
 
 const updatePreview = () => {
     const svgCode = svgInput.value;
@@ -18,15 +19,35 @@ const updatePreview = () => {
 svgInput.addEventListener('input', updatePreview);
 bgInput.addEventListener('change', updatePreview);
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
+const handleFile = (file) => {
     const reader = new FileReader();
     reader.onload = (event) => {
         svgInput.value = event.target.result;
         updatePreview();
     };
     reader.readAsText(file);
+};
+
+fileInput.addEventListener('change', (e) => {
+    handleFile(e.target.files[0]);
 });
+
+// Drag and Drop support
+const dropHandler = (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+};
+
+const dragOverHandler = (e) => {
+    e.preventDefault();
+};
+
+if (dropZone) {
+    dropZone.addEventListener('drop', dropHandler);
+    dropZone.addEventListener('dragover', dragOverHandler);
+}
 
 convertBtn.addEventListener('click', () => {
     const svgCode = svgInput.value;

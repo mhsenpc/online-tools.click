@@ -11,7 +11,10 @@
 </head>
 <body>
     <h1>SVG to PNG Converter</h1>
-    <input type="file" id="file-input" accept=".svg">
+    <div id="drop-zone" style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin-bottom: 10px;">
+        Drag & Drop SVG here or
+        <input type="file" id="file-input" accept=".svg">
+    </div>
     <textarea id="svg-input" placeholder="Paste SVG code here..."></textarea>
     <div>
         <label>Scale: <input type="number" id="scale-input" value="1" min="0.1" step="0.1"></label>
