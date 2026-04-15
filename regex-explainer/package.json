@@ -1,0 +1,10 @@
+{
+  "name": "regex-explainer",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "esbuild main.js --bundle --outfile=dist/bundle.js && cp index.html dist/"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2"
+  }
+}
