@@ -611,18 +611,37 @@
                 }
 
                 let pool = '';
-                if (document.getElementById('include-upper').checked) pool += charset.upper;
-                if (document.getElementById('include-lower').checked) pool += charset.lower;
-                if (document.getElementById('include-numbers').checked) pool += charset.numbers;
-                if (document.getElementById('include-symbols').checked) pool += charset.symbols;
+                let mandatoryChars = [];
+                if (document.getElementById('include-upper').checked) {
+                    pool += charset.upper;
+                    mandatoryChars.push(charset.upper[secureRandom(charset.upper.length)]);
+                }
+                if (document.getElementById('include-lower').checked) {
+                    pool += charset.lower;
+                    mandatoryChars.push(charset.lower[secureRandom(charset.lower.length)]);
+                }
+                if (document.getElementById('include-numbers').checked) {
+                    pool += charset.numbers;
+                    mandatoryChars.push(charset.numbers[secureRandom(charset.numbers.length)]);
+                }
+                if (document.getElementById('include-symbols').checked) {
+                    pool += charset.symbols;
+                    mandatoryChars.push(charset.symbols[secureRandom(charset.symbols.length)]);
+                }
 
                 if (pool === '') return 'Select Options';
 
-                let result = '';
-                for (let i = 0; i < length; i++) {
-                    result += pool[secureRandom(pool.length)];
+                let result = [...mandatoryChars];
+                for (let i = mandatoryChars.length; i < length; i++) {
+                    result.push(pool[secureRandom(pool.length)]);
                 }
-                return result;
+                
+                // Shuffle result
+                for (let i = result.length - 1; i > 0; i--) {
+                    const j = secureRandom(i + 1);
+                    [result[i], result[j]] = [result[j], result[i]];
+                }
+                return result.join('');
             } else {
                 const count = parseInt(wordCountSlider.value);
                 const capitalize = document.getElementById('capitalize-words').checked;
