@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const wordList = ["apple", "banana", "cherry", "dragon", "eagle", "forest", "galaxy", "harbor", "island", "jungle", "knight", "lemon", "mountain", "nebula", "ocean", "planet", "quartz", "river", "shadow", "tiger", "umbra", "valley", "wizard", "xenon", "yacht", "zebra"];
+const wordList = ["apple", "banana", "cherry", "dragon", "eagle", "forest", "galaxy", "harbor", "island", "jungle", "knight", "lemon", "mountain", "nebula", "ocean", "planet", "quartz", "river", "shadow", "tiger", "umbra", "valley", "wizard", "xenon", "yacht", "zebra", "adventure", "beacon", "castle", "desert", "echo", "flame", "glacier", "horizon", "ignite", "journey", "kinetic", "lunar", "mystic", "nebula", "oasis", "prism", "quest", "radiant", "stellar", "tranquil", "universe", "vibrant", "wander", "x-ray", "yearn", "zenith"];
 
 function App() {
   const [count, setCount] = useState(1);
