@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Minifier | Online Tools</title>
+    <meta name="description" content="Minify HTML by stripping whitespace and comments. Fast, private, client-side.">
+    <link rel="canonical" href="https://online-tools.click/html_minifier/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border: rgba(255, 255, 255, 0.12);
+            --radius-md: 12px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); padding: 40px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { margin-bottom: 40px; }
+        .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: var(--text); }
+        .editor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .editor-panel { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; display: flex; flex-direction: column; }
+        .panel-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--bg-input); }
+        textarea { width: 100%; height: 400px; background: var(--bg-input); border: none; color: var(--text); font-family: var(--font-mono); padding: 20px; resize: none; }
+        .btn-primary { background: var(--text); color: var(--bg); border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><a href="/" class="logo">Online Tools / HTML Minifier</a></header>
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">Input HTML</div>
+                <textarea id="input-html" placeholder="Paste your HTML here..."></textarea>
+            </div>
+            <div class="editor-panel">
+                <div class="panel-header">Minified HTML</div>
+                <textarea id="output-html" readonly></textarea>
+            </div>
+        </div>
+        <div style="margin-top: 24px;">
+            <button class="btn-primary" id="minify-btn">Minify</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('minify-btn').addEventListener('click', () => {
+            let html = document.getElementById('input-html').value;
+            // Basic minification: remove comments and extra whitespace
+            html = html.replace(/<!--[\s\S]*?-->/g, ''); // remove comments
+            html = html.replace(/\s+/g, ' '); // collapse whitespace
+            html = html.replace(/>\s+</g, '><'); // remove space between tags
+            document.getElementById('output-html').value = html.trim();
+        });
+    </script>
+</body>
+</html>
