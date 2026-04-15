@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP Request Header Generator | Online Tools</title>
+    <meta name="description" content="Generate common HTTP request headers with syntax validation. Copy as raw text or cURL flag. Fast, client-side tool for developers.">
+    <meta property="og:title" content="HTTP Request Header Generator | Online Tools">
+    <meta property="og:description" content="Generate common HTTP request headers with syntax validation.">
+    <meta property="og:url" content="https://online-tools.click/http_request_header_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="HTTP Request Header Generator | Online Tools">
+    <meta name="twitter:description" content="Generate common HTTP request headers. Fast, client-side.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/http_request_header_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .builder-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .header-select {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 16px;
+            font-family: var(--font-sans);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s;
+            margin-bottom: 24px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 48px;
+        }
+
+        .header-select:hover, .header-select:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        .header-description {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .value-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-family: var(--font-mono);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .value-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .suggestion-chip {
+            padding: 6px 14px;
+            font-size: 13px;
+            font-family: var(--font-mono);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            border-color: var(--accent);
+            color: var(--text);
+            background: var(--accent-glow);
+        }
+
+        .output-section {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .output-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .output-label-text {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #ff5522;
+        }
+
+        .output-display {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg-elevated);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .output-display.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .format-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .format-tab {
+            flex: 1;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .format-tab.active {
+            background: var(--bg-elevated);
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            header {
+                padding: 20px;
+            }
+            main {
+                padding: 24px 16px;
+            }
+            .builder-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">HTTP Header Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>HTTP Request Header Generator</h1>
+            <p>Generate valid HTTP headers with syntax validation and common value suggestions.</p>
+        </section>
+
+        <div class="builder-container">
+            <select class="header-select" id="header-select">
+                <option value="">Select a header type...</option>
+            </select>
+
+            <div class="header-description" id="header-description" style="display: none;">
+                Select a header to see its description and usage.
+            </div>
+
+            <div class="input-group" id="input-group" style="display: none;">
+                <label class="input-label" for="header-value">Header Value</label>
+                <input
+                    type="text"
+                    class="value-input"
+                    id="header-value"
+                    placeholder="Enter value or select a suggestion below"
+                    autocomplete="off"
+                >
+                <div class="suggestions" id="suggestions"></div>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div class="format-tabs">
+                <button class="format-tab active" data-format="raw">Raw Header</button>
+                <button class="format-tab" data-format="curl">cURL Flag</button>
+            </div>
+
+            <div class="output-label">
+                <span class="output-label-text">Generated Output</span>
+                <button class="copy-btn" id="copy-btn">Copy</button>
+            </div>
+            <div class="output-display empty" id="output-display">
+                Select a header and enter a value to generate output
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+        // Header definitions with descriptions and common values
+        const headers = {
+            'Accept': {
+                description: 'Specifies the media types that the client is willing to receive.',
+                suggestions: ['*/*', 'application/json', 'text/html', 'application/xml', 'text/plain', 'application/xhtml+xml']
+            },
+            'Accept-Encoding': {
+                description: 'Specifies the compression algorithms that the client can understand.',
+                suggestions: ['gzip, deflate, br', 'gzip', 'deflate', 'br', 'identity']
+            },
+            'Accept-Language': {
+                description: 'Specifies the preferred language for the response.',
+                suggestions: ['en-US,en;q=0.9', 'en-GB,en;q=0.9', 'fr-FR,fr;q=0.9', 'de-DE,de;q=0.9', 'es-ES,es;q=0.9']
+            },
+            'Authorization': {
+                description: 'Contains the credentials to authenticate a user agent with a server.',
+                suggestions: ['Bearer <token>', 'Basic <base64-encoded-credentials>', 'Digest <digest-response>', 'Token <token>']
+            },
+            'Cache-Control': {
+                description: 'Specifies directives for caching mechanisms in both requests and responses.',
+                suggestions: ['no-cache', 'no-store', 'max-age=0', 'max-age=3600', 'must-revalidate', 'public', 'private']
+            },
+            'Connection': {
+                description: 'Controls whether the network connection stays open after the current transaction.',
+                suggestions: ['keep-alive', 'close']
+            },
+            'Content-Type': {
+                description: 'Indicates the media type of the resource.',
+                suggestions: ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain', 'application/xml', 'text/html']
+            },
+            'Content-Length': {
+                description: 'Indicates the size of the entity-body, in bytes.',
+                suggestions: ['0', '1024', '2048']
+            },
+            'Cookie': {
+                description: 'Contains stored HTTP cookies previously sent by the server.',
+                suggestions: ['name=value', 'name1=value1; name2=value2', 'session=abc123; user=john']
+            },
+            'User-Agent': {
+                description: 'Contains a characteristic string that allows the network protocol peers to identify the application type.',
+                suggestions: ['Mozilla/5.0 (Windows NT 10.0; Win64; x64)', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', 'curl/7.68.0', 'MyApp/1.0']
+            },
+            'Referer': {
+                description: 'Contains the address of the previous web page from which a link to the currently requested page was followed.',
+                suggestions: ['https://example.com', 'https://google.com']
+            },
+            'Origin': {
+                description: 'Indicates the origin of the CORS request.',
+                suggestions: ['https://example.com', 'https://api.example.com', 'null']
+            },
+            'X-Requested-With': {
+                description: 'Indicates that the request was made by an XMLHttpRequest or similar.',
+                suggestions: ['XMLHttpRequest', 'fetch']
+            },
+            'X-Forwarded-For': {
+                description: 'Identifies the originating IP address of a client connecting to a web server.',
+                suggestions: ['192.168.1.1', '10.0.0.1', '203.0.113.1']
+            },
+            'X-Real-IP': {
+                description: 'Identifies the real client IP address when behind a proxy.',
+                suggestions: ['192.168.1.1', '10.0.0.1', '203.0.113.1']
+            },
+            'If-None-Match': {
+                description: 'Makes the request conditional on a cache match.',
+                suggestions: ['"<etag-value>"', '"33a64df551425fcc55e4d42a148795d9f25f89d4"']
+            },
+            'If-Modified-Since': {
+                description: 'Makes the request conditional on the last modification date.',
+                suggestions: ['Wed, 21 Oct 2015 07:28:00 GMT', 'Mon, 01 Jan 2024 00:00:00 GMT']
+            }
+        };
+
+        // State
+        let selectedHeader = '';
+        let headerValue = '';
+        let outputFormat = 'raw';
+
+        // Elements
+        const headerSelect = document.getElementById('header-select');
+        const headerDescription = document.getElementById('header-description');
+        const inputGroup = document.getElementById('input-group');
+        const headerValueInput = document.getElementById('header-value');
+        const suggestions = document.getElementById('suggestions');
+        const outputDisplay = document.getElementById('output-display');
+        const copyBtn = document.getElementById('copy-btn');
+        const toast = document.getElementById('toast');
+        const formatTabs = document.querySelectorAll('.format-tab');
+
+        // Initialize header options
+        Object.keys(headers).sort().forEach(headerName => {
+            const option = document.createElement('option');
+            option.value = headerName;
+            option.textContent = headerName;
+            headerSelect.appendChild(option);
+        });
+
+        // Event handlers
+        headerSelect.addEventListener('change', (e) => {
+            selectedHeader = e.target.value;
+            updateUI();
+        });
+
+        headerValueInput.addEventListener('input', (e) => {
+            headerValue = e.target.value;
+            updateOutput();
+        });
+
+        formatTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                formatTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                outputFormat = tab.dataset.format;
+                updateOutput();
+            });
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const text = outputDisplay.textContent;
+            if (text && !outputDisplay.classList.contains('empty')) {
+                navigator.clipboard.writeText(text).then(() => {
+                    toast.classList.add('visible');
+                    setTimeout(() => toast.classList.remove('visible'), 1500);
+                });
+            }
+        });
+
+        // Functions
+        function updateUI() {
+            if (!selectedHeader) {
+                headerDescription.style.display = 'none';
+                inputGroup.style.display = 'none';
+                headerValue = '';
+                updateOutput();
+                return;
+            }
+
+            const headerInfo = headers[selectedHeader];
+            headerDescription.textContent = headerInfo.description;
+            headerDescription.style.display = 'block';
+            inputGroup.style.display = 'block';
+
+            // Update suggestions
+            suggestions.innerHTML = headerInfo.suggestions.map(suggestion =>
+                `<button class="suggestion-chip" data-value="${suggestion}">${escapeHtml(suggestion)}</button>`
+            ).join('');
+
+            // Add click handlers to suggestions
+            suggestions.querySelectorAll('.suggestion-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    headerValueInput.value = chip.dataset.value;
+                    headerValue = chip.dataset.value;
+                    updateOutput();
+                });
+            });
+
+            updateOutput();
+        }
+
+        function updateOutput() {
+            if (!selectedHeader || !headerValue) {
+                outputDisplay.textContent = 'Select a header and enter a value to generate output';
+                outputDisplay.classList.add('empty');
+                return;
+            }
+
+            outputDisplay.classList.remove('empty');
+
+            if (outputFormat === 'raw') {
+                outputDisplay.textContent = `${selectedHeader}: ${headerValue}`;
+            } else if (outputFormat === 'curl') {
+                // Escape for shell
+                const escapedValue = headerValue.replace(/'/g, "'\\''");
+                outputDisplay.textContent = `-H '${selectedHeader}: ${escapedValue}'`;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
