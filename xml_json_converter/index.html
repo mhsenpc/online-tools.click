@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML to JSON / JSON to XML Converter | Online Tools</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .toolbar {
+            display: flex; gap: 1rem; margin-bottom: 1.5rem;
+            padding: 1rem; background: var(--bg-secondary);
+            border-radius: 8px; border: 1px solid var(--border-color);
+        }
+
+        .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; display: flex; flex-direction: column; min-height: 500px; }
+        .panel-header { padding: 1rem; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-secondary); }
+        textarea, .output { flex: 1; padding: 1rem; background: var(--bg-primary); color: var(--text-primary); border: none; font-family: monospace; resize: none; }
+
+        .btn { padding: 0.5rem 1rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-tertiary); color: white; cursor: pointer; }
+        .btn-primary { background: var(--accent-primary); border: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>XML & JSON Converter</h1>
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="convert('xml2json')">XML to JSON</button>
+            <button class="btn btn-primary" onclick="convert('json2xml')">JSON to XML</button>
+        </div>
+        <div class="panels">
+            <div class="panel">
+                <div class="panel-header">Input</div>
+                <textarea id="input" placeholder="Paste your XML or JSON here..."></textarea>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Output</div>
+                <textarea id="output" readonly></textarea>
+            </div>
+        </div>
+    </div>
+    <script>
+        function convert(mode) {
+            const input = document.getElementById('input').value;
+            const output = document.getElementById('output');
+            try {
+                if (mode === 'xml2json') {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(input, 'text/xml');
+                    if (xmlDoc.getElementsByTagName('parsererror').length > 0) throw new Error('Invalid XML');
+                    output.value = JSON.stringify(xmlToJson(xmlDoc.documentElement), null, 2);
+                } else {
+                    const json = JSON.parse(input);
+                    output.value = jsonToXml(json, 'root');
+                }
+            } catch (e) {
+                output.value = 'Error: ' + e.message;
+            }
+        }
+
+        function xmlToJson(xml) {
+            let obj = {};
+            if (xml.nodeType === 1) {
+                if (xml.attributes.length > 0) {
+                    obj["@attributes"] = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        obj["@attributes"][xml.attributes.item(j).nodeName] = xml.attributes.item(j).nodeValue;
+                    }
+                }
+            } else if (xml.nodeType === 3) {
+                obj = xml.nodeValue;
+            }
+            if (xml.hasChildNodes()) {
+                for (let i = 0; i < xml.childNodes.length; i++) {
+                    const item = xml.childNodes.item(i);
+                    const nodeName = item.nodeName;
+                    if (nodeName === "#text" && item.nodeValue.trim() === "") continue;
+                    if (typeof(obj[nodeName]) == "undefined") {
+                        obj[nodeName] = xmlToJson(item);
+                    } else {
+                        if (typeof(obj[nodeName].push) == "undefined") {
+                            const old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item));
+                    }
+                }
+            }
+            return obj;
+        }
+
+        function jsonToXml(obj, name) {
+            let xml = "";
+            if (typeof obj === "object") {
+                for (let prop in obj) {
+                    if (prop === "@attributes") continue;
+                    if (Array.isArray(obj[prop])) {
+                        for (let array in obj[prop]) {
+                            xml += jsonToXml(obj[prop][array], prop);
+                        }
+                    } else {
+                        xml += "<" + prop + ">";
+                        xml += jsonToXml(obj[prop], prop);
+                        xml += "</" + prop + ">";
+                    }
+                }
+            } else {
+                xml += obj;
+            }
+            return xml;
+        }
+    </script>
+</body>
+</html>
