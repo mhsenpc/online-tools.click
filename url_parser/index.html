@@ -24,23 +24,26 @@
             <div id="components" class="grid grid-cols-2 gap-4 text-sm">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Protocol</label>
-                    <div id="out-protocol" class="font-mono"></div>
+                    <input type="text" id="out-protocol" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Host</label>
-                    <div id="out-host" class="font-mono"></div>
+                    <input type="text" id="out-host" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Path</label>
-                    <div id="out-path" class="font-mono"></div>
+                    <input type="text" id="out-path" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Hash</label>
-                    <div id="out-hash" class="font-mono"></div>
+                    <input type="text" id="out-hash" class="font-mono w-full bg-transparent outline-none">
                 </div>
             </div>
 
-            <h2 class="font-bold">Query Parameters</h2>
+            <div class="flex items-center justify-between">
+                <h2 class="font-bold">Query Parameters</h2>
+                <button id="add-param" class="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">+</button>
+            </div>
             <div id="params" class="space-y-2"></div>
         </div>
     </div>
@@ -53,13 +56,15 @@
         const outHash = document.getElementById('out-hash');
         const paramsList = document.getElementById('params');
 
+        const addParamBtn = document.getElementById('add-param');
+
         function parseUrl() {
             try {
                 const url = new URL(inUrl.value);
-                outProtocol.innerText = url.protocol;
-                outHost.innerText = url.host;
-                outPath.innerText = url.pathname;
-                outHash.innerText = url.hash;
+                outProtocol.value = url.protocol;
+                outHost.value = url.host;
+                outPath.value = url.pathname;
+                outHash.value = url.hash;
 
                 paramsList.innerHTML = '';
                 url.searchParams.forEach((value, key) => {
@@ -70,15 +75,47 @@
             }
         }
 
+        function reconstructUrl() {
+            try {
+                const newUrl = new URL(`${outProtocol.value}//${outHost.value}${outPath.value}`);
+                newUrl.hash = outHash.value;
+
+                const paramInputs = document.querySelectorAll('.param-row');
+                paramInputs.forEach(row => {
+                    const key = row.querySelector('.param-key').value;
+                    const value = row.querySelector('.param-value').value;
+                    if (key) newUrl.searchParams.set(key, value);
+                });
+                
+                inUrl.value = newUrl.toString();
+            } catch(e) {
+                // Invalid URL
+            }
+        }
+
         function addParamRow(key = '', value = '') {
             const row = document.createElement('div');
-            row.className = 'flex gap-2';
-            row.innerHTML = `<input value="${key}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-                             <input value="${value}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">`;
+            row.className = 'flex gap-2 param-row';
+            row.innerHTML = `<input value="${key}" class="param-key w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                             <input value="${value}" class="param-value w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+                             <button class="remove-param px-3 rounded-xl bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-300">×</button>`;
+            
+            row.querySelector('.remove-param').onclick = () => {
+                row.remove();
+                reconstructUrl();
+            };
+            
+            row.querySelectorAll('input').forEach(input => input.oninput = reconstructUrl);
+            
             paramsList.appendChild(row);
         }
 
         inUrl.oninput = parseUrl;
+        [outProtocol, outHost, outPath, outHash].forEach(el => el.oninput = reconstructUrl);
+        addParamBtn.onclick = () => {
+            addParamRow();
+            reconstructUrl();
+        };
     </script>
 
     <!-- Google tag (gtag.js) -->
