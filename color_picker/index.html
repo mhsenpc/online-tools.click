@@ -163,6 +163,22 @@
                         <!-- Palette colors added here -->
                     </div>
                 </div>
+
+                <!-- Quick Palette Generator -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Quick Palette Generator</label>
+                    <div id="quick-palette-container" class="space-y-4">
+                        <div class="flex gap-2">
+                             <button onclick="generatePalette('complementary')" class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md transition-colors">Complementary</button>
+                             <button onclick="generatePalette('analogous')" class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md transition-colors">Analogous</button>
+                             <button onclick="generatePalette('triadic')" class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md transition-colors">Triadic</button>
+                             <button onclick="generatePalette('monochromatic')" class="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-md transition-colors">Monochromatic</button>
+                        </div>
+                        <div id="quick-palette-results" class="flex gap-2 h-12">
+                            <!-- Results here -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
 
@@ -247,6 +263,63 @@
             const ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
             return ratio.toFixed(2);
         }
+
+        function hslToRgb(h, s, l) {
+            s /= 100;
+            l /= 100;
+            const k = n => (n + h / 30) % 12;
+            const a = s * Math.min(l, 1 - l);
+            const f = n =>
+                l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+            return {
+                r: Math.round(255 * f(0)),
+                g: Math.round(255 * f(8)),
+                b: Math.round(255 * f(4))
+            };
+        }
+
+        function hslToHex(h, s, l) {
+            const {r, g, b} = hslToRgb(h, s, l);
+            return rgbToHex(r, g, b);
+        }
+
+        // --- Palette Generator ---
+        window.generatePalette = (type) => {
+            const hex = hexInput.value;
+            const rgb = hexToRgb(hex);
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            let palette = [];
+            
+            if (type === 'complementary') {
+                palette = [
+                    hex,
+                    hslToHex((hsl.h + 180) % 360, hsl.s, hsl.l)
+                ];
+            } else if (type === 'analogous') {
+                palette = [
+                    hslToHex((hsl.h - 30 + 360) % 360, hsl.s, hsl.l),
+                    hex,
+                    hslToHex((hsl.h + 30) % 360, hsl.s, hsl.l)
+                ];
+            } else if (type === 'triadic') {
+                palette = [
+                    hslToHex((hsl.h + 120) % 360, hsl.s, hsl.l),
+                    hex,
+                    hslToHex((hsl.h + 240) % 360, hsl.s, hsl.l)
+                ];
+            } else if (type === 'monochromatic') {
+                palette = [
+                    hslToHex(hsl.h, hsl.s, Math.max(0, hsl.l - 20)),
+                    hex,
+                    hslToHex(hsl.h, hsl.s, Math.min(100, hsl.l + 20))
+                ];
+            }
+            
+            const container = document.getElementById('quick-palette-results');
+            container.innerHTML = palette.map(c => `
+                <button onclick="selectFromPalette('${c}')" class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 transition-transform hover:scale-105 shadow-sm" style="background-color: ${c}" title="${c}"></button>
+            `).join('');
+        };
 
         // --- UI Updates ---
         function updateAll(hex) {
