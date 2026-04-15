@@ -58,16 +58,60 @@ export const useDiff = (
     });
 
     // Word-level diffing for additions/deletions that are paired
-    // This is a bit complex for a basic diff, but we can do it line-by-line if we find pairs.
-    // For simplicity, we'll keep it to line level first, and maybe add word highlighting later.
-    
+    // We'll pair deletion lines with addition lines and compute word diffs
+    const enhancedDiffLines = diffLinesArray.map((line, idx) => {
+      if (line.type === 'neutral') return line;
+
+      // Look for the next or previous line of opposite type to pair with
+      let pairLine: DiffLine | null = null;
+      let pairIdx = -1;
+
+      if (line.type === 'deletion') {
+        // Look ahead for additions
+        for (let i = idx + 1; i < diffLinesArray.length; i++) {
+          if (diffLinesArray[i].type === 'addition') {
+            pairLine = diffLinesArray[i];
+            pairIdx = i;
+            break;
+          } else if (diffLinesArray[i].type === 'neutral') {
+            break;
+          }
+        }
+      } else if (line.type === 'addition') {
+        // Look behind for deletions
+        for (let i = idx - 1; i >= 0; i--) {
+          if (diffLinesArray[i].type === 'deletion') {
+            pairLine = diffLinesArray[i];
+            pairIdx = i;
+            break;
+          } else if (diffLinesArray[i].type === 'neutral') {
+            break;
+          }
+        }
+      }
+
+      if (pairLine && !line.words) {
+        // Compute word-level diff
+        const wordDiff = diffWordsWithSpace(
+          line.type === 'deletion' ? line.content : '',
+          line.type === 'addition' ? line.content : ''
+        );
+
+        // Mark both lines with word diff info
+        line.words = wordDiff;
+        pairLine.words = wordDiff;
+      }
+
+      return line;
+    });
+
     const summary = {
       additions: changes.filter(c => c.added).reduce((acc, c) => acc + (c.count || 0), 0),
       deletions: changes.filter(c => c.removed).reduce((acc, c) => acc + (c.count || 0), 0),
     };
 
     return {
-      diffLines: diffLinesArray,
+      diffLines: enhancedDiffLines,
       summary,
     };
   }, [original, modified, options]);
