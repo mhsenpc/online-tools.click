@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Word / Sentence Generator | online-tools.click</title>
+    <meta name="description" content="Free, fast, and secure online random word and sentence generator. Generate placeholder text with Lorem Ipsum or common English words for testing layouts.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .output-area {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-sm leading-relaxed outline-none focus:border-blue-500 transition-all shadow-inner overflow-y-auto;
+            min-height: 300px;
+        }
+
+        .slider-container {
+            @apply relative h-6 bg-gray-200 dark:bg-gray-700 rounded-full cursor-pointer;
+        }
+
+        .slider-track {
+            @apply absolute h-full bg-blue-500 rounded-full transition-all;
+        }
+
+        .slider-thumb {
+            @apply absolute top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-2 border-blue-500 rounded-full shadow-lg cursor-grab active:cursor-grabbing transition-transform hover:scale-110;
+        }
+
+        .mode-btn {
+            @apply flex-1 py-3 px-4 text-sm font-semibold rounded-xl border-2 transition-all;
+        }
+
+        .mode-btn.active {
+            @apply bg-blue-500 border-blue-500 text-white;
+        }
+
+        .mode-btn:not(.active) {
+            @apply bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-blue-500;
+        }
+    </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Random Word / Sentence Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Generate random placeholder text with Lorem Ipsum or common English words.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Settings -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+
+                    <!-- Mode Selection -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Mode</label>
+                        <div class="flex gap-2">
+                            <button class="mode-btn active" data-mode="words" onclick="setMode('words')">Words</button>
+                            <button class="mode-btn" data-mode="sentences" onclick="setMode('sentences')">Sentences</button>
+                            <button class="mode-btn" data-mode="paragraphs" onclick="setMode('paragraphs')">Paragraphs</button>
+                        </div>
+                    </div>
+
+                    <!-- Count Slider -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                            Count: <span id="count-display" class="text-blue-500 font-bold">10</span>
+                        </label>
+                        <div class="slider-container" id="count-slider">
+                            <div class="slider-track" id="count-track"></div>
+                            <div class="slider-thumb" id="count-thumb"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400 mt-2">
+                            <span>1</span>
+                            <span id="max-count-display">100</span>
+                        </div>
+                    </div>
+
+                    <!-- Words per Sentence (for sentence/paragraph mode) -->
+                    <div id="words-per-sentence-container" style="display: none;">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                            Words per Sentence: <span id="words-per-sentence-display" class="text-blue-500 font-bold">8</span>
+                        </label>
+                        <div class="slider-container" id="words-per-sentence-slider">
+                            <div class="slider-track" id="words-per-sentence-track"></div>
+                            <div class="slider-thumb" id="words-per-sentence-thumb"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400 mt-2">
+                            <span>5</span>
+                            <span>20</span>
+                        </div>
+                    </div>
+
+                    <!-- Sentences per Paragraph (for paragraph mode) -->
+                    <div id="sentences-per-paragraph-container" style="display: none;">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                            Sentences per Paragraph: <span id="sentences-per-paragraph-display" class="text-blue-500 font-bold">4</span>
+                        </label>
+                        <div class="slider-container" id="sentences-per-paragraph-slider">
+                            <div class="slider-track" id="sentences-per-paragraph-track"></div>
+                            <div class="slider-thumb" id="sentences-per-paragraph-thumb"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-400 mt-2">
+                            <span>2</span>
+                            <span>10</span>
+                        </div>
+                    </div>
+
+                    <!-- Vocabulary Selection -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Vocabulary</label>
+                        <div class="flex gap-2">
+                            <button class="mode-btn active" id="vocab-lorem" onclick="setVocabulary('lorem')">Lorem Ipsum</button>
+                            <button class="mode-btn" id="vocab-english" onclick="setVocabulary('english')">English</button>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="opt-start" checked class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm group-hover:text-blue-500 transition-colors">Start with standard phrase</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="opt-punctuation" checked class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm group-hover:text-blue-500 transition-colors">Add punctuation</span>
+                        </label>
+                    </div>
+
+                    <button id="btn-generate" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                        Generate Text
+                    </button>
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div class="lg:col-span-8 space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Generated Content</h2>
+                    <button id="btn-copy" class="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-tighter transition-colors">Copy to Clipboard</button>
+                </div>
+                <div id="output-text" class="output-area" contenteditable="false"></div>
+                <div class="text-xs text-gray-400 dark:text-gray-600 text-center">
+                    <span id="stats-display">Ready to generate</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Client-Side: Your content stays in the browser. No tracking or logging.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        // Vocabulary sets
+        const loremWords = ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"];
+
+        const englishWords = ["the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "it", "for", "not", "on", "with", "he", "as", "you", "do", "at", "this", "but", "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will", "my", "one", "all", "would", "there", "their", "what", "so", "up", "out", "if", "about", "who", "get", "which", "go", "me", "when", "make", "can", "like", "time", "no", "just", "him", "know", "take", "people", "into", "year", "your", "good", "some", "could", "them", "see", "other", "than", "then", "now", "look", "only", "come", "its", "over", "think", "also", "back", "after", "use", "two", "how", "our", "work", "first", "well", "way", "even", "new", "want", "because", "any", "these", "give", "day", "most", "us"];
+
+        // State
+        let currentMode = 'words';
+        let currentVocabulary = 'lorem';
+        let count = 10;
+        let wordsPerSentence = 8;
+        let sentencesPerParagraph = 4;
+        let isDragging = null;
+
+        // DOM Elements
+        const output = document.getElementById('output-text');
+        const btnGenerate = document.getElementById('btn-generate');
+        const btnCopy = document.getElementById('btn-copy');
+        const optStart = document.getElementById('opt-start');
+        const optPunctuation = document.getElementById('opt-punctuation');
+        const countDisplay = document.getElementById('count-display');
+        const maxCountDisplay = document.getElementById('max-count-display');
+        const wordsPerSentenceDisplay = document.getElementById('words-per-sentence-display');
+        const sentencesPerParagraphDisplay = document.getElementById('sentences-per-paragraph-display');
+        const statsDisplay = document.getElementById('stats-display');
+        const toast = document.getElementById('toast');
+
+        // Mode limits
+        const modeLimits = {
+            words: { min: 1, max: 100 },
+            sentences: { min: 1, max: 50 },
+            paragraphs: { min: 1, max: 20 }
+        };
+
+        // Initialize sliders
+        function initSlider(sliderId, trackId, thumbId, displayId, min, max, initial, callback) {
+            const slider = document.getElementById(sliderId);
+            const track = document.getElementById(trackId);
+            const thumb = document.getElementById(thumbId);
+            const display = document.getElementById(displayId);
+
+            let value = initial;
+            updateSlider();
+
+            slider.addEventListener('mousedown', (e) => {
+                isDragging = { slider, track, thumb, min, max, callback, display };
+                updateFromEvent(e);
+            });
+
+            function updateFromEvent(e) {
+                const rect = slider.getBoundingClientRect();
+                const percentage = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                value = Math.round(min + percentage * (max - min));
+                updateSlider();
+                if (callback) callback(value);
+            }
+
+            function updateSlider() {
+                const percentage = ((value - min) / (max - min)) * 100;
+                track.style.width = percentage + '%';
+                thumb.style.left = percentage + '%';
+                if (display) display.textContent = value;
+            }
+        }
+
+        // Global mouse events for dragging
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const { slider, min, max, callback, display } = isDragging;
+                const rect = slider.getBoundingClientRect();
+                const percentage = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                const value = Math.round(min + percentage * (max - min));
+
+                const percentageFinal = ((value - min) / (max - min)) * 100;
+                isDragging.track.style.width = percentageFinal + '%';
+                isDragging.thumb.style.left = percentageFinal + '%';
+                if (display) display.textContent = value;
+                if (callback) callback(value);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = null;
+        });
+
+        // Initialize all sliders
+        initSlider('count-slider', 'count-track', 'count-thumb', 'count-display',
+                   modeLimits.words.min, modeLimits.words.max, count, (val) => count = val);
+
+        initSlider('words-per-sentence-slider', 'words-per-sentence-track', 'words-per-sentence-thumb', 'words-per-sentence-display',
+                   5, 20, wordsPerSentence, (val) => wordsPerSentence = val);
+
+        initSlider('sentences-per-paragraph-slider', 'sentences-per-paragraph-track', 'sentences-per-paragraph-thumb', 'sentences-per-paragraph-display',
+                   2, 10, sentencesPerParagraph, (val) => sentencesPerParagraph = val);
+
+        // Set mode
+        function setMode(mode) {
+            currentMode = mode;
+
+            // Update button styles
+            document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+
+            // Update count slider limits
+            const limits = modeLimits[mode];
+            count = Math.min(count, limits.max);
+            countDisplay.textContent = count;
+            maxCountDisplay.textContent = limits.max;
+
+            // Show/hide additional controls
+            document.getElementById('words-per-sentence-container').style.display =
+                mode === 'sentences' || mode === 'paragraphs' ? 'block' : 'none';
+            document.getElementById('sentences-per-paragraph-container').style.display =
+                mode === 'paragraphs' ? 'block' : 'none';
+        }
+
+        // Set vocabulary
+        function setVocabulary(vocab) {
+            currentVocabulary = vocab;
+
+            document.getElementById('vocab-lorem').classList.toggle('active', vocab === 'lorem');
+            document.getElementById('vocab-english').classList.toggle('active', vocab === 'english');
+        }
+
+        // Get current vocabulary
+        function getVocabulary() {
+            return currentVocabulary === 'lorem' ? loremWords : englishWords;
+        }
+
+        // Generate random word
+        function getRandomWord() {
+            const words = getVocabulary();
+            return words[Math.floor(Math.random() * words.length)];
+        }
+
+        // Generate sentence
+        function generateSentence(wordCount) {
+            const words = [];
+            for (let i = 0; i < wordCount; i++) {
+                words.push(getRandomWord());
+            }
+
+            // Capitalize first letter
+            words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+
+            let sentence = words.join(' ');
+
+            if (optPunctuation.checked) {
+                sentence += '.';
+            }
+
+            return sentence;
+        }
+
+        // Generate paragraph
+        function generateParagraph(sentenceCount) {
+            const sentences = [];
+            for (let i = 0; i < sentenceCount; i++) {
+                sentences.push(generateSentence(wordsPerSentence));
+            }
+            return sentences.join(' ');
+        }
+
+        // Main generate function
+        function generate() {
+            const startPhrase = currentVocabulary === 'lorem' ?
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit." :
+                "The quick brown fox jumps over the lazy dog.";
+
+            let result = '';
+            let totalWords = 0;
+
+            switch (currentMode) {
+                case 'words':
+                    const wordArray = [];
+                    for (let i = 0; i < count; i++) {
+                        wordArray.push(getRandomWord());
+                    }
+                    result = wordArray.join(' ');
+                    totalWords = count;
+                    break;
+
+                case 'sentences':
+                    const sentenceArray = [];
+                    if (optStart.checked) {
+                        sentenceArray.push(startPhrase);
+                        totalWords += startPhrase.split(' ').length;
+                    }
+
+                    const sentencesToGenerate = optStart.checked ? count - 1 : count;
+                    for (let i = 0; i < sentencesToGenerate; i++) {
+                        const sentence = generateSentence(wordsPerSentence);
+                        sentenceArray.push(sentence);
+                        totalWords += wordsPerSentence;
+                    }
+                    result = sentenceArray.join(' ');
+                    break;
+
+                case 'paragraphs':
+                    const paragraphArray = [];
+                    for (let i = 0; i < count; i++) {
+                        const para = generateParagraph(sentencesPerParagraph);
+                        paragraphArray.push(para);
+                        totalWords += sentencesPerParagraph * wordsPerSentence;
+                    }
+                    result = paragraphArray.join('\n\n');
+                    break;
+            }
+
+            output.textContent = result;
+            statsDisplay.textContent = `Generated ${totalWords} words in ${currentMode}`;
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            const text = output.textContent;
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast();
+            } catch (err) {
+                // Fallback
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast();
+            }
+        }
+
+        // Show toast notification
+        function showToast() {
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 2000);
+        }
+
+        // Event listeners
+        btnGenerate.addEventListener('click', generate);
+        btnCopy.addEventListener('click', copyToClipboard);
+
+        // Generate initial content
+        generate();
+    </script>
+</body>
+</html>
