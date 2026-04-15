@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV to Markdown Converter | online-tools.click</title>
+    <meta name="description" content="Fast, client-side CSV to Markdown table converter.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body { transition: background-color 0.2s, color 0.2s; }
+        .output-area {
+            @apply w-full bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-sm font-mono overflow-auto;
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold mb-2">CSV to Markdown Converter</h1>
+            <p class="text-gray-500">Convert CSV data to clean Markdown tables.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-4">
+                <textarea id="csv-input" class="w-full h-64 p-4 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900" placeholder="Name,Age,Role&#10;Alice,30,Developer&#10;Bob,25,Designer"></textarea>
+                
+                <div class="flex gap-4 items-center">
+                    <select id="delimiter" class="bg-gray-200 dark:bg-gray-800 rounded px-3 py-1">
+                        <option value=",">Comma (,)</option>
+                        <option value="\t">Tab</option>
+                        <option value=";">Semicolon (;)</option>
+                    </select>
+                    <button id="btn-generate" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold">Convert</button>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div id="output-markdown" class="output-area"></div>
+                <button id="btn-copy" class="text-sm font-bold text-blue-500 hover:underline">Copy Markdown</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('btn-generate').onclick = () => {
+            const input = document.getElementById('csv-input').value;
+            const delimiter = document.getElementById('delimiter').value === '\\t' ? '\t' : document.getElementById('delimiter').value;
+            
+            const rows = input.split('\n').filter(r => r.trim() !== '');
+            if (rows.length === 0) return;
+
+            const headers = rows[0].split(delimiter);
+            
+            let markdown = '| ' + headers.join(' | ') + ' |\n';
+            markdown += '| ' + headers.map(() => '---').join(' | ') + ' |\n';
+
+            for (let i = 1; i < rows.length; i++) {
+                const cols = rows[i].split(delimiter);
+                markdown += '| ' + cols.join(' | ') + ' |\n';
+            }
+
+            document.getElementById('output-markdown').innerText = markdown;
+        };
+
+        document.getElementById('btn-copy').onclick = () => {
+            navigator.clipboard.writeText(document.getElementById('output-markdown').innerText);
+            alert('Copied!');
+        };
+    </script>
+</body>
+</html>
