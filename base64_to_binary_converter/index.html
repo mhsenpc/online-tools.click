@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base64 to Binary / Binary to Base64 — Free Online Tool</title>
+  <meta name="description" content="Convert between Base64 and Binary representations instantly. 100% private — runs in your browser." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+    (function() {
+      const saved = localStorage.getItem('b64bin_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🔢</span>
+      <div class="flex-1">
+        <h1 class="text-xl font-bold leading-tight">Base64 ↔ Binary Converter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs in your browser</p>
+      </div>
+      <button id="btn-dark-toggle" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors">
+        <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/></svg>
+        <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <div class="flex flex-wrap items-center gap-4 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <label class="flex items-center gap-1.5 cursor-pointer">
+        <input type="checkbox" id="format-binary" class="accent-blue-600 w-4 h-4" checked />
+        <span class="text-sm">Group into 8-bit bytes</span>
+      </label>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section class="flex flex-col gap-2">
+        <label for="base64-input" class="font-medium text-sm">Base64</label>
+        <textarea id="base64-input" rows="12" class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono" placeholder="Paste Base64 here..."></textarea>
+      </section>
+
+      <section class="flex flex-col gap-2">
+        <label for="binary-input" class="font-medium text-sm">Binary</label>
+        <textarea id="binary-input" rows="12" class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono" placeholder="Paste Binary here (0s and 1s)..."></textarea>
+      </section>
+    </div>
+
+    <div class="flex gap-3">
+        <button id="btn-clear" class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors">Clear</button>
+    </div>
+  </main>
+
+  <script>
+    const base64Input = document.getElementById('base64-input');
+    const binaryInput = document.getElementById('binary-input');
+    const formatBinary = document.getElementById('format-binary');
+    const btnClear = document.getElementById('btn-clear');
+
+    function base64ToBinary(b64) {
+      try {
+        const binaryString = atob(b64.replace(/\s/g, ''));
+        let binary = '';
+        for (let i = 0; i < binaryString.length; i++) {
+          let byte = binaryString.charCodeAt(i).toString(2).padStart(8, '0');
+          binary += byte + (formatBinary.checked ? ' ' : '');
+        }
+        return binary.trim();
+      } catch (e) {
+        return '';
+      }
+    }
+
+    function binaryToBase64(bin) {
+      try {
+        const bytes = bin.replace(/\s/g, '');
+        if (bytes.length % 8 !== 0) return '';
+        let binaryString = '';
+        for (let i = 0; i < bytes.length; i += 8) {
+          binaryString += String.fromCharCode(parseInt(bytes.substring(i, i + 8), 2));
+        }
+        return btoa(binaryString);
+      } catch (e) {
+        return '';
+      }
+    }
+
+    base64Input.addEventListener('input', () => {
+        binaryInput.value = base64ToBinary(base64Input.value);
+    });
+
+    binaryInput.addEventListener('input', () => {
+        base64Input.value = binaryToBase64(binaryInput.value);
+    });
+
+    formatBinary.addEventListener('change', () => {
+        if (base64Input.value) {
+            binaryInput.value = base64ToBinary(base64Input.value);
+        }
+    });
+
+    btnClear.addEventListener('click', () => {
+        base64Input.value = '';
+        binaryInput.value = '';
+    });
+    
+    // Dark mode toggle
+    document.getElementById('btn-dark-toggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('b64bin_dark_mode', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
+  </script>
+</body>
+</html>
