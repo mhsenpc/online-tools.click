@@ -18,13 +18,16 @@ const parseCSV = (csv: string): any[] => {
 };
 
 // Simple JSON to CSV
-const jsonToCSV = (json: any[], selectedFields: string[] = []): string => {
+const jsonToCSV = (json: any[], selectedFields: string[] = [], mappings: Record<string, string> = {}): string => {
   if (!json || json.length === 0) return '';
   const allHeaders = Object.keys(json[0]);
-  const headers = selectedFields.length > 0 ? selectedFields : allHeaders;
+  const fields = selectedFields.length > 0 ? selectedFields : allHeaders;
+  
+  const headers = fields.map(f => mappings[f] || f);
+  
   const csv = [
     headers.join(','),
-    ...json.map(obj => headers.map(h => JSON.stringify(obj[h] || '')).join(','))
+    ...json.map(obj => fields.map(h => JSON.stringify(obj[h] || '')).join(','))
   ];
   return csv.join('\n');
 };
@@ -35,12 +38,13 @@ export default function App() {
   const [mode, setMode] = useState<'json-to-csv' | 'csv-to-json'>('json-to-csv');
   const [availableFields, setAvailableFields] = useState<string[]>([]);
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
+  const [columnMappings, setColumnMappings] = useState<Record<string, string>>({});
 
-  const handleConvert = (inputData: string, fields = selectedFields) => {
+  const handleConvert = (inputData: string, fields = selectedFields, mappings = columnMappings) => {
     try {
       if (mode === 'json-to-csv') {
         const json = JSON.parse(inputData);
-        setOutput(jsonToCSV(Array.isArray(json) ? json : [json], fields));
+        setOutput(jsonToCSV(Array.isArray(json) ? json : [json], fields, mappings));
       } else {
         const csv = parseCSV(inputData);
         setOutput(JSON.stringify(csv, null, 2));
@@ -72,7 +76,7 @@ export default function App() {
         if (selectedFields.length === 0) {
             setSelectedFields(headers);
         }
-        handleConvert(input, selectedFields.length > 0 ? selectedFields : headers);
+        handleConvert(input, selectedFields.length > 0 ? selectedFields : headers, columnMappings);
       } catch (e) {
         setOutput('Error: Invalid format');
       }
@@ -80,8 +84,9 @@ export default function App() {
         handleConvert(input);
         setAvailableFields([]);
         setSelectedFields([]);
+        setColumnMappings({});
     }
-  }, [input, selectedFields]);
+  }, [input, selectedFields, columnMappings]);
 
   const toggleField = (field: string) => {
     setSelectedFields(prev => 
@@ -107,19 +112,28 @@ export default function App() {
           />
           {mode === 'json-to-csv' && availableFields.length > 0 && (
             <div className="mt-4">
-                <label className="block text-sm font-medium text-white/70 mb-2">Select Fields</label>
-                <div className="flex flex-wrap gap-2">
+                <label className="block text-sm font-medium text-white/70 mb-2">Configure Fields</label>
+                <div className="space-y-2">
                     {availableFields.map(field => (
-                        <button 
-                            key={field}
-                            onClick={() => toggleField(field)}
-                            className={clsx(
-                                "px-3 py-1 rounded-full text-sm",
-                                selectedFields.includes(field) ? "bg-[#ff3e00] text-white" : "bg-[#111111] text-white/50 border border-white/10"
+                        <div key={field} className="flex items-center gap-2">
+                            <button 
+                                onClick={() => toggleField(field)}
+                                className={clsx(
+                                    "px-3 py-1 rounded-full text-sm",
+                                    selectedFields.includes(field) ? "bg-[#ff3e00] text-white" : "bg-[#111111] text-white/50 border border-white/10"
+                                )}
+                            >
+                                {field}
+                            </button>
+                            {selectedFields.includes(field) && (
+                                <input 
+                                    className="px-2 py-1 bg-[#111111] border border-white/10 rounded text-sm text-white"
+                                    placeholder="Rename..."
+                                    value={columnMappings[field] || ''}
+                                    onChange={(e) => setColumnMappings(prev => ({ ...prev, [field]: e.target.value }))}
+                                />
                             )}
-                        >
-                            {field}
-                        </button>
+                        </div>
                     ))}
                 </div>
             </div>
