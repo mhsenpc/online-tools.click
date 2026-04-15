@@ -395,6 +395,78 @@
             font-style: italic;
         }
 
+        .regex-explanation-section {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .explanation-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .explanation-header label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .explanation-content {
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .token-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .token-item:last-child {
+            border-bottom: none;
+        }
+
+        .token-value {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--highlight-border);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .token-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .token-type {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        .explanation-empty {
+            padding: 32px 16px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
         .substitution-section {
             background: var(--bg-input);
             border: 1px solid var(--border);
@@ -703,6 +775,14 @@
                         <div class="match-details-empty">Enter a pattern to see matches</div>
                     </div>
                 </div>
+                <div class="regex-explanation-section">
+                    <div class="explanation-header">
+                        <label>Regex Breakdown</label>
+                    </div>
+                    <div class="explanation-content" id="regex-explanation">
+                        <div class="explanation-empty">Enter a pattern to see explanation</div>
+                    </div>
+                </div>
                 <div class="substitution-section">
                     <div class="substitution-header">
                         <label>Substitution</label>
@@ -838,6 +918,7 @@
         const cheatContent = document.getElementById('cheat-content');
         const copyResultBtn = document.getElementById('copy-result-btn');
         const toast = document.getElementById('toast');
+        const regexExplanation = document.getElementById('regex-explanation');
 
         const flagBtns = document.querySelectorAll('.flag-btn');
 
