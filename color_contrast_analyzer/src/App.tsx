@@ -23,6 +23,7 @@ const getContrastRatio = (l1: number, l2: number) => {
 export default function App() {
   const [fg, setFg] = useState('#000000');
   const [bg, setBg] = useState('#ffffff');
+  const [textSize, setTextSize] = useState<'normal' | 'large'>('normal');
 
   const ratio = useMemo(() => {
     const rgb1 = hexToRgb(fg);
@@ -31,6 +32,14 @@ export default function App() {
     const l2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
     return getContrastRatio(l1, l2);
   }, [fg, bg]);
+
+  const aaPass = useMemo(() => {
+    return textSize === 'normal' ? ratio >= 4.5 : ratio >= 3;
+  }, [ratio, textSize]);
+
+  const aaaPass = useMemo(() => {
+    return textSize === 'normal' ? ratio >= 7 : ratio >= 4.5;
+  }, [ratio, textSize]);
 
   return (
     <div className="min-h-screen bg-[#050505] text-white p-6 flex flex-col items-center">
@@ -46,9 +55,19 @@ export default function App() {
             type="color"
             value={fg}
             onChange={(e) => setFg(e.target.value)}
-            className="w-full h-12 rounded cursor-pointer"
+            className="w-full h-12 rounded cursor-pointer mb-2"
           />
-          <div className="mt-2 text-center font-mono">{fg}</div>
+          <input
+            type="text"
+            value={fg}
+            onChange={(e) => {
+              if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) {
+                setFg(e.target.value);
+              }
+            }}
+            className="w-full bg-[#050505] border border-gray-700 rounded p-2 text-center font-mono"
+            placeholder="#000000"
+          />
         </div>
         <div className="bg-[#111] p-6 rounded-xl border border-gray-800">
           <label className="block text-sm text-gray-400 mb-2">Background Color</label>
@@ -56,22 +75,50 @@ export default function App() {
             type="color"
             value={bg}
             onChange={(e) => setBg(e.target.value)}
-            className="w-full h-12 rounded cursor-pointer"
+            className="w-full h-12 rounded cursor-pointer mb-2"
           />
-          <div className="mt-2 text-center font-mono">{bg}</div>
+          <input
+            type="text"
+            value={bg}
+            onChange={(e) => {
+              if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) {
+                setBg(e.target.value);
+              }
+            }}
+            className="w-full bg-[#050505] border border-gray-700 rounded p-2 text-center font-mono"
+            placeholder="#FFFFFF"
+          />
         </div>
       </div>
 
       <div className="w-full max-w-2xl bg-[#111] p-8 rounded-xl border border-gray-800 text-center">
+        <div className="mb-6">
+          <label className="block text-sm text-gray-400 mb-2">Text Size</label>
+          <div className="flex justify-center gap-2">
+            <button
+              onClick={() => setTextSize('normal')}
+              className={`px-4 py-2 rounded-lg ${textSize === 'normal' ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}
+            >
+              Normal Text
+            </button>
+            <button
+              onClick={() => setTextSize('large')}
+              className={`px-4 py-2 rounded-lg ${textSize === 'large' ? 'bg-white text-black' : 'bg-gray-800 text-white'}`}
+            >
+              Large Text
+            </button>
+          </div>
+        </div>
+
         <div className="text-6xl font-bold font-['Fira_Code'] mb-6">{ratio}:1</div>
         
         <div className="grid grid-cols-2 gap-4">
-          <div className={`p-4 rounded-lg flex items-center justify-center gap-2 ${ratio >= 4.5 ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'}`}>
-            {ratio >= 4.5 ? <CheckCircle size={20} /> : <XCircle size={20} />}
+          <div className={`p-4 rounded-lg flex items-center justify-center gap-2 ${aaPass ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'}`}>
+            {aaPass ? <CheckCircle size={20} /> : <XCircle size={20} />}
             <span>AA Standard</span>
           </div>
-          <div className={`p-4 rounded-lg flex items-center justify-center gap-2 ${ratio >= 7 ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'}`}>
-            {ratio >= 7 ? <CheckCircle size={20} /> : <XCircle size={20} />}
+          <div className={`p-4 rounded-lg flex items-center justify-center gap-2 ${aaaPass ? 'bg-green-900/20 text-green-400' : 'bg-red-900/20 text-red-400'}`}>
+            {aaaPass ? <CheckCircle size={20} /> : <XCircle size={20} />}
             <span>AAA Standard</span>
           </div>
         </div>
