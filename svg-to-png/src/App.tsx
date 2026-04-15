@@ -5,6 +5,8 @@ function App() {
   const [svgCode, setSvgCode] = useState<string>('')
   const [width, setWidth] = useState<number>(500)
   const [height, setHeight] = useState<number>(500)
+  const [scaleFactor, setScaleFactor] = useState<number>(1)
+  const [mode, setMode] = useState<'dimensions' | 'scale'>('dimensions')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -33,12 +35,20 @@ function App() {
     const url = URL.createObjectURL(blob)
 
     img.onload = () => {
-      canvas.width = width
-      canvas.height = height
+      let finalWidth = width
+      let finalHeight = height
+
+      if (mode === 'scale') {
+        finalWidth = img.naturalWidth * scaleFactor
+        finalHeight = img.naturalHeight * scaleFactor
+      }
+
+      canvas.width = finalWidth
+      canvas.height = finalHeight
       const ctx = canvas.getContext('2d')
       if (ctx) {
-        ctx.clearRect(0, 0, width, height)
-        ctx.drawImage(img, 0, 0, width, height)
+        ctx.clearRect(0, 0, finalWidth, finalHeight)
+        ctx.drawImage(img, 0, 0, finalWidth, finalHeight)
         setPreviewUrl(canvas.toDataURL('image/png'))
       }
       URL.revokeObjectURL(url)
@@ -64,13 +74,33 @@ function App() {
       <input type="file" accept=".svg" onChange={handleFileChange} />
       <div className="controls">
         <label>
-          Width:
-          <input type="number" value={width} onChange={(e) => setWidth(Number(e.target.value))} />
+          Mode:
+          <select value={mode} onChange={(e) => setMode(e.target.value as 'dimensions' | 'scale')}>
+            <option value="dimensions">Custom Dimensions</option>
+            <option value="scale">Scale Factor</option>
+          </select>
         </label>
-        <label>
-          Height:
-          <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} />
-        </label>
+        {mode === 'dimensions' ? (
+          <>
+            <label>
+              Width:
+              <input type="number" value={width} onChange={(e) => setWidth(Number(e.target.value))} />
+            </label>
+            <label>
+              Height:
+              <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} />
+            </label>
+          </>
+        ) : (
+          <label>
+            Scale Factor:
+            <select value={scaleFactor} onChange={(e) => setScaleFactor(Number(e.target.value))}>
+              <option value={1}>1x</option>
+              <option value={2}>2x</option>
+              <option value={4}>4x</option>
+            </select>
+          </label>
+        )}
         <button onClick={convertToPng}>Convert</button>
       </div>
       {error && <p className="error">{error}</p>}
