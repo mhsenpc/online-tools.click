@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder/Decoder | online-tools.click</title>
+    <meta name="description" content="Encode and decode URLs with live preview and component breakdown.">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-3xl font-bold mt-2">URL Encoder / Decoder</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Live encoding and decoding with component breakdown</p>
+        </header>
+
+        <div class="space-y-6">
+
+            <!-- Input URL -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label for="input-url" class="font-bold text-sm">Original URL</label>
+                    <span id="input-count" class="text-xs text-gray-500 dark:text-gray-400">0 chars</span>
+                </div>
+                <textarea
+                    id="input-url"
+                    rows="4"
+                    class="w-full bg-white dark:bg-gray-900 rounded-2xl p-4 font-mono text-sm outline-none border border-gray-200 dark:border-gray-800 focus:border-blue-500 resize-y"
+                    placeholder="Enter URL to encode or decode..."
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex flex-wrap gap-3">
+                <button id="btn-encode" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
+                    Encode URL
+                </button>
+                <button id="btn-decode" class="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition-colors">
+                    Decode URL
+                </button>
+                <button id="btn-swap" class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors">
+                    ⇄ Swap
+                </button>
+                <button id="btn-clear" class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors">
+                    Clear
+                </button>
+            </div>
+
+            <!-- Error message -->
+            <div id="error-msg" class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm"></div>
+
+            <!-- Encoded/Decoded Output -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <label for="output-url" class="font-bold text-sm">Result</label>
+                    <div class="flex items-center gap-2">
+                        <span id="output-count" class="text-xs text-gray-500 dark:text-gray-400">0 chars</span>
+                        <button id="btn-copy" class="px-3 py-1 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-xs transition-colors">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                <textarea
+                    id="output-url"
+                    rows="4"
+                    class="w-full bg-white dark:bg-gray-900 rounded-2xl p-4 font-mono text-sm outline-none border border-gray-200 dark:border-gray-800 resize-y"
+                    placeholder="Result will appear here..."
+                    readonly
+                    spellcheck="false"></textarea>
+            </div>
+
+            <!-- Component Breakdown -->
+            <div class="space-y-3">
+                <h2 class="font-bold text-sm">Component Breakdown</h2>
+                <div id="components" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Protocol</label>
+                        <div id="comp-protocol" class="font-mono mt-1 break-all">—</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Host</label>
+                        <div id="comp-host" class="font-mono mt-1 break-all">—</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Path</label>
+                        <div id="comp-path" class="font-mono mt-1 break-all">—</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Query String</label>
+                        <div id="comp-query" class="font-mono mt-1 break-all">—</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Hash/Fragment</label>
+                        <div id="comp-hash" class="font-mono mt-1 break-all">—</div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                        <label class="font-bold text-xs text-gray-400 uppercase">Full URL</label>
+                        <div id="comp-full" class="font-mono mt-1 break-all text-xs">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Query Parameters -->
+            <div class="space-y-3">
+                <h2 class="font-bold text-sm">Query Parameters</h2>
+                <div id="params-list" class="space-y-2">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 italic">No parameters detected</div>
+                </div>
+            </div>
+
+            <!-- Character encoding info -->
+            <div class="px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 text-xs">
+                <div class="font-bold text-blue-800 dark:text-blue-200 mb-1">ℹ️ About URL Encoding</div>
+                <div class="text-blue-700 dark:text-blue-300 space-y-1">
+                    <p><strong>Encode:</strong> Converts special characters to %XX format (e.g., space → %20, é → %C3%A9)</p>
+                    <p><strong>Decode:</strong> Restores %XX encoded characters back to original form</p>
+                    <p><strong>Live Mode:</strong> Results update automatically as you type</p>
+                </div>
+            </div>
+
+            <!-- Privacy note -->
+            <p class="text-xs text-gray-400 dark:text-gray-500 text-center">
+                🔒 Your data never leaves this page. All encoding and decoding happens locally in your browser.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const inputUrl = document.getElementById('input-url');
+        const outputUrl = document.getElementById('output-url');
+        const inputCount = document.getElementById('input-count');
+        const outputCount = document.getElementById('output-count');
+        const errorMsg = document.getElementById('error-msg');
+        const components = {
+            protocol: document.getElementById('comp-protocol'),
+            host: document.getElementById('comp-host'),
+            path: document.getElementById('comp-path'),
+            query: document.getElementById('comp-query'),
+            hash: document.getElementById('comp-hash'),
+            full: document.getElementById('comp-full')
+        };
+        const paramsList = document.getElementById('params-list');
+
+        let autoConvert = true;
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMsg.classList.add('hidden');
+        }
+
+        function updateCounts() {
+            inputCount.textContent = `${inputUrl.value.length} chars`;
+            outputCount.textContent = `${outputUrl.value.length} chars`;
+        }
+
+        function encodeUrl(url) {
+            // Split the URL into parts to encode only the necessary components
+            try {
+                const urlObj = new URL(url);
+                // Encode path, search params, and hash
+                const encodedPath = urlObj.pathname.split('/').map(segment =>
+                    encodeURIComponent(segment)
+                ).join('/');
+
+                urlObj.pathname = encodedPath;
+
+                // Rebuild query string with encoded values
+                const searchParams = new URLSearchParams();
+                urlObj.searchParams.forEach((value, key) => {
+                    searchParams.append(encodeURIComponent(key), encodeURIComponent(value));
+                });
+                urlObj.search = searchParams.toString();
+
+                // Encode hash
+                if (urlObj.hash) {
+                    urlObj.hash = encodeURIComponent(urlObj.hash.substring(1));
+                }
+
+                return urlObj.toString();
+            } catch (e) {
+                // If URL parsing fails, encode the entire string
+                return url.split('').map(char => {
+                    const code = char.charCodeAt(0);
+                    if (code > 255 || /[^\w\-\.~]/.test(char)) {
+                        return encodeURIComponent(char);
+                    }
+                    return char;
+                }).join('');
+            }
+        }
+
+        function decodeUrl(url) {
+            try {
+                return decodeURIComponent(url);
+            } catch (e) {
+                throw new Error('Invalid URL encoding');
+            }
+        }
+
+        function parseUrlComponents(url) {
+            try {
+                const urlObj = new URL(url);
+                return {
+                    protocol: urlObj.protocol,
+                    host: urlObj.host,
+                    path: urlObj.pathname,
+                    query: urlObj.search,
+                    hash: urlObj.hash,
+                    full: urlObj.toString()
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function updateComponents(url) {
+            const parsed = parseUrlComponents(url);
+
+            if (parsed) {
+                components.protocol.textContent = parsed.protocol || '—';
+                components.host.textContent = parsed.host || '—';
+                components.path.textContent = parsed.path || '—';
+                components.query.textContent = parsed.query || '—';
+                components.hash.textContent = parsed.hash || '—';
+                components.full.textContent = parsed.full || '—';
+
+                // Update query params list
+                try {
+                    const urlObj = new URL(url);
+                    paramsList.innerHTML = '';
+
+                    if (urlObj.searchParams.toString() === '') {
+                        paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">No parameters detected</div>';
+                        return;
+                    }
+
+                    urlObj.searchParams.forEach((value, key) => {
+                        const row = document.createElement('div');
+                        row.className = 'flex gap-2 p-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 items-center';
+                        row.innerHTML = `
+                            <span class="font-mono text-blue-600 dark:text-blue-400 text-xs break-all">${escapeHtml(key)}</span>
+                            <span class="text-gray-400">=</span>
+                            <span class="font-mono text-green-600 dark:text-green-400 text-xs break-all flex-1">${escapeHtml(value)}</span>
+                        `;
+                        paramsList.appendChild(row);
+                    });
+                } catch (e) {
+                    paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">Unable to parse parameters</div>';
+                }
+            } else {
+                Object.values(components).forEach(el => el.textContent = '—');
+                paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">Invalid URL format</div>';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function performEncode() {
+            const input = inputUrl.value.trim();
+            hideError();
+
+            if (!input) {
+                outputUrl.value = '';
+                updateCounts();
+                Object.values(components).forEach(el => el.textContent = '—');
+                paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">No parameters detected</div>';
+                return;
+            }
+
+            try {
+                const encoded = encodeUrl(input);
+                outputUrl.value = encoded;
+                updateCounts();
+                updateComponents(encoded);
+            } catch (e) {
+                showError(e.message);
+                outputUrl.value = '';
+            }
+        }
+
+        function performDecode() {
+            const input = inputUrl.value.trim();
+            hideError();
+
+            if (!input) {
+                outputUrl.value = '';
+                updateCounts();
+                Object.values(components).forEach(el => el.textContent = '—');
+                paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">No parameters detected</div>';
+                return;
+            }
+
+            try {
+                const decoded = decodeUrl(input);
+                outputUrl.value = decoded;
+                updateCounts();
+                updateComponents(decoded);
+            } catch (e) {
+                showError(e.message);
+                outputUrl.value = '';
+            }
+        }
+
+        // Live encoding/decoding with debounce
+        let debounceTimer;
+        inputUrl.addEventListener('input', () => {
+            updateCounts();
+            if (autoConvert) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(performEncode, 300);
+            }
+        });
+
+        // Button handlers
+        document.getElementById('btn-encode').addEventListener('click', () => {
+            autoConvert = false;
+            performEncode();
+        });
+
+        document.getElementById('btn-decode').addEventListener('click', () => {
+            autoConvert = false;
+            performDecode();
+        });
+
+        document.getElementById('btn-swap').addEventListener('click', () => {
+            const temp = inputUrl.value;
+            inputUrl.value = outputUrl.value;
+            outputUrl.value = temp;
+            updateCounts();
+
+            // Re-enable auto convert and re-parse
+            autoConvert = true;
+            if (inputUrl.value) {
+                updateComponents(inputUrl.value);
+            }
+        });
+
+        document.getElementById('btn-clear').addEventListener('click', () => {
+            inputUrl.value = '';
+            outputUrl.value = '';
+            hideError();
+            updateCounts();
+            Object.values(components).forEach(el => el.textContent = '—');
+            paramsList.innerHTML = '<div class="text-xs text-gray-500 dark:text-gray-400 italic">No parameters detected</div>';
+            autoConvert = true;
+        });
+
+        document.getElementById('btn-copy').addEventListener('click', async () => {
+            if (!outputUrl.value) return;
+
+            try {
+                await navigator.clipboard.writeText(outputUrl.value);
+                const btn = document.getElementById('btn-copy');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                btn.classList.add('bg-green-500');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-500');
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                }, 2000);
+            } catch (err) {
+                // Fallback
+                outputUrl.select();
+                document.execCommand('copy');
+            }
+        });
+
+        // Initialize
+        updateCounts();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
