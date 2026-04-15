@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SVG to Data URI Converter — Free Online Tool</title>
+  <meta name="description" content="Convert SVG code to URL-encoded Data URIs instantly. Generate CSS background-image snippets. Minify output. 100% private — runs in your browser." />
+  <meta name="keywords" content="svg to data uri, svg data url, css background svg, encode svg, base64 svg" />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SVG to Data URI Converter",
+    "description": "Convert SVG code to URL-encoded Data URIs with CSS snippet generation.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+    // Apply dark mode from localStorage or system preference before render
+    (function() {
+      const saved = localStorage.getItem('svg_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    /* Custom focus ring style */
+    textarea:focus { outline: none; }
+
+    /* Copy button feedback */
+    .copy-btn.copied {
+      background-color: #22c55e !important;
+      border-color: #22c55e !important;
+      color: white !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      .copy-btn.copied {
+        background-color: #16a34a !important;
+        border-color: #16a34a !important;
+      }
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🎨</span>
+      <div class="flex-1">
+        <h1 class="text-xl font-bold leading-tight">SVG to Data URI Converter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+      <!-- Dark mode toggle button -->
+      <button id="btn-dark-toggle"
+              class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Toggle dark mode"
+              title="Toggle dark/light mode">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Options bar -->
+    <section aria-labelledby="options-label" class="flex flex-wrap items-center gap-4 px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+      <span id="options-label" class="font-medium text-sm">Options:</span>
+
+      <!-- Minify toggle -->
+      <label class="flex items-center gap-1.5 cursor-pointer" title="Remove whitespace and comments before encoding">
+        <input type="checkbox" id="minify" class="accent-blue-600 w-4 h-4" aria-label="Minify SVG" checked />
+        <span class="text-sm">Minify SVG</span>
+      </label>
+
+      <!-- URI encoding mode -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-600 dark:text-gray-400">Encoding:</span>
+        <fieldset class="flex gap-3" aria-label="URI encoding mode">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="radio" name="encoding" value="base64" id="enc-base64" class="accent-blue-600" checked />
+            <span class="text-sm">Base64</span>
+          </label>
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="radio" name="encoding" value="url" id="enc-url" class="accent-blue-600" />
+            <span class="text-sm">URL-encoded</span>
+          </label>
+        </fieldset>
+      </div>
+    </section>
+
+    <!-- Input / Output grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Input panel -->
+      <section aria-labelledby="input-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="input-label" for="input-svg" class="font-medium text-sm">SVG Input</label>
+          <div class="flex items-center gap-2">
+            <span id="input-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 chars</span>
+          </div>
+        </div>
+        <textarea
+          id="input-svg"
+          rows="12"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="&#60;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;100&quot; height=&quot;100&quot;&#62;
+  &#60;circle cx=&quot;50&quot; cy=&quot;50&quot; r=&quot;40&quot; fill=&quot;%23ff3e00&quot;/&#62;
+&#60;/svg&#62;"
+          aria-label="SVG input"
+          aria-describedby="input-count"
+          spellcheck="false"
+        ></textarea>
+        <div class="flex items-center gap-2">
+          <button id="btn-clear" class="text-xs px-3 py-1.5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            Clear
+          </button>
+          <button id="btn-sample" class="text-xs px-3 py-1.5 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            Load Sample
+          </button>
+        </div>
+      </section>
+
+      <!-- Output panel -->
+      <section aria-labelledby="output-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="output-label" for="output-uri" class="font-medium text-sm">Data URI Output</label>
+          <div class="flex items-center gap-2">
+            <span id="output-size" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 bytes</span>
+            <button id="btn-copy-uri" class="copy-btn text-xs px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors" aria-label="Copy Data URI to clipboard">
+              Copy URI
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="output-uri"
+          rows="12"
+          readonly
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-850 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Your Data URI will appear here…"
+          aria-label="Data URI output"
+          aria-describedby="output-size"
+        ></textarea>
+      </section>
+
+    </div>
+
+    <!-- CSS Snippet panel -->
+    <section aria-labelledby="css-label" class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <label id="css-label" for="output-css" class="font-medium text-sm">CSS Snippet (background-image)</label>
+        <button id="btn-copy-css" class="copy-btn text-xs px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors" aria-label="Copy CSS snippet to clipboard">
+          Copy CSS
+        </button>
+      </div>
+      <textarea
+        id="output-css"
+        rows="4"
+        readonly
+        class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-850 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+        placeholder="background-image: url('data:image/svg+xml,...');"
+        aria-label="CSS snippet output"
+      ></textarea>
+    </section>
+
+    <!-- Preview -->
+    <section aria-labelledby="preview-label" class="flex flex-col gap-2">
+      <h2 id="preview-label" class="font-medium text-sm">Preview</h2>
+      <div id="preview-container" class="w-full h-48 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+        <p id="preview-placeholder" class="text-sm text-gray-400 dark:text-gray-500">Your SVG preview will appear here</p>
+        <img id="preview-image" class="max-w-full max-h-full hidden" alt="SVG preview" />
+      </div>
+    </section>
+
+    <!-- Usage notes -->
+    <section aria-labelledby="usage-label" class="px-4 py-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+      <h2 id="usage-label" class="font-medium text-sm text-blue-900 dark:text-blue-200 mb-2">💡 Usage Tips</h2>
+      <ul class="text-xs text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
+        <li><strong>Base64 encoding:</strong> Produces <code class="bg-blue-100 dark:bg-blue-900 px-1 rounded">data:image/svg+xml;base64,...</code> — most compatible with CSS and HTML.</li>
+        <li><strong>URL-encoded:</strong> Produces <code class="bg-blue-100 dark:bg-blue-900 px-1 rounded">data:image/svg+xml;charset=UTF-8,...</code> — human-readable but longer for complex SVGs.</li>
+        <li><strong>Minification:</strong> Removes unnecessary whitespace and comments for smaller file sizes.</li>
+        <li>Use the CSS snippet directly in your stylesheets or inline styles.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <script>
+    // DOM elements
+    const inputSvg = document.getElementById('input-svg');
+    const outputUri = document.getElementById('output-uri');
+    const outputCss = document.getElementById('output-css');
+    const previewImage = document.getElementById('preview-image');
+    const previewPlaceholder = document.getElementById('preview-placeholder');
+    const inputCount = document.getElementById('input-count');
+    const outputSize = document.getElementById('output-size');
+    const minifyCheckbox = document.getElementById('minify');
+    const encBase64 = document.getElementById('enc-base64');
+    const encUrl = document.getElementById('enc-url');
+    const btnClear = document.getElementById('btn-clear');
+    const btnSample = document.getElementById('btn-sample');
+    const btnCopyUri = document.getElementById('btn-copy-uri');
+    const btnCopyCss = document.getElementById('btn-copy-css');
+    const btnDarkToggle = document.getElementById('btn-dark-toggle');
+
+    // Sample SVG
+    const SAMPLE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="#ff3e00"/>
+  <path d="M30 50 L45 65 L70 35" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+    // Dark mode handling
+    function updateDarkMode() {
+      const isDark = document.documentElement.classList.contains('dark');
+      localStorage.setItem('svg_dark_mode', isDark ? 'dark' : 'light');
+    }
+
+    btnDarkToggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      updateDarkMode();
+    });
+
+    // Minify SVG: remove comments and unnecessary whitespace
+    function minifySvg(svg) {
+      return svg
+        .replace(/<!--[\s\S]*?-->/g, '') // Remove comments
+        .replace(/\s+/g, ' ') // Collapse whitespace
+        .replace(/>\s+</g, '><') // Remove whitespace between tags
+        .replace(/\s+>/g, '>') // Remove whitespace before closing >
+        .replace(/<\s+/g, '<') // Remove whitespace after opening <
+        .trim();
+    }
+
+    // Encode SVG to Base64
+    function encodeBase64(str) {
+      try {
+        return btoa(unescape(encodeURIComponent(str)));
+      } catch (e) {
+        console.error('Base64 encoding error:', e);
+        return null;
+      }
+    }
+
+    // Encode SVG for URL (percent-encoding)
+    function encodeUrl(str) {
+      try {
+        return encodeURIComponent(str)
+          .replace(/'/g, '%27')
+          .replace(/"/g, '%22');
+      } catch (e) {
+        console.error('URL encoding error:', e);
+        return null;
+      }
+    }
+
+    // Convert SVG to Data URI
+    function svgToDataUri(svg, encoding, shouldMinify) {
+      let processed = svg;
+
+      // Minify if requested
+      if (shouldMinify) {
+        processed = minifySvg(processed);
+      }
+
+      // Encode based on selected method
+      if (encoding === 'base64') {
+        const base64 = encodeBase64(processed);
+        if (!base64) return null;
+        return `data:image/svg+xml;base64,${base64}`;
+      } else {
+        const urlEncoded = encodeUrl(processed);
+        if (!urlEncoded) return null;
+        return `data:image/svg+xml;charset=UTF-8,${urlEncoded}`;
+      }
+    }
+
+    // Update output
+    function updateOutput() {
+      const svg = inputSvg.value.trim();
+      const encoding = encBase64.checked ? 'base64' : 'url';
+      const shouldMinify = minifyCheckbox.checked;
+
+      // Update character count
+      inputCount.textContent = `${svg.length} chars`;
+
+      if (!svg) {
+        outputUri.value = '';
+        outputCss.value = '';
+        outputSize.textContent = '0 bytes';
+        previewImage.classList.add('hidden');
+        previewPlaceholder.classList.remove('hidden');
+        return;
+      }
+
+      // Convert to Data URI
+      const dataUri = svgToDataUri(svg, encoding, shouldMinify);
+
+      if (!dataUri) {
+        outputUri.value = 'Error: Unable to encode SVG';
+        outputCss.value = '';
+        outputSize.textContent = '0 bytes';
+        previewImage.classList.add('hidden');
+        previewPlaceholder.classList.remove('hidden');
+        return;
+      }
+
+      // Update output fields
+      outputUri.value = dataUri;
+      outputCss.value = `background-image: url('${dataUri}');`;
+      outputSize.textContent = `${dataUri.length} bytes`;
+
+      // Update preview
+      previewImage.src = dataUri;
+      previewImage.classList.remove('hidden');
+      previewPlaceholder.classList.add('hidden');
+
+      // Handle image load errors
+      previewImage.onerror = () => {
+        previewImage.classList.add('hidden');
+        previewPlaceholder.classList.remove('hidden');
+        previewPlaceholder.textContent = 'Invalid SVG — preview not available';
+      };
+    }
+
+    // Copy to clipboard
+    async function copyToClipboard(text, button) {
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Copy failed:', err);
+        button.textContent = 'Failed';
+        setTimeout(() => {
+          button.textContent = button === btnCopyUri ? 'Copy URI' : 'Copy CSS';
+        }, 2000);
+      }
+    }
+
+    // Event listeners
+    inputSvg.addEventListener('input', updateOutput);
+    minifyCheckbox.addEventListener('change', updateOutput);
+    encBase64.addEventListener('change', updateOutput);
+    encUrl.addEventListener('change', updateOutput);
+
+    btnClear.addEventListener('click', () => {
+      inputSvg.value = '';
+      updateOutput();
+      inputSvg.focus();
+    });
+
+    btnSample.addEventListener('click', () => {
+      inputSvg.value = SAMPLE_SVG;
+      updateOutput();
+    });
+
+    btnCopyUri.addEventListener('click', () => {
+      if (outputUri.value) {
+        copyToClipboard(outputUri.value, btnCopyUri);
+      }
+    });
+
+    btnCopyCss.addEventListener('click', () => {
+      if (outputCss.value) {
+        copyToClipboard(outputCss.value, btnCopyCss);
+      }
+    });
+
+    // Initialize
+    updateOutput();
+  </script>
+
+</body>
+</html>
