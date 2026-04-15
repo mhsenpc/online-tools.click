@@ -3,15 +3,52 @@ import { useState } from 'react'
 function App() {
   const [jsonInput, setJsonInput] = useState('')
   const [csvOutput, setCsvOutput] = useState('')
-  const [error, setError] = useState('')
+  const [flattenedData, setFlattenedData] = useState<any[]>([])
+  const [columns, setColumns] = useState<string[]>([])
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([])
 
-  const [delimiter, setDelimiter] = useState(',')
+  const updateCSV = (data: any[], headers: string[]) => {
+    const csv = [
+        headers.join(delimiter),
+        ...data.map((item) => 
+          headers.map((h) => {
+            const val = item[h] ?? '';
+            const stringVal = typeof val === 'string' ? val : JSON.stringify(val);
+            return `"${stringVal.replace(/"/g, '""')}"`;
+          }).join(delimiter)
+        )
+      ].join('\n')
 
-  const flattenObject = (obj: any, prefix = ''): any => {
+      setCsvOutput(csv)
+  }
+
+  const convertToCSV = () => {
+    try {
+      const data = JSON.parse(jsonInput)
+      if (!Array.isArray(data)) {
+        setError('JSON must be an array of objects')
+        return
+      }
+
+      const flattened = data.map((item) => flattenObject(item, '', 0, maxDepth, arraySeparator))
+      setFlattenedData(flattened)
+      
+      const allHeaders = Array.from(new Set(flattened.flatMap((item) => Object.keys(item)))) as string[]
+      setColumns(allHeaders)
+      setSelectedColumns(allHeaders)
+      
+      updateCSV(flattened, allHeaders)
+      setError('')
+    } catch (e) {
+      setError('Invalid JSON')
+    }
+  }
     return Object.keys(obj).reduce((acc: any, k) => {
       const pre = prefix.length ? prefix + '.' : '';
-      if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
-        Object.assign(acc, flattenObject(obj[k], pre + k));
+      if (Array.isArray(obj[k])) {
+        acc[pre + k] = obj[k].join(arraySeparator);
+      } else if (typeof obj[k] === 'object' && obj[k] !== null) {
+        Object.assign(acc, flattenObject(obj[k], pre + k, depth + 1, maxDepth, arraySeparator));
       } else {
         acc[pre + k] = obj[k];
       }
@@ -27,9 +64,12 @@ function App() {
         return
       }
 
-      const flattenedData = data.map((item) => flattenObject(item))
-      const headers = Array.from(new Set(flattenedData.flatMap((item) => Object.keys(item))))
+      const flattenedData = data.map((item) => flattenObject(item, '', 0, maxDepth, arraySeparator))
+      const allHeaders = Array.from(new Set(flattenedData.flatMap((item) => Object.keys(item))))
+      setColumns(allHeaders)
+      setSelectedColumns(allHeaders)
       
+      const headers = allHeaders
       const csv = [
         headers.join(delimiter),
         ...flattenedData.map((item) => 
@@ -76,11 +116,38 @@ function App() {
             <option value="\t">Tab</option>
           </select>
         </label>
+        <label style={{ marginLeft: '1rem' }}>
+          Max Depth:
+          <input type="number" value={maxDepth} onChange={(e) => setMaxDepth(parseInt(e.target.value))} />
+        </label>
+        <label style={{ marginLeft: '1rem' }}>
+          Array Separator:
+          <input type="text" value={arraySeparator} onChange={(e) => setArraySeparator(e.target.value)} />
+        </label>
       </div>
       <button onClick={convertToCSV}>Convert to CSV</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {csvOutput && (
         <div style={{ marginTop: '1rem' }}>
+          <div style={{ marginBottom: '1rem' }}>
+            <h3>Columns:</h3>
+            {columns.map(col => (
+              <label key={col} style={{ marginRight: '1rem', display: 'inline-block' }}>
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.includes(col)}
+                  onChange={(e) => {
+                    const newSelected = e.target.checked 
+                      ? [...selectedColumns, col]
+                      : selectedColumns.filter(c => c !== col);
+                    setSelectedColumns(newSelected);
+                    updateCSV(flattenedData, newSelected);
+                  }}
+                />
+                {col}
+              </label>
+            ))}
+          </div>
           <textarea 
             style={{ width: '100%', height: '200px' }}
             value={csvOutput}
