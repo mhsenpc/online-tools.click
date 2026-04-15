@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random String & Password Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Random Generator</h1>
+        
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-1">Length: <span id="lengthVal">16</span></label>
+            <input type="range" id="length" min="1" max="128" value="16" class="w-full">
+        </div>
+
+        <div class="space-y-2 mb-4">
+            <label class="flex items-center"><input type="checkbox" id="upper" checked class="mr-2"> Uppercase</label>
+            <label class="flex items-center"><input type="checkbox" id="lower" checked class="mr-2"> Lowercase</label>
+            <label class="flex items-center"><input type="checkbox" id="number" checked class="mr-2"> Numbers</label>
+            <label class="flex items-center"><input type="checkbox" id="symbol" class="mr-2"> Symbols</label>
+        </div>
+
+        <button id="generate" class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">Generate</button>
+
+        <div class="mt-4 relative">
+            <input type="text" id="result" readonly class="w-full p-2 border rounded bg-gray-50 text-gray-800 font-mono">
+            <button id="copy" class="absolute right-2 top-2 text-gray-500 hover:text-blue-600">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        const lengthInput = document.getElementById('length');
+        const lengthVal = document.getElementById('lengthVal');
+        const generateBtn = document.getElementById('generate');
+        const resultInput = document.getElementById('result');
+        const copyBtn = document.getElementById('copy');
+
+        lengthInput.addEventListener('input', () => lengthVal.textContent = lengthInput.value);
+
+        generateBtn.addEventListener('click', () => {
+            const length = parseInt(lengthInput.value);
+            const useUpper = document.getElementById('upper').checked;
+            const useLower = document.getElementById('lower').checked;
+            const useNumber = document.getElementById('number').checked;
+            const useSymbol = document.getElementById('symbol').checked;
+
+            const upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const lower = 'abcdefghijklmnopqrstuvwxyz';
+            const numbers = '0123456789';
+            const symbols = '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+
+            let chars = '';
+            if (useUpper) chars += upper;
+            if (useLower) chars += lower;
+            if (useNumber) chars += numbers;
+            if (useSymbol) chars += symbols;
+
+            if (!chars) {
+                alert('Please select at least one character type.');
+                return;
+            }
+
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            resultInput.value = result;
+        });
+
+        copyBtn.addEventListener('click', () => {
+            resultInput.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        });
+    </script>
+</body>
+</html>
