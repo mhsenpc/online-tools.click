@@ -18,9 +18,10 @@ const parseCSV = (csv: string): any[] => {
 };
 
 // Simple JSON to CSV
-const jsonToCSV = (json: any[]): string => {
+const jsonToCSV = (json: any[], selectedFields: string[] = []): string => {
   if (!json || json.length === 0) return '';
-  const headers = Object.keys(json[0]);
+  const allHeaders = Object.keys(json[0]);
+  const headers = selectedFields.length > 0 ? selectedFields : allHeaders;
   const csv = [
     headers.join(','),
     ...json.map(obj => headers.map(h => JSON.stringify(obj[h] || '')).join(','))
@@ -32,12 +33,14 @@ export default function App() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState<'json-to-csv' | 'csv-to-json'>('json-to-csv');
+  const [availableFields, setAvailableFields] = useState<string[]>([]);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
 
-  const handleConvert = (inputData: string) => {
+  const handleConvert = (inputData: string, fields = selectedFields) => {
     try {
       if (mode === 'json-to-csv') {
         const json = JSON.parse(inputData);
-        setOutput(jsonToCSV(Array.isArray(json) ? json : [json]));
+        setOutput(jsonToCSV(Array.isArray(json) ? json : [json], fields));
       } else {
         const csv = parseCSV(inputData);
         setOutput(JSON.stringify(csv, null, 2));
@@ -50,13 +53,41 @@ export default function App() {
   useEffect(() => {
     if (input.trim() === '') {
       setOutput('');
+      setAvailableFields([]);
+      setSelectedFields([]);
       return;
     }
     // Simple detection
     const isJson = input.trim().startsWith('{') || input.trim().startsWith('[');
     setMode(isJson ? 'json-to-csv' : 'csv-to-json');
-    handleConvert(input);
-  }, [input]);
+
+    if (isJson) {
+      try {
+        const json = JSON.parse(input);
+        const data = Array.isArray(json) ? json : [json];
+        const headers = data.length > 0 ? Object.keys(data[0]) : [];
+        setAvailableFields(headers);
+        // Only reset selection if fields changed significantly? 
+        // For now, simple reset if empty or different
+        if (selectedFields.length === 0) {
+            setSelectedFields(headers);
+        }
+        handleConvert(input, selectedFields.length > 0 ? selectedFields : headers);
+      } catch (e) {
+        setOutput('Error: Invalid format');
+      }
+    } else {
+        handleConvert(input);
+        setAvailableFields([]);
+        setSelectedFields([]);
+    }
+  }, [input, selectedFields]);
+
+  const toggleField = (field: string) => {
+    setSelectedFields(prev => 
+        prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white p-6">
@@ -74,6 +105,25 @@ export default function App() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Paste JSON or CSV here..."
           />
+          {mode === 'json-to-csv' && availableFields.length > 0 && (
+            <div className="mt-4">
+                <label className="block text-sm font-medium text-white/70 mb-2">Select Fields</label>
+                <div className="flex flex-wrap gap-2">
+                    {availableFields.map(field => (
+                        <button 
+                            key={field}
+                            onClick={() => toggleField(field)}
+                            className={clsx(
+                                "px-3 py-1 rounded-full text-sm",
+                                selectedFields.includes(field) ? "bg-[#ff3e00] text-white" : "bg-[#111111] text-white/50 border border-white/10"
+                            )}
+                        >
+                            {field}
+                        </button>
+                    ))}
+                </div>
+            </div>
+          )}
         </div>
         <div className="space-y-4">
           <label className="block text-sm font-medium text-white/70">Output ({mode})</label>
