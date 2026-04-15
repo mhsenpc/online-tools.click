@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Join Visualizer | Online Tools</title>
+    <meta name="description" content="Interactive SQL JOIN visualizer. Learn and generate JOIN queries between two tables.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --text: #ffffff;
+            --accent: #50fa7b;
+            --border: #333;
+        }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .visualizer { border: 2px solid var(--border); padding: 20px; text-align: center; margin-bottom: 20px; min-height: 200px; display: flex; align-items: center; justify-content: center; }
+        .syntax { background: #222; padding: 15px; border-radius: 5px; position: relative; }
+        .copy-btn { position: absolute; top: 5px; right: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL Join Visualizer</h1>
+        <div class="controls">
+            <select id="join-type">
+                <option value="INNER">INNER JOIN</option>
+                <option value="LEFT">LEFT JOIN</option>
+                <option value="RIGHT">RIGHT JOIN</option>
+                <option value="FULL">FULL OUTER JOIN</option>
+            </select>
+            <input type="text" id="table-a" placeholder="Table A">
+            <input type="text" id="table-b" placeholder="Table B">
+        </div>
+        <div class="visualizer" id="visualizer">
+            <!-- Visualization goes here -->
+        </div>
+        <div class="syntax" id="syntax">
+            <code id="sql-output">SELECT * FROM TableA JOIN TableB ON TableA.id = TableB.a_id</code>
+            <button class="copy-btn" onclick="copySql()">Copy</button>
+        </div>
+    </div>
+    <script>
+        const joinType = document.getElementById('join-type');
+        const tableA = document.getElementById('table-a');
+        const tableB = document.getElementById('table-b');
+        const sqlOutput = document.getElementById('sql-output');
+        const visualizer = document.getElementById('visualizer');
+
+        function update() {
+            const type = joinType.value;
+            const a = tableA.value || 'TableA';
+            const b = tableB.value || 'TableB';
+            sqlOutput.textContent = `SELECT * FROM ${a} ${type} JOIN ${b} ON ${a}.id = ${b}.id;`;
+            visualizer.innerHTML = `Visualization for ${type} JOIN between ${a} and ${b}`;
+        }
+
+        joinType.addEventListener('change', update);
+        tableA.addEventListener('input', update);
+        tableB.addEventListener('input', update);
+
+        function copySql() {
+            navigator.clipboard.writeText(sqlOutput.textContent);
+            alert('Copied!');
+        }
+    </script>
+</body>
+</html>
