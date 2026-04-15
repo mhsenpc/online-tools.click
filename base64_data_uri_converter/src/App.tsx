@@ -12,7 +12,15 @@ function App() {
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h1>Base64 to Data URI Converter</h1>
-      <input type="text" placeholder="MIME Type (e.g. image/png)" value={mimeType} onChange={(e) => setMimeType(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: '1rem' }} />
+      <select value={mimeType} onChange={(e) => setMimeType(e.target.value)} style={{ display: 'block', width: '100%', marginBottom: '1rem' }}>
+        <option value="image/png">image/png</option>
+        <option value="image/jpeg">image/jpeg</option>
+        <option value="image/gif">image/gif</option>
+        <option value="image/webp">image/webp</option>
+        <option value="application/pdf">application/pdf</option>
+        <option value="application/font-woff">application/font-woff</option>
+        <option value="text/plain">text/plain</option>
+      </select>
       <textarea 
         style={{ width: '100%', height: '200px', marginBottom: '1rem' }}
         value={base64}
