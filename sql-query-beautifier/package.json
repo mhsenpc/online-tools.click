@@ -1,0 +1,13 @@
+{
+  "name": "sql-query-beautifier",
+  "version": "1.0.0",
+  "dependencies": {
+    "sql-formatter": "^13.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2"
+  },
+  "scripts": {
+    "build": "esbuild main.js --bundle --outfile=dist/bundle.js && cp index.html dist/"
+  }
+}
