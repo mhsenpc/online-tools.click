@@ -30,9 +30,9 @@
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3 mb-10">
                 <!-- Cards for voting -->
                 <script>
-                    const points = [1, 2, 3, 5, 8, 13, 21, '?'];
+                    const points = [1, 2, 3, 5, 8, 13, 21, '?', '☕', '∞'];
                     document.write(points.map(p => `
-                        <button onclick="vote(${p === '?' ? "'?'" : p})" class="card bg-white p-4 rounded-lg shadow border-2 border-transparent hover:border-blue-500 text-2xl font-bold text-blue-600 focus:bg-blue-600 focus:text-white">${p}</button>
+                        <button onclick="vote('${p}')" class="card bg-white p-4 rounded-lg shadow border-2 border-transparent hover:border-blue-500 text-2xl font-bold text-blue-600 focus:bg-blue-600 focus:text-white">${p}</button>
                     `).join(''));
                 </script>
             </div>
