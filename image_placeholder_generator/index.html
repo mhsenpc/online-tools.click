@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Image Placeholder Generator | online-tools.click</title>
+    <meta name="description" content="Generate placeholder images with custom dimensions, colors, and text. Perfect for frontend developers testing responsive layouts. 100% client-side.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+        }
+        .dark {
+            --bg-card: #111827;
+        }
+
+        body {
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        #previewCanvas {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+        }
+
+        .color-input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            background: none;
+        }
+
+        .color-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-input::-webkit-color-swatch {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+
+        .dark .color-input::-webkit-color-swatch {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-full">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg toast">
+            <span id="toastMessage">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <a href="/" class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 inline-block">
+                ← Back to Tools
+            </a>
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">Image Placeholder Generator</h1>
+            <p class="text-gray-600 dark:text-gray-400">Generate custom placeholder images for testing responsive layouts</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Controls Panel -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">Settings</h2>
+
+                <!-- Dimensions -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Dimensions</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Width (px)</label>
+                            <input type="number" id="width" value="800" min="1" max="4000"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Height (px)</label>
+                            <input type="number" id="height" value="600" min="1" max="4000"
+                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Aspect Ratios -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setAspectRatio(16, 9)" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            16:9
+                        </button>
+                        <button onclick="setAspectRatio(4, 3)" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            4:3
+                        </button>
+                        <button onclick="setAspectRatio(1, 1)" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            1:1
+                        </button>
+                        <button onclick="setAspectRatio(3, 2)" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            3:2
+                        </button>
+                        <button onclick="setAspectRatio(21, 9)" class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            21:9
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Colors -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Colors</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Background</label>
+                            <input type="color" id="bgColor" value="#3B82F6" class="color-input rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Text</label>
+                            <input type="color" id="textColor" value="#FFFFFF" class="color-input rounded-lg">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Label Text</label>
+                    <input type="text" id="labelText" value="800 × 600"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Leave empty to hide text</p>
+                </div>
+
+                <!-- Font Size -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Font Size: <span id="fontSizeValue">48</span>px</label>
+                    <input type="range" id="fontSize" value="48" min="12" max="200"
+                        class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Format -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Output Format</label>
+                    <select id="format" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="png">PNG</option>
+                        <option value="jpeg">JPEG</option>
+                        <option value="svg">SVG</option>
+                    </select>
+                </div>
+
+                <!-- High DPI Toggle -->
+                <div class="mb-6">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="highDPI" checked class="sr-only peer">
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">High-DPI (Retina) Support</span>
+                    </label>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    <button onclick="copyDataURI()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Copy Data URI
+                    </button>
+                    <button onclick="downloadImage()" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download Image
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Preview</h2>
+                    <span id="actualSize" class="text-sm text-gray-500 dark:text-gray-400"></span>
+                </div>
+
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex items-center justify-center min-h-[400px] overflow-auto">
+                    <canvas id="previewCanvas" class="max-w-full h-auto shadow-lg rounded"></canvas>
+                </div>
+
+                <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Image Info</p>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-gray-600 dark:text-gray-400">Dimensions:</span>
+                            <span id="infoDimensions" class="ml-2 text-gray-900 dark:text-white font-medium"></span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600 dark:text-gray-400">Format:</span>
+                            <span id="infoFormat" class="ml-2 text-gray-900 dark:text-white font-medium"></span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="text-gray-600 dark:text-gray-400">Data URI Length:</span>
+                            <span id="infoLength" class="ml-2 text-gray-900 dark:text-white font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentDataURI = '';
+
+        // DOM Elements
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+        const bgColorInput = document.getElementById('bgColor');
+        const textColorInput = document.getElementById('textColor');
+        const labelTextInput = document.getElementById('labelText');
+        const fontSizeInput = document.getElementById('fontSize');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        const formatSelect = document.getElementById('format');
+        const highDPICheckbox = document.getElementById('highDPI');
+
+        // Initialize
+        function init() {
+            addEventListeners();
+            generatePlaceholder();
+        }
+
+        // Event Listeners
+        function addEventListeners() {
+            widthInput.addEventListener('input', debounce(generatePlaceholder, 150));
+            heightInput.addEventListener('input', debounce(generatePlaceholder, 150));
+            bgColorInput.addEventListener('input', debounce(generatePlaceholder, 150));
+            textColorInput.addEventListener('input', debounce(generatePlaceholder, 150));
+            labelTextInput.addEventListener('input', debounce(generatePlaceholder, 150));
+            fontSizeInput.addEventListener('input', function() {
+                fontSizeValue.textContent = this.value;
+                generatePlaceholder();
+            });
+            formatSelect.addEventListener('change', generatePlaceholder);
+            highDPICheckbox.addEventListener('change', generatePlaceholder);
+        }
+
+        // Debounce helper
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Set Aspect Ratio
+        function setAspectRatio(width, height) {
+            const baseHeight = parseInt(heightInput.value) || 600;
+            const newWidth = Math.round((baseHeight / height) * width);
+
+            widthInput.value = newWidth;
+            heightInput.value = baseHeight;
+            generatePlaceholder();
+        }
+
+        // Generate Placeholder
+        function generatePlaceholder() {
+            const width = parseInt(widthInput.value) || 800;
+            const height = parseInt(heightInput.value) || 600;
+            const bgColor = bgColorInput.value;
+            const textColor = textColorInput.value;
+            const text = labelTextInput.value || `${width} × ${height}`;
+            const fontSize = parseInt(fontSizeInput.value) || 48;
+            const format = formatSelect.value;
+            const highDPI = highDPICheckbox.checked;
+
+            // Calculate scale factor for High-DPI
+            const dpr = highDPI ? window.devicePixelRatio || 1 : 1;
+            const scaledWidth = width * dpr;
+            const scaledHeight = height * dpr;
+
+            // Set canvas size
+            canvas.width = scaledWidth;
+            canvas.height = scaledHeight;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            // Draw background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, scaledWidth, scaledHeight);
+
+            // Draw text if provided
+            if (text.trim()) {
+                const scaledFontSize = fontSize * dpr;
+                ctx.fillStyle = textColor;
+                ctx.font = `bold ${scaledFontSize}px Inter, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Add text shadow for better readability
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                ctx.shadowBlur = 4 * dpr;
+                ctx.shadowOffsetX = 2 * dpr;
+                ctx.shadowOffsetY = 2 * dpr;
+
+                ctx.fillText(text, scaledWidth / 2, scaledHeight / 2);
+
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+
+            // Generate Data URI
+            if (format === 'svg') {
+                currentDataURI = generateSVG(width, height, bgColor, textColor, text, fontSize);
+            } else {
+                const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+                currentDataURI = canvas.toDataURL(mimeType, 0.95);
+            }
+
+            // Update info
+            updateInfo(width, height, format, highDPI, dpr);
+        }
+
+        // Generate SVG
+        function generateSVG(width, height, bgColor, textColor, text, fontSize) {
+            const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <rect width="100%" height="100%" fill="${bgColor}"/>
+  ${text.trim() ? `<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+    font-family="Inter, sans-serif" font-size="${fontSize}" font-weight="bold" fill="${textColor}"
+    style="filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">${escapeXml(text)}</text>` : ''}
+</svg>`;
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
+
+        // Escape XML
+        function escapeXml(str) {
+            return str.replace(/[<>&'"]/g, char => ({
+                '<': '&lt;',
+                '>': '&gt;',
+                '&': '&amp;',
+                "'": '&apos;',
+                '"': '&quot;'
+            }[char]));
+        }
+
+        // Update Info Display
+        function updateInfo(width, height, format, highDPI, dpr) {
+            const actualSize = highDPI ? `${width * dpr} × ${height * dpr}` : `${width} × ${height}`;
+            document.getElementById('actualSize').textContent = highDPI ? `Display: ${width} × ${height} | Actual: ${actualSize}` : `${width} × ${height}`;
+            document.getElementById('infoDimensions').textContent = actualSize;
+            document.getElementById('infoFormat').textContent = format.toUpperCase();
+            document.getElementById('infoLength').textContent = currentDataURI.length.toLocaleString() + ' chars';
+        }
+
+        // Copy Data URI to Clipboard
+        async function copyDataURI() {
+            try {
+                await navigator.clipboard.writeText(currentDataURI);
+                showToast('Data URI copied to clipboard!');
+            } catch (err) {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = currentDataURI;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Data URI copied to clipboard!');
+                } catch (e) {
+                    showToast('Failed to copy. Try manual copy from browser console.', true);
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Download Image
+        function downloadImage() {
+            const link = document.createElement('a');
+            const width = widthInput.value;
+            const height = heightInput.value;
+            const format = formatSelect.value;
+            const extension = format === 'jpeg' ? 'jpg' : format;
+            link.download = `placeholder-${width}x${height}.${extension}`;
+            link.href = currentDataURI;
+            link.click();
+            showToast('Image downloaded successfully!');
+        }
+
+        // Show Toast
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+            toast.querySelector('div').className = `${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg toast`;
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Start
+        init();
+    </script>
+
+    <!-- Dark Mode Toggle -->
+    <script>
+        // Check for saved preference or system preference
+        if (localStorage.getItem('darkMode') === 'true' ||
+            (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Add toggle button
+        const toggleBtn = document.createElement('button');
+        toggleBtn.innerHTML = '🌓';
+        toggleBtn.className = 'fixed bottom-4 right-4 w-12 h-12 bg-gray-800 dark:bg-gray-200 text-white dark:text-gray-900 rounded-full shadow-lg text-xl hover:scale-110 transition';
+        toggleBtn.style.cssText = 'position: fixed; bottom: 1rem; right: 1rem; width: 3rem; height: 3rem; background: #1f2937; color: white; border-radius: 50%; border: none; cursor: pointer; font-size: 1.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transition: transform 0.2s;';
+        toggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+        toggleBtn.addEventListener('mouseenter', () => toggleBtn.style.transform = 'scale(1.1)');
+        toggleBtn.addEventListener('mouseleave', () => toggleBtn.style.transform = 'scale(1)');
+        document.body.appendChild(toggleBtn);
+    </script>
+</body>
+</html>
