@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import VennDiagram from './VennDiagram';
 
 function App() {
   const [table1, setTable1] = useState('users');
@@ -18,13 +19,16 @@ function App() {
         <input placeholder="Column 1" value={column1} onChange={(e) => setColumn1(e.target.value)} />
         <input placeholder="Column 2" value={column2} onChange={(e) => setColumn2(e.target.value)} />
       </div>
-      <select value={joinType} onChange={(e) => setJoinType(e.target.value)}>
-        <option>INNER JOIN</option>
-        <option>LEFT JOIN</option>
-        <option>RIGHT JOIN</option>
-        <option>FULL OUTER JOIN</option>
-      </select>
-      <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#333' }}>
+        <select value={joinType} onChange={(e) => setJoinType(e.target.value)}>
+          <option>INNER JOIN</option>
+          <option>LEFT JOIN</option>
+          <option>RIGHT JOIN</option>
+          <option>FULL OUTER JOIN</option>
+        </select>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
+          <VennDiagram joinType={joinType} />
+        </div>
+        <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#333' }}>
         <code>SELECT * FROM {table1} {query}</code>
       </div>
       <button onClick={() => navigator.clipboard.writeText(`SELECT * FROM ${table1} ${query}`)}>Copy SQL</button>
