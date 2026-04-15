@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMAC Generator | online-tools.click</title>
+    <meta name="description" content="Generate HMAC (SHA-256, SHA-512, MD5) for API security testing. Client-side, secure, and private.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { --bg-card: #ffffff; }
+        .dark { --bg-card: #111827; }
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">HMAC Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Secure, client-side HMAC generator for API security testing.</p>
+        </header>
+
+        <main class="space-y-6">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                <!-- Input Selection -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Algorithm</label>
+                    <select id="algo-select" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-bold outline-none transition-all">
+                        <option value="sha256">HMAC-SHA256</option>
+                        <option value="sha512">HMAC-SHA512</option>
+                        <option value="md5">HMAC-MD5</option>
+                    </select>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Secret Key</label>
+                    <input type="text" id="input-key" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-mono outline-none transition-all" placeholder="Enter secret key...">
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Message</label>
+                    <textarea id="input-message" rows="6" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-mono outline-none transition-all" placeholder="Enter message to hash..."></textarea>
+                </div>
+            </div>
+
+            <!-- Result -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-4">
+                <div class="flex justify-between items-center">
+                    <label class="text-sm font-bold uppercase tracking-wider text-gray-500">HMAC Result</label>
+                    <button onclick="copyHash()" class="text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                </div>
+                <div id="res-hmac" class="w-full bg-gray-100 dark:bg-gray-800 rounded-xl px-4 py-4 text-sm font-mono break-all text-gray-600 dark:text-gray-300">---</div>
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Private: All HMAC generation is performed locally in your browser.</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        const algoSelect = document.getElementById('algo-select');
+        const inputKey = document.getElementById('input-key');
+        const inputMessage = document.getElementById('input-message');
+        const resHmac = document.getElementById('res-hmac');
+        const toast = document.getElementById('toast');
+
+        function generateHMAC() {
+            const algo = algoSelect.value;
+            const key = inputKey.value;
+            const message = inputMessage.value;
+
+            if (!message || !key) {
+                resHmac.textContent = '---';
+                return;
+            }
+
+            let hash;
+            switch(algo) {
+                case 'sha256': hash = CryptoJS.HmacSHA256(message, key); break;
+                case 'sha512': hash = CryptoJS.HmacSHA512(message, key); break;
+                case 'md5': hash = CryptoJS.HmacMD5(message, key); break;
+            }
+            resHmac.textContent = hash.toString();
+        }
+
+        algoSelect.onchange = generateHMAC;
+        inputKey.oninput = generateHMAC;
+        inputMessage.oninput = generateHMAC;
+
+        window.copyHash = function() {
+            const text = resHmac.textContent;
+            if (text === '---') return;
+            navigator.clipboard.writeText(text).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+    </script>
+</body>
+</html>
