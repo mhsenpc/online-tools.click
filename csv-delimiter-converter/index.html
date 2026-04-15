@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV Delimiter & Quote Converter — Free Online Tool</title>
+  <meta name="description" content="Free online CSV delimiter and quote converter. Transform CSV files by changing delimiters (comma, tab, semicolon, pipe) and quoting styles. 100% private — runs in your browser." />
+  <meta name="keywords" content="csv delimiter converter, csv quote converter, change csv delimiter, csv to tab, csv to pipe delimited" />
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "CSV Delimiter & Quote Converter",
+    "description": "Free online CSV delimiter and quote converter with support for multiple delimiters and quoting styles.",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0" }
+  }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+    // Apply dark mode from localStorage or system preference before render
+    (function() {
+      const saved = localStorage.getItem('csvconv_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <style>
+    /* Custom focus ring style */
+    textarea:focus { outline: none; }
+
+    /* File drop zone */
+    #drop-zone { transition: background 0.15s, border-color 0.15s; }
+    #drop-zone.drag-over { background: #eff6ff; border-color: #3b82f6; }
+    @media (prefers-color-scheme: dark) {
+      #drop-zone.drag-over { background: rgba(59,130,246,0.15); border-color: #3b82f6; }
+    }
+  </style>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">📊</span>
+      <div class="flex-1">
+        <h1 class="text-xl font-bold leading-tight">CSV Delimiter & Quote Converter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+      <!-- Dark mode toggle button -->
+      <button id="btn-dark-toggle"
+              class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Toggle dark mode"
+              title="Toggle dark/light mode">
+        <!-- Sun icon (shown in dark mode) -->
+        <svg id="icon-sun" class="hidden dark:block w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <!-- Moon icon (shown in light mode) -->
+        <svg id="icon-moon" class="block dark:hidden w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Top-level tab: Text vs File -->
+    <div class="flex gap-2 border-b border-gray-200 dark:border-gray-700 pb-1">
+      <button id="tab-text"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900"
+              aria-selected="true" role="tab">
+        Text
+      </button>
+      <button id="tab-file"
+              class="px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900"
+              aria-selected="false" role="tab">
+        File
+      </button>
+    </div>
+
+    <!-- ===== Configuration Bar ===== -->
+    <section aria-label="CSV conversion settings" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+
+      <!-- Source Delimiter -->
+      <div>
+        <label for="source-delimiter" class="block font-medium text-sm mb-1">Source Delimiter</label>
+        <select id="source-delimiter" class="w-full text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2" aria-label="Source delimiter">
+          <option value=",">Comma (,)</option>
+          <option value="\t">Tab</option>
+          <option value=";">Semicolon (;)</option>
+          <option value="|">Pipe (|)</option>
+          <option value="^">Caret (^)</option>
+        </select>
+      </div>
+
+      <!-- Target Delimiter -->
+      <div>
+        <label for="target-delimiter" class="block font-medium text-sm mb-1">Target Delimiter</label>
+        <select id="target-delimiter" class="w-full text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2" aria-label="Target delimiter">
+          <option value="\t" selected>Tab</option>
+          <option value=",">Comma (,)</option>
+          <option value=";">Semicolon (;)</option>
+          <option value="|">Pipe (|)</option>
+          <option value="^">Caret (^)</option>
+        </select>
+      </div>
+
+      <!-- Quote Style -->
+      <div>
+        <label for="quote-style" class="block font-medium text-sm mb-1">Quote Style</label>
+        <select id="quote-style" class="w-full text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2" aria-label="Quote style">
+          <option value="minimal">Minimal (as needed)</option>
+          <option value="all">All fields</option>
+          <option value="numeric">Numeric only</option>
+          <option value="none">None</option>
+        </select>
+      </div>
+
+      <!-- Line Endings -->
+      <div>
+        <label for="line-endings" class="block font-medium text-sm mb-1">Line Endings</label>
+        <select id="line-endings" class="w-full text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2" aria-label="Line endings">
+          <option value="lf">LF (Unix/Unix)</option>
+          <option value="crlf">CRLF (Windows)</option>
+          <option value="auto">Auto-detect</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ===== TEXT TAB PANEL ===== -->
+    <div id="panel-text">
+
+    <!-- Input / Output grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Input panel -->
+      <section aria-labelledby="input-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="input-label" for="input-text" class="font-medium text-sm">Input CSV</label>
+          <div class="flex items-center gap-2">
+            <span id="input-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 rows</span>
+          </div>
+        </div>
+        <textarea
+          id="input-text"
+          rows="15"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Paste your CSV data here…
+
+Example:
+Name,Age,City
+John,30,New York
+Jane,25,&quot;London, UK&quot;"
+          aria-label="Input CSV text"
+          aria-describedby="input-count"
+          spellcheck="false"
+        ></textarea>
+      </section>
+
+      <!-- Output panel -->
+      <section aria-labelledby="output-label" class="flex flex-col gap-2">
+        <div class="flex items-center justify-between">
+          <label id="output-label" for="output-text" class="font-medium text-sm">Output CSV</label>
+          <div class="flex items-center gap-2">
+            <span id="output-count" class="text-xs text-gray-500 dark:text-gray-400" aria-live="polite">0 rows</span>
+            <button id="btn-copy"
+                    class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-xs transition-colors"
+                    aria-label="Copy output to clipboard">
+              Copy
+            </button>
+          </div>
+        </div>
+        <textarea
+          id="output-text"
+          rows="15"
+          class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono focus:border-blue-500 dark:focus:border-blue-400 transition-colors"
+          placeholder="Converted CSV will appear here…"
+          aria-label="Output CSV text"
+          aria-describedby="output-count"
+          spellcheck="false"
+          readonly
+        ></textarea>
+      </section>
+    </div>
+
+    <!-- Error bar -->
+    <div id="error-bar" role="alert" aria-live="assertive"
+         class="hidden px-4 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+    </div>
+
+    <!-- Action buttons -->
+    <div class="flex flex-wrap items-center gap-3">
+      <button id="btn-convert"
+              class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+              aria-label="Convert CSV">
+        Convert CSV
+      </button>
+
+      <button id="btn-swap"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Swap input and output">
+        ⇄ Swap
+      </button>
+
+      <button id="btn-download"
+              class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-500"
+              aria-label="Download CSV file">
+        ↓ Download CSV
+      </button>
+
+      <button id="btn-clear"
+              class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 font-medium text-sm transition-colors"
+              aria-label="Clear all">
+        Clear
+      </button>
+
+      <span id="copy-msg" role="status" aria-live="polite"
+            class="hidden text-sm text-green-600 dark:text-green-400 font-medium">
+        ✓ Copied!
+      </span>
+    </div>
+
+    <!-- Keyboard shortcut hints -->
+    <p class="text-xs text-gray-400 dark:text-gray-500">
+      Keyboard shortcuts: <kbd class="px-1 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono text-xs">Ctrl+Enter</kbd> convert &nbsp;·&nbsp;
+      <kbd class="px-1 py-0.5 rounded border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-mono text-xs">Ctrl+Shift+C</kbd> copy
+    </p>
+
+    <!-- Privacy note -->
+    <p class="text-xs text-gray-400 dark:text-gray-500">
+      🔒 Your data never leaves this page. All processing happens locally in your browser.
+    </p>
+
+    </div><!-- end #panel-text -->
+
+    <!-- ===== FILE TAB PANEL ===== -->
+    <div id="panel-file" class="hidden space-y-4">
+
+      <!-- File upload section -->
+      <section aria-labelledby="file-upload-label" class="space-y-3">
+        <h2 id="file-upload-label" class="font-semibold text-sm">Upload CSV File</h2>
+
+        <!-- Drop zone -->
+        <div id="drop-zone"
+             class="flex flex-col items-center justify-center gap-3 p-8 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500"
+             role="button" tabindex="0" aria-label="Drop a CSV file here or click to browse">
+          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Drag &amp; drop a CSV file here, or <span class="text-blue-600 dark:text-blue-400 underline">browse</span></p>
+          <p class="text-xs text-gray-400 dark:text-gray-500">Supports .csv, .tsv, .txt files</p>
+          <input type="file" id="file-input" class="sr-only" accept=".csv,.tsv,.txt" aria-label="Choose CSV file" />
+        </div>
+
+        <!-- File info -->
+        <div id="file-info" class="hidden flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+          <svg class="w-4 h-4 shrink-0 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-3-3v6M4.5 12a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0z"/>
+          </svg>
+          <span id="file-info-text"></span>
+        </div>
+      </section>
+
+      <!-- Preview section -->
+      <section aria-labelledby="preview-label" id="preview-section" class="hidden space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 id="preview-label" class="font-semibold text-sm">Preview (first 10 rows)</h2>
+          <span id="preview-count" class="text-xs text-gray-500 dark:text-gray-400"></span>
+        </div>
+        <textarea id="preview-text" rows="10" readonly
+                  class="w-full resize-y rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-xs font-mono text-gray-700 dark:text-gray-300"
+                  aria-label="CSV preview"
+                  spellcheck="false"></textarea>
+      </section>
+
+      <!-- Download button -->
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="btn-file-convert"
+                class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+                aria-label="Convert and download CSV">
+          Convert & Download
+        </button>
+        <span id="file-msg" role="status" aria-live="polite"
+              class="hidden text-sm text-green-600 dark:text-green-400 font-medium">
+          ✓ Downloaded!
+        </span>
+      </div>
+
+      <!-- Privacy note (file panel) -->
+      <p class="text-xs text-gray-400 dark:text-gray-500">
+        🔒 Your file never leaves this page. All processing happens locally in your browser.
+      </p>
+
+    </div><!-- end #panel-file -->
+
+  </main>
+
+  <!-- ===== Script ===== -->
+  <script>
+    (() => {
+      'use strict';
+
+      // ── DOM refs ──────────────────────────────────────────────
+      const inputEl        = document.getElementById('input-text');
+      const outputEl       = document.getElementById('output-text');
+      const inputCount     = document.getElementById('input-count');
+      const outputCount    = document.getElementById('output-count');
+      const errorBar       = document.getElementById('error-bar');
+      const copyMsg        = document.getElementById('copy-msg');
+      const fileMsg        = document.getElementById('file-msg');
+
+      const sourceDelimiterSel = document.getElementById('source-delimiter');
+      const targetDelimiterSel = document.getElementById('target-delimiter');
+      const quoteStyleSel       = document.getElementById('quote-style');
+      const lineEndingsSel      = document.getElementById('line-endings');
+
+      const dropZone          = document.getElementById('drop-zone');
+      const fileInput         = document.getElementById('file-input');
+      const fileInfo          = document.getElementById('file-info');
+      const fileInfoText      = document.getElementById('file-info-text');
+      const previewSection    = document.getElementById('preview-section');
+      const previewEl         = document.getElementById('preview-text');
+      const previewCount      = document.getElementById('preview-count');
+
+      let currentFileContent = null;
+      let currentFileName    = 'converted.csv';
+
+      // ── CSV Parsing & Conversion ────────────────────────────────
+
+      /**
+       * Escape special regex characters in delimiter
+       */
+      function escapeRegex(str) {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      /**
+       * Parse a CSV line handling quoted fields correctly
+       */
+      function parseCSVLine(line, delimiter) {
+        const fields = [];
+        let current = '';
+        let inQuotes = false;
+
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          const nextChar = line[i + 1];
+
+          if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+              // Escaped quote inside quotes
+              current += '"';
+              i++;
+            } else {
+              // Toggle quote mode
+              inQuotes = !inQuotes;
+            }
+          } else if (char === delimiter && !inQuotes) {
+            // Field delimiter
+            fields.push(current);
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+
+        fields.push(current);
+        return fields;
+      }
+
+      /**
+       * Format a field value according to quote style
+       */
+      function formatField(field, quoteStyle) {
+        const trimmed = field.trim();
+
+        // Check if field is numeric
+        const isNumeric = /^-?\d+\.?\d*$/.test(trimmed);
+
+        // Check if field contains special characters that need quoting
+        const hasDelimiter = trimmed.includes(targetDelimiterSel.value === '\\t' ? '\t' : targetDelimiterSel.value);
+        const hasQuote = trimmed.includes('"');
+        const hasNewline = trimmed.includes('\n') || trimmed.includes('\r');
+        const needsQuoting = hasDelimiter || hasQuote || hasNewline || trimmed.includes(',');
+
+        switch (quoteStyle) {
+          case 'all':
+            return `"${trimmed.replace(/"/g, '""')}"`;
+          case 'numeric':
+            if (isNumeric) {
+              return `"${trimmed}"`;
+            }
+            return needsQuoting ? `"${trimmed.replace(/"/g, '""')}"` : trimmed;
+          case 'none':
+            return trimmed;
+          case 'minimal':
+          default:
+            return needsQuoting ? `"${trimmed.replace(/"/g, '""')}"` : trimmed;
+        }
+      }
+
+      /**
+       * Convert CSV content
+       */
+      function convertCSV(content) {
+        const sourceDelim = sourceDelimiterSel.value === '\\t' ? '\t' : sourceDelimiterSel.value;
+        const targetDelim = targetDelimiterSel.value === '\\t' ? '\t' : targetDelimiterSel.value;
+        const quoteStyle = quoteStyleSel.value;
+        const lineEnding = lineEndingsSel.value;
+
+        // Detect line ending if auto
+        let lineEndingChar = '\n';
+        if (lineEnding === 'crlf') {
+          lineEndingChar = '\r\n';
+        } else if (lineEnding === 'auto') {
+          const hasCRLF = content.includes('\r\n');
+          const hasLF = content.includes('\n') && !content.endsWith('\r\n');
+          lineEndingChar = hasCRLF && !hasLF ? '\r\n' : '\n';
+        }
+
+        // Split by lines and parse
+        const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+        const parsedRows = lines.map(line => parseCSVLine(line, sourceDelim));
+
+        // Format output
+        const outputLines = parsedRows.map(fields => {
+          return fields.map(field => formatField(field, quoteStyle)).join(targetDelim);
+        });
+
+        return outputLines.join(lineEndingChar);
+      }
+
+      /**
+       * Count rows in CSV content
+       */
+      function countRows(content) {
+        if (!content.trim()) return 0;
+        return content.split(/\r?\n/).filter(line => line.trim() !== '').length;
+      }
+
+      /**
+       * Format file size
+       */
+      function fmtBytes(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      }
+
+      // ── UI helpers ────────────────────────────────────────────
+
+      function showError(msg) {
+        errorBar.textContent = msg;
+        errorBar.classList.remove('hidden');
+      }
+
+      function clearError() {
+        errorBar.textContent = '';
+        errorBar.classList.add('hidden');
+      }
+
+      function updateCounts() {
+        const inputRows = countRows(inputEl.value);
+        const outputRows = countRows(outputEl.value);
+        inputCount.textContent = `${inputRows} row${inputRows !== 1 ? 's' : ''}`;
+        outputCount.textContent = `${outputRows} row${outputRows !== 1 ? 's' : ''}`;
+      }
+
+      function convert() {
+        clearError();
+
+        const input = inputEl.value.trim();
+        if (!input) {
+          outputEl.value = '';
+          updateCounts();
+          return;
+        }
+
+        try {
+          const result = convertCSV(input);
+          outputEl.value = result;
+          updateCounts();
+        } catch (err) {
+          showError(`Conversion error: ${err.message}`);
+          outputEl.value = '';
+        }
+      }
+
+      // ── Event wiring ──────────────────────────────────────────
+
+      // Live conversion (debounced)
+      let debounceTimer;
+      inputEl.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(convert, 300);
+        updateCounts();
+      });
+
+      // Settings change → re-convert
+      sourceDelimiterSel.addEventListener('change', convert);
+      targetDelimiterSel.addEventListener('change', convert);
+      quoteStyleSel.addEventListener('change', convert);
+      lineEndingsSel.addEventListener('change', convert);
+
+      // Keyboard shortcut: Ctrl+Enter to convert
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          convert();
+        }
+      });
+
+      // Convert button
+      document.getElementById('btn-convert').addEventListener('click', convert);
+
+      // Swap button
+      document.getElementById('btn-swap').addEventListener('click', () => {
+        const tmp = inputEl.value;
+        inputEl.value = outputEl.value;
+        outputEl.value = tmp;
+
+        // Swap delimiter selections
+        const sourceDelim = sourceDelimiterSel.value;
+        const targetDelim = targetDelimiterSel.value;
+        sourceDelimiterSel.value = targetDelim;
+        targetDelimiterSel.value = sourceDelim;
+
+        clearError();
+        convert();
+      });
+
+      // Copy button
+      document.getElementById('btn-copy').addEventListener('click', async () => {
+        const text = outputEl.value;
+        if (!text) return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          outputEl.removeAttribute('readonly');
+          outputEl.select();
+          document.execCommand('copy');
+          outputEl.setAttribute('readonly', '');
+        }
+
+        copyMsg.classList.remove('hidden');
+        setTimeout(() => copyMsg.classList.add('hidden'), 2000);
+      });
+
+      // Download button
+      document.getElementById('btn-download').addEventListener('click', () => {
+        const content = outputEl.value;
+        if (!content) {
+          showError('No content to download. Please convert some CSV data first.');
+          return;
+        }
+
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'converted.csv';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+      });
+
+      // Clear button
+      document.getElementById('btn-clear').addEventListener('click', () => {
+        inputEl.value = '';
+        outputEl.value = '';
+        clearError();
+        updateCounts();
+      });
+
+      // Keyboard shortcut: Ctrl+Shift+C to copy
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+          e.preventDefault();
+          document.getElementById('btn-copy').click();
+        }
+      });
+
+      // Initial count sync
+      updateCounts();
+
+      // ── File handling ───────────────────────────────────────────
+
+      function handleFile(file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          currentFileContent = e.target.result;
+          currentFileName = file.name.replace(/\.[^/.]+$/, '') + '_converted.csv';
+
+          // Show file info
+          fileInfoText.textContent = `${file.name} (${fmtBytes(file.size)})`;
+          fileInfo.classList.remove('hidden');
+
+          // Show preview (first 10 rows)
+          const lines = currentFileContent.split(/\r?\n/).slice(0, 10);
+          previewEl.value = lines.join('\n');
+          previewCount.textContent = `Showing ${lines.length} of ${countRows(currentFileContent)} rows`;
+          previewSection.classList.remove('hidden');
+        };
+
+        reader.onerror = () => {
+          showError('Failed to read the file.');
+        };
+
+        reader.readAsText(file);
+      }
+
+      // Click to browse
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+      });
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files.length) handleFile(fileInput.files[0]);
+        fileInput.value = '';
+      });
+
+      // Drag and drop
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f) handleFile(f);
+      });
+
+      // Convert & download button
+      document.getElementById('btn-file-convert').addEventListener('click', () => {
+        if (!currentFileContent) {
+          showError('Please upload a CSV file first.');
+          return;
+        }
+
+        try {
+          const converted = convertCSV(currentFileContent);
+          const blob = new Blob([converted], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = currentFileName;
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+
+          fileMsg.classList.remove('hidden');
+          setTimeout(() => fileMsg.classList.add('hidden'), 2000);
+        } catch (err) {
+          showError(`Conversion error: ${err.message}`);
+        }
+      });
+
+      // ── Tab switching (Text / File) ───────────────────────────
+
+      const tabText  = document.getElementById('tab-text');
+      const tabFile  = document.getElementById('tab-file');
+      const panelText = document.getElementById('panel-text');
+      const panelFile = document.getElementById('panel-file');
+
+      function activateTab(which) {
+        if (which === 'file') {
+          tabText.setAttribute('aria-selected', 'false');
+          tabText.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900';
+          tabFile.setAttribute('aria-selected', 'true');
+          tabFile.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900';
+          panelText.classList.add('hidden');
+          panelFile.classList.remove('hidden');
+        } else {
+          tabFile.setAttribute('aria-selected', 'false');
+          tabFile.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-white dark:bg-gray-900';
+          tabText.setAttribute('aria-selected', 'true');
+          tabText.className = 'px-4 py-1.5 text-sm font-medium rounded-t-lg border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900';
+          panelFile.classList.add('hidden');
+          panelText.classList.remove('hidden');
+        }
+      }
+
+      tabText.addEventListener('click', () => activateTab('text'));
+      tabFile.addEventListener('click', () => activateTab('file'));
+
+      // ── Dark mode toggle ───────────────────────────────────────
+
+      const btnDarkToggle = document.getElementById('btn-dark-toggle');
+
+      function applyDarkMode(dark) {
+        if (dark) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('csvconv_dark_mode', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('csvconv_dark_mode', 'light');
+        }
+      }
+
+      btnDarkToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        applyDarkMode(!isDark);
+      });
+
+      // Listen for system preference changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('csvconv_dark_mode')) {
+          applyDarkMode(e.matches);
+        }
+      });
+
+    })();
+  </script>
+
+</body>
+</html>
