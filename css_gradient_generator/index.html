@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Gradient Generator | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online CSS gradient generator. Create beautiful linear and radial gradients with visual preview and code export.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+        }
+        .dark {
+            --bg-card: #111827;
+        }
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .gradient-preview {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            transition: background 0.1s;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .color-stop {
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .color-stop:hover {
+            transform: scale(1.05);
+        }
+
+        .angle-dial {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(from 0deg, #3b82f6, #8b5cf6, #ec4899, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6);
+            cursor: pointer;
+        }
+
+        .angle-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background: white;
+            transform-origin: left center;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+
+        .angle-knob {
+            position: absolute;
+            right: -6px;
+            top: -5px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(0,0,0,0.5);
+        }
+
+        .stop-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+
+        .stop-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+        }
+
+        .stop-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 0 4px rgba(0,0,0,0.3);
+            border: none;
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">CSS Gradient Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Create beautiful gradients with visual preview and instant code export.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Preview Section -->
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Preview</label>
+                        <div class="flex gap-2">
+                            <button id="type-linear" class="px-3 py-1 text-xs font-medium rounded-md bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                                Linear
+                            </button>
+                            <button id="type-radial" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700">
+                                Radial
+                            </button>
+                        </div>
+                    </div>
+                    <div id="gradient-preview" class="gradient-preview"></div>
+                </div>
+
+                <!-- CSS Output -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">CSS Code</label>
+                        <button id="copy-btn" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            Copy CSS
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <pre id="css-output" class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 text-sm font-mono overflow-x-auto text-gray-800 dark:text-gray-200"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls Section -->
+            <div class="space-y-6">
+                <!-- Gradient Type & Angle -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <div id="angle-control">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Angle Control</label>
+                        <div class="flex items-center gap-6">
+                            <div class="angle-dial" id="angle-dial">
+                                <div class="angle-indicator" id="angle-indicator">
+                                    <div class="angle-knob"></div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <input type="number" id="angle-input" value="90" min="0" max="360" class="w-20 px-3 py-2 text-sm font-mono rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">degrees</span>
+                                </div>
+                                <div class="flex gap-2 flex-wrap">
+                                    <button class="angle-preset px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" data-angle="0">0°</button>
+                                    <button class="angle-preset px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" data-angle="45">45°</button>
+                                    <button class="angle-preset px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" data-angle="90">90°</button>
+                                    <button class="angle-preset px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" data-angle="135">135°</button>
+                                    <button class="angle-preset px-3 py-1 text-xs rounded-md bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700" data-angle="180">180°</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Color Stops -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Color Stops</label>
+                        <button id="add-stop" class="px-3 py-1 text-xs font-medium rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add Stop
+                        </button>
+                    </div>
+                    <div id="color-stops" class="space-y-4">
+                        <!-- Color stops will be added here dynamically -->
+                    </div>
+                </div>
+
+                <!-- Gradient Direction for Radial -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm hidden" id="radial-options">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Radial Gradient Shape</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="radial-shape px-4 py-2 text-sm font-medium rounded-lg border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300" data-shape="circle">
+                            Circle
+                        </button>
+                        <button class="radial-shape px-4 py-2 text-sm font-medium rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-400 dark:hover:border-gray-500" data-shape="ellipse">
+                            Ellipse
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Position</label>
+                        <select id="radial-position" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                            <option value="center">Center</option>
+                            <option value="top">Top</option>
+                            <option value="bottom">Bottom</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                            <option value="top left">Top Left</option>
+                            <option value="top right">Top Right</option>
+                            <option value="bottom left">Bottom Left</option>
+                            <option value="bottom right">Bottom Right</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
+            <p>100% client-side • No data collection • Instant preview</p>
+        </footer>
+    </div>
+
+    <script>
+        // Gradient state
+        let state = {
+            type: 'linear',
+            angle: 90,
+            radialShape: 'circle',
+            radialPosition: 'center',
+            stops: [
+                { color: '#3b82f6', position: 0 },
+                { color: '#8b5cf6', position: 50 },
+                { color: '#ec4899', position: 100 }
+            ]
+        };
+
+        // DOM elements
+        const preview = document.getElementById('gradient-preview');
+        const cssOutput = document.getElementById('css-output');
+        const angleDial = document.getElementById('angle-dial');
+        const angleIndicator = document.getElementById('angle-indicator');
+        const angleInput = document.getElementById('angle-input');
+        const colorStopsContainer = document.getElementById('color-stops');
+        const angleControl = document.getElementById('angle-control');
+        const radialOptions = document.getElementById('radial-options');
+
+        // Initialize
+        function init() {
+            renderColorStops();
+            updateGradient();
+            setupEventListeners();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Gradient type buttons
+            document.getElementById('type-linear').addEventListener('click', () => setGradientType('linear'));
+            document.getElementById('type-radial').addEventListener('click', () => setGradientType('radial'));
+
+            // Angle dial
+            let isDragging = false;
+            angleDial.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateAngleFromMouse(e);
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) updateAngleFromMouse(e);
+            });
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Angle input
+            angleInput.addEventListener('input', (e) => {
+                state.angle = parseInt(e.target.value) || 0;
+                updateAngleIndicator();
+                updateGradient();
+            });
+
+            // Angle presets
+            document.querySelectorAll('.angle-preset').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.angle = parseInt(btn.dataset.angle);
+                    angleInput.value = state.angle;
+                    updateAngleIndicator();
+                    updateGradient();
+                });
+            });
+
+            // Add stop button
+            document.getElementById('add-stop').addEventListener('click', addColorStop);
+
+            // Copy button
+            document.getElementById('copy-btn').addEventListener('click', copyCSS);
+
+            // Radial shape buttons
+            document.querySelectorAll('.radial-shape').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.radialShape = btn.dataset.shape;
+                    document.querySelectorAll('.radial-shape').forEach(b => {
+                        b.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20', 'text-blue-700', 'dark:text-blue-300');
+                        b.classList.add('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                    });
+                    btn.classList.remove('border-gray-300', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                    btn.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-blue-900/20', 'text-blue-700', 'dark:text-blue-300');
+                    updateGradient();
+                });
+            });
+
+            // Radial position
+            document.getElementById('radial-position').addEventListener('change', (e) => {
+                state.radialPosition = e.target.value;
+                updateGradient();
+            });
+        }
+
+        // Set gradient type
+        function setGradientType(type) {
+            state.type = type;
+            const linearBtn = document.getElementById('type-linear');
+            const radialBtn = document.getElementById('type-radial');
+
+            if (type === 'linear') {
+                linearBtn.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                linearBtn.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+                radialBtn.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+                radialBtn.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                angleControl.classList.remove('hidden');
+                radialOptions.classList.add('hidden');
+            } else {
+                radialBtn.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                radialBtn.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+                linearBtn.classList.remove('bg-blue-100', 'dark:bg-blue-900', 'text-blue-700', 'dark:text-blue-300');
+                linearBtn.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-700', 'dark:text-gray-300');
+                angleControl.classList.add('hidden');
+                radialOptions.classList.remove('hidden');
+            }
+            updateGradient();
+        }
+
+        // Update angle from mouse position
+        function updateAngleFromMouse(e) {
+            const rect = angleDial.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) + 90;
+            state.angle = Math.round(angle < 0 ? angle + 360 : angle);
+            angleInput.value = state.angle;
+            updateAngleIndicator();
+            updateGradient();
+        }
+
+        // Update angle indicator
+        function updateAngleIndicator() {
+            angleIndicator.style.transform = `rotate(${state.angle}deg)`;
+        }
+
+        // Render color stops
+        function renderColorStops() {
+            colorStopsContainer.innerHTML = '';
+            state.stops.forEach((stop, index) => {
+                const stopEl = document.createElement('div');
+                stopEl.className = 'color-stop flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg';
+                stopEl.innerHTML = `
+                    <input type="color" value="${stop.color}" class="w-10 h-10 rounded cursor-pointer border-0" data-index="${index}">
+                    <input type="text" value="${stop.color}" class="flex-1 px-3 py-2 text-sm font-mono rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 color-input" data-index="${index}">
+                    <div class="flex-1">
+                        <input type="range" min="0" max="100" value="${stop.position}" class="stop-slider position-slider" data-index="${index}">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">${stop.position}%</div>
+                    </div>
+                    ${state.stops.length > 2 ? `
+                        <button class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg remove-stop" data-index="${index}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    ` : ''}
+                `;
+                colorStopsContainer.appendChild(stopEl);
+            });
+
+            // Add event listeners
+            document.querySelectorAll('.color-stop input[type="color"]').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    state.stops[index].color = e.target.value;
+                    e.target.parentElement.querySelector('.color-input').value = e.target.value;
+                    updateGradient();
+                });
+            });
+
+            document.querySelectorAll('.color-input').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    const color = e.target.value;
+                    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+                        state.stops[index].color = color;
+                        e.target.parentElement.querySelector('input[type="color"]').value = color;
+                        updateGradient();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.position-slider').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    state.stops[index].position = parseInt(e.target.value);
+                    e.target.nextElementSibling.textContent = e.target.value + '%';
+                    updateGradient();
+                });
+            });
+
+            document.querySelectorAll('.remove-stop').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    state.stops.splice(index, 1);
+                    renderColorStops();
+                    updateGradient();
+                });
+            });
+        }
+
+        // Add color stop
+        function addColorStop() {
+            const newStop = {
+                color: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'),
+                position: 50
+            };
+            state.stops.push(newStop);
+            state.stops.sort((a, b) => a.position - b.position);
+            renderColorStops();
+            updateGradient();
+        }
+
+        // Update gradient
+        function updateGradient() {
+            const stops = state.stops
+                .sort((a, b) => a.position - b.position)
+                .map(stop => `${stop.color} ${stop.position}%`)
+                .join(', ');
+
+            let gradient;
+            if (state.type === 'linear') {
+                gradient = `linear-gradient(${state.angle}deg, ${stops})`;
+            } else {
+                gradient = `radial-gradient(${state.radialShape} at ${state.radialPosition}, ${stops})`;
+            }
+
+            preview.style.background = gradient;
+            cssOutput.textContent = `background: ${gradient};`;
+        }
+
+        // Copy CSS
+        function copyCSS() {
+            navigator.clipboard.writeText(cssOutput.textContent).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Copied!
+                `;
+                btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                    btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                }, 2000);
+            });
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
