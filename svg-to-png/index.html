@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG to PNG Converter | online-tools.click</title>
+    <meta name="description" content="Convert SVG to PNG online. Client-side, privacy-focused SVG to PNG converter.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { primary: '#3b82f6' } } }
+        }
+    </script>
+    
+    <style>
+        .output-area {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 min-h-[300px] flex items-center justify-center;
+        }
+        .drop-zone {
+            @apply border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl p-10 text-center transition-all cursor-pointer hover:border-blue-500 dark:hover:border-blue-500;
+        }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-4xl font-bold mt-2">SVG to PNG Converter</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Convert your SVGs to high-quality PNGs instantly.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">SVG Source</label>
+                    <textarea id="svg-input" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none border-2 border-transparent focus:border-blue-500 transition-all mb-4" rows="6" placeholder="Paste SVG code here..."></textarea>
+                    
+                    <div id="drop-zone" class="drop-zone mb-4">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Drag & drop SVG file or click to upload</p>
+                        <input type="file" id="file-input" class="hidden" accept=".svg">
+                    </div>
+
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Scale Factor</label>
+                    <select id="scale-factor" class="w-full bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-2 text-sm outline-none border-2 border-transparent focus:border-blue-500 transition-all mb-6">
+                        <option value="1">1x</option>
+                        <option value="2" selected>2x</option>
+                        <option value="4">4x</option>
+                    </select>
+
+                    <button id="convert-btn" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all active:scale-95">Convert to PNG</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-4">
+                <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 px-2">Preview</h2>
+                <div id="preview-area" class="output-area">
+                    <div id="preview-placeholder" class="text-gray-400">No SVG loaded</div>
+                    <img id="preview-img" class="hidden max-h-[400px]" alt="Preview">
+                </div>
+                <button id="download-btn" class="hidden w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all">Download PNG</button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const svgInput = document.getElementById('svg-input');
+        const fileInput = document.getElementById('file-input');
+        const dropZone = document.getElementById('drop-zone');
+        const scaleFactor = document.getElementById('scale-factor');
+        const convertBtn = document.getElementById('convert-btn');
+        const previewImg = document.getElementById('preview-img');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+        const downloadBtn = document.getElementById('download-btn');
+        let currentDataUrl = null;
+
+        function loadSVG(data) {
+            previewPlaceholder.classList.add('hidden');
+            previewImg.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(data)));
+            previewImg.classList.remove('hidden');
+            svgInput.value = data;
+        }
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => loadSVG(e.target.result);
+            reader.readAsText(file);
+        };
+
+        svgInput.oninput = (e) => {
+            if (e.target.value) loadSVG(e.target.value);
+        };
+
+        convertBtn.onclick = () => {
+            const svgData = svgInput.value;
+            if (!svgData) return;
+
+            const scale = parseInt(scaleFactor.value);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                currentDataUrl = canvas.toDataURL('image/png');
+                downloadBtn.classList.remove('hidden');
+            };
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        };
+
+        downloadBtn.onclick = () => {
+            if (!currentDataUrl) return;
+            const a = document.createElement('a');
+            a.href = currentDataUrl;
+            a.download = 'converted-image.png';
+            a.click();
+        };
+    </script>
+</body>
+</html>
