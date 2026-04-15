@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-zinc-950 text-zinc-200;
+  }
+}
+
+.json-tree {
+  @apply font-mono text-sm leading-6;
+}
+
+.json-node {
+  @apply pl-4 pr-2 py-0.5 break-all;
+}
+
+.json-key {
+  @apply text-emerald-400 font-medium;
+}
+
+.json-string {
+  @apply text-amber-300;
+}
+
+.json-number {
+  @apply text-cyan-400;
+}
+
+.json-boolean {
+  @apply text-violet-400;
+}
+
+.json-null {
+  @apply text-rose-400;
+}
+
+.json-highlight {
+  @apply bg-emerald-500/20 rounded px-1 -mx-1;
+}
+
+.match-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20;
+}
+
+.error-badge {
+  @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20;
+}
