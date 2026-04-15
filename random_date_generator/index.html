@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Date Generator | Online Tools</title>
+    <meta name="description" content="Generate random dates within a specified range and format. Bulk generation supported. 100% client-side.">
+    <link rel="canonical" href="https://online-tools.click/random_date_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: var(--text); }
+        main { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        
+        .result-container { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 40px; }
+        .result-display { font-family: var(--font-mono); font-size: 24px; color: var(--text); background: var(--bg-input); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 20px; min-height: 60px; word-break: break-all; }
+        
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+        .setting-group { display: flex; flex-direction: column; gap: 12px; }
+        label { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        input, select { background: var(--bg-input); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; font-family: var(--font-sans); }
+
+        .btn-generate { background: var(--accent); color: white; border: none; padding: 16px 24px; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; transition: opacity 0.2s; }
+        .btn-generate:hover { opacity: 0.9; }
+
+        #bulk-results { margin-top: 20px; font-family: var(--font-mono); font-size: 14px; color: var(--text-secondary); white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://online-tools.click" class="logo">Online Tools / Random Date Generator</a>
+    </header>
+    <main>
+        <section class="result-container">
+            <div id="result" class="result-display">Select range and generate...</div>
+            <button class="btn-generate" id="generate-btn">Generate</button>
+            <div id="bulk-results"></div>
+        </section>
+
+        <div class="settings-grid">
+            <div class="setting-group">
+                <label>Start Date</label>
+                <input type="date" id="start-date" value="2020-01-01">
+                <label>End Date</label>
+                <input type="date" id="end-date" value="2025-12-31">
+            </div>
+            <div class="setting-group">
+                <label>Format</label>
+                <select id="format">
+                    <option value="iso">ISO (YYYY-MM-DDTHH:mm:ss.sssZ)</option>
+                    <option value="date">Date Only (YYYY-MM-DD)</option>
+                    <option value="utc">UTC String</option>
+                    <option value="custom">Custom (MM/DD/YYYY)</option>
+                </select>
+                <label>Bulk Count</label>
+                <input type="number" id="count" value="1" min="1" max="100">
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            const start = new Date(document.getElementById('start-date').value);
+            const end = new Date(document.getElementById('end-date').value);
+            const format = document.getElementById('format').value;
+            const count = parseInt(document.getElementById('count').value);
+            
+            if (isNaN(start) || isNaN(end)) {
+                alert("Please select valid dates");
+                return;
+            }
+
+            const results = [];
+            for (let i = 0; i < count; i++) {
+                const randomDate = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+                results.push(formatDate(randomDate, format));
+            }
+
+            document.getElementById('result').textContent = results[0];
+            document.getElementById('bulk-results').textContent = count > 1 ? results.join('\n') : '';
+        });
+
+        function formatDate(date, format) {
+            switch(format) {
+                case 'iso': return date.toISOString();
+                case 'date': return date.toISOString().split('T')[0];
+                case 'utc': return date.toUTCString();
+                case 'custom': return `${date.getMonth()+1}/${date.getDate()}/${date.getFullYear()}`;
+                default: return date.toString();
+            }
+        }
+    </script>
+</body>
+</html>
