@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text to Base64 Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">Text to Base64 Converter</h1>
+        <textarea id="input" class="w-full h-32 p-2 border rounded mb-4" placeholder="Enter text or Base64 here..."></textarea>
+        <div class="flex gap-2 mb-4">
+            <button onclick="convert('encode')" class="bg-blue-500 text-white px-4 py-2 rounded">Encode to Base64</button>
+            <button onclick="convert('decode')" class="bg-green-500 text-white px-4 py-2 rounded">Decode from Base64</button>
+        </div>
+        <label class="flex items-center gap-2 mb-4">
+            <input type="checkbox" id="urlSafe"> URL-safe Base64
+        </label>
+        <textarea id="output" class="w-full h-32 p-2 border rounded bg-gray-50" readonly placeholder="Result..."></textarea>
+    </div>
+
+    <script>
+        function convert(mode) {
+            const input = document.getElementById('input').value;
+            const urlSafe = document.getElementById('urlSafe').checked;
+            const output = document.getElementById('output');
+            
+            try {
+                if (mode === 'encode') {
+                    const bytes = new TextEncoder().encode(input);
+                    let binary = '';
+                    for (const b of bytes) binary += String.fromCharCode(b);
+                    let b64 = btoa(binary);
+                    if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+                    output.value = b64;
+                } else {
+                    let standard = input.trim().replace(/-/g, '+').replace(/_/g, '/');
+                    const binary = atob(standard);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    output.value = new TextDecoder('utf-8').decode(bytes);
+                }
+            } catch (e) {
+                output.value = 'Error: ' + e.message;
+            }
+        }
+    </script>
+</body>
+</html>
