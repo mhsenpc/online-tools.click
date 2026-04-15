@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #050505;
+  --color-fg: #ffffff;
+  --color-accent: #ff3e00;
+  --color-surface: #111111;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Instrument Sans', sans-serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-bg text-fg font-body;
+  }
+}
+
+.json-tree-node {
+  @apply pl-4 border-l border-white/5 transition-colors;
+}
+
+.json-tree-node:hover {
+  @apply border-white/20;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full hover:bg-white/20;
+}
