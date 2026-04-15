@@ -131,6 +131,12 @@
         <input type="checkbox" id="url-safe" class="accent-blue-600 w-4 h-4" aria-label="URL-safe Base64 (- and _ instead of + and /)" />
         <span class="text-sm">URL-safe Base64 (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">-_</code> instead of <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">+/</code>)</span>
       </label>
+
+      <!-- Strip Padding toggle -->
+      <label class="flex items-center gap-1.5 cursor-pointer" title="Strip '=' padding characters">
+        <input type="checkbox" id="strip-padding" class="accent-blue-600 w-4 h-4" aria-label="Strip padding (=)" />
+        <span class="text-sm">Strip padding (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">=</code>)</span>
+      </label>
     </section>
 
     <!-- ONLA-18: Line-break and chunked output options -->
@@ -301,10 +307,18 @@
         <h2 id="file-encode-label" class="font-semibold text-sm">File → Base64</h2>
 
         <!-- URL-safe toggle for file mode -->
-        <label class="inline-flex items-center gap-1.5 cursor-pointer" title="Use - and _ instead of + and /">
-          <input type="checkbox" id="file-url-safe" class="accent-blue-600 w-4 h-4" aria-label="URL-safe Base64 for file encoding" />
-          <span class="text-sm">URL-safe Base64 (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">-_</code>)</span>
-        </label>
+        <div class="flex items-center gap-4">
+          <label class="inline-flex items-center gap-1.5 cursor-pointer" title="Use - and _ instead of + and /">
+            <input type="checkbox" id="file-url-safe" class="accent-blue-600 w-4 h-4" aria-label="URL-safe Base64 for file encoding" />
+            <span class="text-sm">URL-safe Base64 (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">-_</code>)</span>
+          </label>
+
+          <!-- Strip Padding toggle for file mode -->
+          <label class="inline-flex items-center gap-1.5 cursor-pointer" title="Strip '=' padding characters">
+            <input type="checkbox" id="file-strip-padding" class="accent-blue-600 w-4 h-4" aria-label="Strip padding (=) for file encoding" />
+            <span class="text-sm">Strip padding (<code class="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">=</code>)</span>
+          </label>
+        </div>
 
         <!-- Drop zone -->
         <div id="drop-zone"
@@ -437,6 +451,7 @@
       const bannerMsg      = document.getElementById('auto-detect-message');
       const copyMsg        = document.getElementById('copy-msg');
       const urlSafeChk     = document.getElementById('url-safe');
+      const stripPaddingChk = document.getElementById('strip-padding');
       // ONLA-18: new option controls
       const stripNewlinesChk = document.getElementById('strip-newlines');
       const wrapOutputChk    = document.getElementById('wrap-output');
@@ -454,12 +469,13 @@
        * Uses TextEncoder → Uint8Array → binary string → btoa pipeline
        * for full Unicode / emoji support.
        */
-      function encodeBase64(text, urlSafe = false) {
+      function encodeBase64(text, urlSafe = false, stripPadding = false) {
         const bytes  = new TextEncoder().encode(text);
         let binary   = '';
         for (const b of bytes) binary += String.fromCharCode(b);
         let b64 = btoa(binary);
         if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+        if (stripPadding) b64 = b64.replace(/=+$/, '');
         return b64;
       }
 
@@ -579,6 +595,7 @@
 
         let raw      = inputEl.value;
         const urlSafe = urlSafeChk.checked;
+        const stripPadding = stripPaddingChk.checked;
         let   mode   = getMode();
 
         if (raw.trim() === '') {
@@ -606,7 +623,7 @@
 
         try {
           if (mode === 'encode') {
-            let result = encodeBase64(raw, urlSafe);
+            let result = encodeBase64(raw, urlSafe, stripPadding);
             // ONLA-18: Chunked/wrapped output
             if (wrapOutputChk.checked) {
               result = wrapAtColumn(result, parseInt(wrapColsSel.value, 10));
@@ -656,6 +673,7 @@
 
       // URL-safe toggle → re-convert
       urlSafeChk.addEventListener('change', convert);
+      stripPaddingChk.addEventListener('change', convert);
 
       // ONLA-18: output option toggles → re-convert
       stripNewlinesChk.addEventListener('change', convert);
@@ -946,6 +964,7 @@
       const fileOutputEl      = document.getElementById('file-output');
       const fileOutputCount   = document.getElementById('file-output-count');
       const fileUrlSafeChk    = document.getElementById('file-url-safe');
+      const fileStripPaddingChk = document.getElementById('file-strip-padding');
       const dataUriWrap       = document.getElementById('data-uri-wrap');
 
       let currentFileMime = '';
@@ -976,13 +995,14 @@
 
       function encodeFileWithWorker(file) {
         const urlSafe = fileUrlSafeChk.checked;
+        const stripPadding = fileStripPaddingChk.checked;
         const worker = new Worker('file-worker.js');
 
         setProgress(0);
         fileProgress.classList.remove('hidden');
         fileOutputSection.classList.add('hidden');
 
-        worker.postMessage({ file, urlSafe });
+        worker.postMessage({ file, urlSafe, stripPadding });
 
         worker.addEventListener('message', (e) => {
           const { type } = e.data;
@@ -1003,6 +1023,7 @@
 
       function encodeFileDirect(file) {
         const urlSafe = fileUrlSafeChk.checked;
+        const stripPadding = stripPaddingChk.checked;
         const reader  = new FileReader();
         setProgress(0);
         fileProgress.classList.remove('hidden');
@@ -1014,6 +1035,7 @@
           const commaIdx = dataUrl.indexOf(',');
           let b64 = commaIdx >= 0 ? dataUrl.slice(commaIdx + 1) : dataUrl;
           if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+          if (stripPadding) b64 = b64.replace(/=+$/, '');
           setProgress(100);
           setTimeout(() => fileProgress.classList.add('hidden'), 400);
           showFileOutput(b64, file.type || 'application/octet-stream', file.name);
@@ -1078,6 +1100,25 @@
           b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
         } else {
           b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+        }
+        if (stripPaddingChk.checked) {
+           b64 = b64.replace(/=+$/, '');
+        }
+        currentFileBase64Raw = b64;
+        showFileOutput(b64, currentFileMime, '');
+      });
+
+      // Strip padding toggle → refresh output
+      stripPaddingChk.addEventListener('change', () => {
+        if (!currentFileBase64Raw) return;
+        let b64 = currentFileBase64Raw;
+        if (stripPaddingChk.checked) {
+          b64 = b64.replace(/=+$/, '');
+        } else {
+          // Cannot easily restore padding without re-encoding
+          // For now, let's just warn or reload
+          // But I'll just reload
+          if(fileInput.files.length) handleFile(fileInput.files[0]);
         }
         currentFileBase64Raw = b64;
         showFileOutput(b64, currentFileMime, '');

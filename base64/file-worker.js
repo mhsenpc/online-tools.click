@@ -7,7 +7,7 @@
  *           | { type: 'error', message: string }
  */
 self.addEventListener('message', (e) => {
-  const { file, urlSafe } = e.data;
+  const { file, urlSafe, stripPadding } = e.data;
 
   const CHUNK = 1024 * 1024; // 1 MB chunks
   const reader = new FileReader();
@@ -41,6 +41,9 @@ self.addEventListener('message', (e) => {
         let b64 = btoa(binary);
         if (urlSafe) {
           b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+        }
+        if (stripPadding) {
+          b64 = b64.replace(/=+$/, '');
         }
         self.postMessage({
           type: 'done',
