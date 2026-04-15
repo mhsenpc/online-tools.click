@@ -80,6 +80,15 @@
                         </select>
                     </div>
 
+                    <!-- Text Type -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Text Type</label>
+                        <select id="opt-text-type" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-2 text-sm outline-none transition-all">
+                            <option value="lorem">Standard Lorem Ipsum</option>
+                            <option value="developer">Developer-Themed</option>
+                        </select>
+                    </div>
+
                     <!-- Count -->
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Amount</label>
@@ -132,22 +141,30 @@
     </div>
 
     <script>
-        const words = ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"];
+        const loremWords = ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", "ut", "enim", "ad", "minim", "veniam", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "non", "proident", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"];
+
+        const developerWords = ["function", "variable", "array", "object", "string", "number", "boolean", "null", "undefined", "class", "method", "property", "parameter", "argument", "return", "async", "await", "promise", "callback", "error", "exception", "try", "catch", "finally", "throw", "debug", "console", "log", "warn", "error", "info", "fetch", "request", "response", "json", "parse", "stringify", "api", "endpoint", "server", "client", "frontend", "backend", "database", "query", "mutation", "subscription", "schema", "type", "interface", "enum", "union", "implementation", "module", "import", "export", "default", "namespace", "package", "dependency", "version", "release", "deploy", "build", "compile", "runtime", "memory", "cpu", "performance", "optimization", "refactor", "test", "spec", "mock", "stub", "assert", "expect", "describe", "it", "before", "after", "git", "commit", "push", "pull", "merge", "branch", "checkout", "rebase", "cherry", "pick", "repository", "remote", "origin", "master", "main", "develop", "feature", "bugfix", "hotfix", "release", "tag", "semantic", "versioning", "conventional", "changelog"];
 
         const output = document.getElementById('output-text');
         const btnGenerate = document.getElementById('btn-generate');
         const btnCopy = document.getElementById('btn-copy');
         const optType = document.getElementById('opt-type');
         const optCount = document.getElementById('opt-count');
+        const optTextType = document.getElementById('opt-text-type');
         const optTags = document.getElementById('opt-tags');
         const optStart = document.getElementById('opt-start');
         const toast = document.getElementById('toast');
+
+        function getWords() {
+            return optTextType.value === 'developer' ? developerWords : loremWords;
+        }
 
         function generate() {
             const type = optType.value;
             const count = Math.min(100, Math.max(1, parseInt(optCount.value) || 1));
             const withTags = optTags.checked;
             const startWithLorem = optStart.checked;
+            const words = getWords();
 
             let result = [];
 
@@ -155,7 +172,10 @@
                 for (let i = 0; i < count; i++) {
                     result.push(words[Math.floor(Math.random() * words.length)]);
                 }
-                if (startWithLorem && count >= 2) { result[0] = "lorem"; result[1] = "ipsum"; }
+                if (startWithLorem && count >= 2 && optTextType.value === 'lorem') {
+                    result[0] = "lorem";
+                    result[1] = "ipsum";
+                }
                 output.innerText = result.join(' ');
             } else if (type === 'sentences') {
                 for (let i = 0; i < count; i++) {
@@ -168,7 +188,7 @@
                     sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
                     result.push(sentence);
                 }
-                if (startWithLorem) {
+                if (startWithLorem && optTextType.value === 'lorem') {
                     let first = result[0].split(' ');
                     first[0] = "Lorem";
                     if (first.length > 1) first[1] = "ipsum";
@@ -189,7 +209,7 @@
                         p.push(sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.');
                     }
                     let paragraph = p.join(' ');
-                    if (i === 0 && startWithLorem) {
+                    if (i === 0 && startWithLorem && optTextType.value === 'lorem') {
                         paragraph = "Lorem ipsum " + paragraph.charAt(0).toLowerCase() + paragraph.slice(1);
                     }
                     result.push(withTags ? `<p>${paragraph}</p>` : paragraph);
