@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cron Schedule Descriptor | Online Tools</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #3b82f6;
+            --radius-md: 12px;
+            --font-sans: system-ui, -apple-system, sans-serif;
+            --font-mono: monospace;
+        }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .expression-bar { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 10px; margin-bottom: 20px; }
+        #expression-input { background: none; border: none; color: var(--accent); font-family: var(--font-mono); font-size: 18px; flex: 1; outline: none; }
+        .results { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+        .label { font-size: 12px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        #description { font-size: 18px; font-weight: 500; margin-bottom: 20px; color: var(--text); }
+        .run-item { font-family: var(--font-mono); font-size: 14px; margin-bottom: 5px; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cron Schedule Descriptor</h1>
+        <div class="expression-bar">
+            <input type="text" id="expression-input" placeholder="* * * * *" value="*/5 * * * *">
+        </div>
+        <div class="results">
+            <div class="label">Description</div>
+            <div id="description"></div>
+            <div class="label">Next 5 Runs</div>
+            <div id="next-runs"></div>
+        </div>
+    </div>
+    <script>
+        const MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const SHORTHAND = { '@yearly': '0 0 1 1 *', '@annually': '0 0 1 1 *', '@monthly': '0 0 1 * *', '@weekly': '0 0 * * 0', '@daily': '0 0 * * *', '@midnight': '0 0 * * *', '@hourly': '0 * * * *' };
+
+        function expandField(field, min, max) {
+            const values = new Set();
+            const parts = field.split(',');
+            for (const part of parts) {
+                let rangePart = part, step = 1;
+                if (part.includes('/')) { const rp = part.split('/'); rangePart = rp[0]; step = parseInt(rp[1]); }
+                let start, end;
+                if (rangePart === '*') { start = min; end = max; }
+                else if (rangePart.includes('-')) { [start, end] = rangePart.split('-').map(Number); }
+                else { start = parseInt(rangePart); end = start; }
+                for (let i = start; i <= end; i += step) values.add(i);
+            }
+            return values;
+        }
+
+        function parseExpression(expr) {
+            let e = expr.trim().toLowerCase();
+            if (SHORTHAND[e]) e = SHORTHAND[e];
+            const parts = e.split(/\s+/);
+            if (parts.length !== 5) return null;
+            const fieldDefs = [
+                { min: 0, max: 59 }, { min: 0, max: 23 }, { min: 1, max: 31 },
+                { min: 1, max: 12 }, { min: 0, max: 6 }
+            ];
+            const parsed = {};
+            for (let i = 0; i < 5; i++) {
+                const def = fieldDefs[i];
+                const values = expandField(parts[i], def.min, def.max);
+                parsed[['minute','hour','dom','month','dow'][i]] = { values, isWild: parts[i] === '*' };
+            }
+            return parsed;
+        }
+
+        function daysInMonth(month, year) { return new Date(year, month, 0).getDate(); }
+        function getDayOfWeek(year, month, day) { return new Date(year, month - 1, day).getDay(); }
+
+        function findNext(parsed, start) {
+            const c = { ...start };
+            c.minute++;
+            if (c.minute > 59) { c.minute = 0; c.hour++; }
+            if (c.hour > 23) { c.hour = 0; c.day++; }
+            if (c.day > daysInMonth(c.month, c.year)) { c.day = 1; c.month++; }
+            if (c.month > 12) { c.month = 1; c.year++; }
+            for (let i = 0; i < 10000; i++) {
+                if (!parsed.month.values.has(c.month)) { c.month++; c.day=1; c.hour=0; c.minute=0; continue; }
+                if (!parsed.dom.values.has(c.day) || !parsed.dow.values.has(getDayOfWeek(c.year, c.month, c.day))) { c.day++; c.hour=0; c.minute=0; continue; }
+                if (!parsed.hour.values.has(c.hour)) { c.hour++; c.minute=0; continue; }
+                if (!parsed.minute.values.has(c.minute)) { c.minute++; continue; }
+                return c;
+            }
+            return null;
+        }
+
+        function update() {
+            const expr = document.getElementById('expression-input').value;
+            const parsed = parseExpression(expr);
+            if (!parsed) { descriptionEl.textContent = 'Invalid Cron'; return; }
+            descriptionEl.textContent = expr; // Basic
+            let next = { year: new Date().getFullYear(), month: new Date().getMonth()+1, day: new Date().getDate(), hour: new Date().getHours(), minute: new Date().getMinutes() };
+            nextRunsEl.innerHTML = '';
+            for(let i=0; i<5; i++) {
+                next = findNext(parsed, next);
+                if (!next) break;
+                nextRunsEl.innerHTML += `<div class="run-item">${next.year}-${next.month}-${next.day} ${next.hour}:${next.minute}</div>`;
+            }
+        }
+        document.getElementById('expression-input').addEventListener('input', update);
+        update();
+    </script>
+</body>
+</html>
