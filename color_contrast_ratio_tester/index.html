@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Contrast Ratio Tester | online-tools.click</title>
+    <meta name="description" content="Free WCAG contrast ratio checker. Test foreground and background color combinations for accessibility compliance (AA/AAA).">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+        }
+        .dark {
+            --bg-card: #111827;
+        }
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 60px;
+            cursor: pointer;
+            background: none;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch {
+            border: 2px solid rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+
+        .pass-badge {
+            transition: all 0.2s;
+        }
+
+        .preview-box {
+            transition: all 0.2s;
+        }
+
+        .ratio-display {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date);
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-5xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Color Contrast Ratio Tester</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Check WCAG accessibility compliance for color combinations.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left: Color Pickers & Ratio -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Color Pickers -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Text Color (Foreground)</label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="fg-picker" value="#000000" class="flex-1">
+                            <input type="text" id="fg-hex" value="#000000" class="w-28 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 font-mono text-sm text-center uppercase outline-none focus:border-blue-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Background Color</label>
+                        <div class="flex items-center gap-3">
+                            <input type="color" id="bg-picker" value="#ffffff" class="flex-1">
+                            <input type="text" id="bg-hex" value="#FFFFFF" class="w-28 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 font-mono text-sm text-center uppercase outline-none focus:border-blue-500 transition-colors">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrast Ratio Display -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm text-center">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Contrast Ratio</div>
+                    <div id="ratio-value" class="ratio-display text-6xl font-black tracking-tight mb-2">21.00</div>
+                    <div class="text-gray-400 text-lg">:1</div>
+                </div>
+
+                <!-- WCAG Compliance -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">WCAG Compliance</div>
+
+                    <div class="space-y-4">
+                        <!-- Normal Text -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Normal Text</span>
+                                <span class="text-xs text-gray-400">&lt; 18pt (24px) or &lt; 14pt bold</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div id="aa-normal" class="pass-badge p-3 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+                                    <div class="text-[10px] text-gray-400 mb-1 uppercase font-medium">AA</div>
+                                    <div class="text-xs font-bold">4.5:1</div>
+                                </div>
+                                <div id="aaa-normal" class="pass-badge p-3 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+                                    <div class="text-[10px] text-gray-400 mb-1 uppercase font-medium">AAA</div>
+                                    <div class="text-xs font-bold">7.0:1</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Large Text -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-medium">Large Text</span>
+                                <span class="text-xs text-gray-400">≥ 18pt (24px) or ≥ 14pt bold</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div id="aa-large" class="pass-badge p-3 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+                                    <div class="text-[10px] text-gray-400 mb-1 uppercase font-medium">AA</div>
+                                    <div class="text-xs font-bold">3.0:1</div>
+                                </div>
+                                <div id="aaa-large" class="pass-badge p-3 rounded-xl border border-gray-100 dark:border-gray-800 text-center">
+                                    <div class="text-[10px] text-gray-400 mb-1 uppercase font-medium">AAA</div>
+                                    <div class="text-xs font-bold">4.5:1</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Live Preview -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-4">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Live Preview</label>
+
+                    <!-- Preview Box -->
+                    <div id="preview-box" class="preview-box rounded-xl p-8 min-h-[280px] flex flex-col justify-center space-y-6" style="background-color: #ffffff; color: #000000;">
+                        <div>
+                            <div class="text-xs font-medium uppercase tracking-wide opacity-70 mb-2">Normal Text Sample</div>
+                            <p class="text-lg leading-relaxed">
+                                The quick brown fox jumps over the lazy dog.
+                                This is how normal paragraph text will appear
+                                with your chosen color combination.
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-medium uppercase tracking-wide opacity-70 mb-2">Large Text Sample (24pt / Bold)</div>
+                            <p class="text-2xl font-bold leading-tight">
+                                The quick brown fox
+                            </p>
+                        </div>
+
+                        <div>
+                            <div class="text-xs font-medium uppercase tracking-wide opacity-70 mb-2">UI Components</div>
+                            <div class="flex items-center gap-3">
+                                <button class="px-4 py-2 rounded-lg font-medium text-sm border-2 border-current opacity-90 hover:opacity-100 transition-opacity">
+                                    Button
+                                </button>
+                                <span class="text-sm underline opacity-90">Link text</span>
+                                <span class="text-xs opacity-70">Secondary text</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preset Color Pairs -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Common Combinations</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="setColors('#000000', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #000000 50%, #ffffff 50%)" title="Black on White"></button>
+                            <button onclick="setColors('#ffffff', '#000000')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #ffffff 50%, #000000 50%)" title="White on Black"></button>
+                            <button onclick="setColors('#1d4ed8', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #1d4ed8 50%, #ffffff 50%)" title="Blue on White"></button>
+                            <button onclick="setColors('#374151', '#f3f4f6')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #374151 50%, #f3f4f6 50%)" title="Gray on Light Gray"></button>
+                            <button onclick="setColors('#dc2626', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #dc2626 50%, #ffffff 50%)" title="Red on White"></button>
+                            <button onclick="setColors('#059669', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #059669 50%, #ffffff 50%)" title="Green on White"></button>
+                            <button onclick="setColors('#7c3aed', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #7c3aed 50%, #ffffff 50%)" title="Purple on White"></button>
+                            <button onclick="setColors('#ea580c', '#ffffff')" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors" style="background: linear-gradient(135deg, #ea580c 50%, #ffffff 50%)" title="Orange on White"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- WCAG Reference -->
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">WCAG 2.1 Requirements</label>
+                    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                        <p><strong class="text-gray-900 dark:text-gray-100">Level AA:</strong> Minimum for general accessibility compliance</p>
+                        <p><strong class="text-gray-900 dark:text-gray-100">Level AAA:</strong> Enhanced accessibility (recommended where possible)</p>
+                        <p class="text-xs mt-3 text-gray-400">
+                            WCAG Success Criterion 1.4.3: Contrast (Minimum) requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Private: All contrast calculations happen client-side in your browser.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const fgPicker = document.getElementById('fg-picker');
+        const bgPicker = document.getElementById('bg-picker');
+        const fgHex = document.getElementById('fg-hex');
+        const bgHex = document.getElementById('bg-hex');
+        const previewBox = document.getElementById('preview-box');
+        const ratioValue = document.getElementById('ratio-value');
+
+        // --- Contrast Calculation (WCAG 2.1) ---
+        function getLuminance(r, g, b) {
+            const [rs, gs, bs] = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return rs * 0.2126 + gs * 0.7152 + bs * 0.0722;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function getContrastRatio(hex1, hex2) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+            if (!rgb1 || !rgb2) return 0;
+
+            const lum1 = getLuminance(rgb1.r, rgb1.g, rgb1.b);
+            const lum2 = getLuminance(rgb2.r, rgb2.g, rgb2.b);
+
+            const lighter = Math.max(lum1, lum2);
+            const darker = Math.min(lum1, lum2);
+
+            return parseFloat(((lighter + 0.05) / (darker + 0.05)).toFixed(2));
+        }
+
+        // --- UI Updates ---
+        function updateComplianceBadge(elementId, requiredRatio, actualRatio) {
+            const element = document.getElementById(elementId);
+            const passes = actualRatio >= requiredRatio;
+
+            if (passes) {
+                element.className = 'pass-badge p-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/30 text-center';
+                element.querySelector('.text-xs').className = 'text-xs font-bold text-emerald-600 dark:text-emerald-400';
+            } else {
+                element.className = 'pass-badge p-3 rounded-xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/30 text-center';
+                element.querySelector('.text-xs').className = 'text-xs font-bold text-red-600 dark:text-red-400';
+            }
+        }
+
+        function updateAll() {
+            const fgHexVal = fgPicker.value;
+            const bgHexVal = bgPicker.value;
+
+            // Update hex inputs
+            fgHex.value = fgHexVal.toUpperCase();
+            bgHex.value = bgHexVal.toUpperCase();
+
+            // Calculate contrast
+            const ratio = getContrastRatio(fgHexVal, bgHexVal);
+            ratioValue.textContent = ratio.toFixed(2);
+
+            // Update preview
+            previewBox.style.backgroundColor = bgHexVal;
+            previewBox.style.color = fgHexVal;
+
+            // Update WCAG compliance badges
+            updateComplianceBadge('aa-normal', 4.5, ratio);
+            updateComplianceBadge('aaa-normal', 7.0, ratio);
+            updateComplianceBadge('aa-large', 3.0, ratio);
+            updateComplianceBadge('aaa-large', 4.5, ratio);
+
+            // Update ratio display color based on overall compliance
+            if (ratio >= 7.0) {
+                ratioValue.className = 'ratio-display text-6xl font-black tracking-tight mb-2 text-emerald-600 dark:text-emerald-400';
+            } else if (ratio >= 4.5) {
+                ratioValue.className = 'ratio-display text-6xl font-black tracking-tight mb-2 text-blue-600 dark:text-blue-400';
+            } else {
+                ratioValue.className = 'ratio-display text-6xl font-black tracking-tight mb-2 text-red-600 dark:text-red-400';
+            }
+        }
+
+        window.setColors = (fg, bg) => {
+            fgPicker.value = fg;
+            bgPicker.value = bg;
+            updateAll();
+        };
+
+        // --- Event Handlers ---
+        fgPicker.addEventListener('input', updateAll);
+        bgPicker.addEventListener('input', updateAll);
+
+        fgHex.addEventListener('change', (e) => {
+            let val = e.target.value;
+            if (!val.startsWith('#')) val = '#' + val;
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                fgPicker.value = val;
+                updateAll();
+            }
+        });
+
+        bgHex.addEventListener('change', (e) => {
+            let val = e.target.value;
+            if (!val.startsWith('#')) val = '#' + val;
+            if (/^#[0-9A-F]{6}$/i.test(val)) {
+                bgPicker.value = val;
+                updateAll();
+            }
+        });
+
+        // --- Init ---
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        updateAll();
+    </script>
+</body>
+</html>
