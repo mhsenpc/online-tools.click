@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Sequence Generator | Online Tools</title>
+    <meta name="description" content="Generate non-repeating random sequences of numbers or items.">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --text: #ffffff;
+            --accent: #ff3e00;
+        }
+        body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: var(--bg-elevated); padding: 20px; border-radius: 8px; }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: var(--accent); color: white; border: none; cursor: pointer; }
+        #result { background: #000; padding: 15px; word-break: break-all; min-height: 50px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Random Sequence Generator</h1>
+        <label>Type: 
+            <select id="type">
+                <option value="number">Number Range</option>
+                <option value="char">Characters</option>
+            </select>
+        </label>
+        <div id="number-settings">
+            <label>Min: <input type="number" id="min" value="1"></label>
+            <label>Max: <input type="number" id="max" value="100"></label>
+        </div>
+        <div id="char-settings" style="display:none;">
+            <label>Character Set: <input type="text" id="chars" value="abcdefghijklmnopqrstuvwxyz"></label>
+        </div>
+        <label>Quantity: <input type="number" id="quantity" value="10"></label>
+        <button id="generate">Generate</button>
+        <div id="result"></div>
+        <button id="copy">Copy</button>
+    </div>
+    <script>
+        document.getElementById('type').addEventListener('change', (e) => {
+            document.getElementById('number-settings').style.display = e.target.value === 'number' ? 'block' : 'none';
+            document.getElementById('char-settings').style.display = e.target.value === 'char' ? 'block' : 'none';
+        });
+
+        document.getElementById('generate').addEventListener('click', () => {
+            const type = document.getElementById('type').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            let pool = [];
+            if (type === 'number') {
+                const min = parseInt(document.getElementById('min').value);
+                const max = parseInt(document.getElementById('max').value);
+                for(let i=min; i<=max; i++) pool.push(i);
+            } else {
+                pool = document.getElementById('chars').value.split('');
+            }
+            
+            // Shuffle
+            for(let i=pool.length-1; i>0; i--) {
+                const j = Math.floor(Math.random() * (i+1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+            
+            const result = pool.slice(0, quantity).join(', ');
+            document.getElementById('result').textContent = result;
+        });
+
+        document.getElementById('copy').addEventListener('click', () => {
+            navigator.clipboard.writeText(document.getElementById('result').textContent);
+            alert('Copied!');
+        });
+    </script>
+</body>
+</html>
