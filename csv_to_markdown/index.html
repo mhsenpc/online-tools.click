@@ -7,6 +7,7 @@
     <meta name="description" content="Fast, client-side CSV to Markdown table converter.">
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
@@ -35,6 +36,15 @@
                         <option value="\t">Tab</option>
                         <option value=";">Semicolon (;)</option>
                     </select>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" id="has-header" checked>
+                        <span>Header</span>
+                    </label>
+                    <select id="alignment" class="bg-gray-200 dark:bg-gray-800 rounded px-3 py-1 text-sm">
+                        <option value="left">Left</option>
+                        <option value="center">Center</option>
+                        <option value="right">Right</option>
+                    </select>
                     <button id="btn-generate" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold">Convert</button>
                 </div>
             </div>
@@ -50,21 +60,46 @@
         document.getElementById('btn-generate').onclick = () => {
             const input = document.getElementById('csv-input').value;
             const delimiter = document.getElementById('delimiter').value === '\\t' ? '\t' : document.getElementById('delimiter').value;
-            
-            const rows = input.split('\n').filter(r => r.trim() !== '');
-            if (rows.length === 0) return;
+            const hasHeader = document.getElementById('has-header').checked;
+            const alignment = document.getElementById('alignment').value;
 
-            const headers = rows[0].split(delimiter);
-            
-            let markdown = '| ' + headers.join(' | ') + ' |\n';
-            markdown += '| ' + headers.map(() => '---').join(' | ') + ' |\n';
+            Papa.parse(input, {
+                delimiter: delimiter,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    const data = results.data;
+                    if (data.length === 0) return;
 
-            for (let i = 1; i < rows.length; i++) {
-                const cols = rows[i].split(delimiter);
-                markdown += '| ' + cols.join(' | ') + ' |\n';
-            }
+                    let markdown = '';
+                    let headers = [];
+                    let rows = [];
 
-            document.getElementById('output-markdown').innerText = markdown;
+                    if (hasHeader) {
+                        headers = data[0];
+                        rows = data.slice(1);
+                    } else {
+                        headers = data[0].map((_, i) => `Col ${i + 1}`);
+                        rows = data;
+                    }
+
+                    // Alignment syntax
+                    const alignMap = {
+                        left: ':---',
+                        center: ':---:',
+                        right: '---:'
+                    };
+                    const alignSyntax = alignMap[alignment];
+
+                    markdown += '| ' + headers.join(' | ') + ' |\n';
+                    markdown += '| ' + headers.map(() => alignSyntax).join(' | ') + ' |\n';
+
+                    rows.forEach(row => {
+                        markdown += '| ' + row.join(' | ') + ' |\n';
+                    });
+
+                    document.getElementById('output-markdown').innerText = markdown;
+                }
+            });
         };
 
         document.getElementById('btn-copy').onclick = () => {
