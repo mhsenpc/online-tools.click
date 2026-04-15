@@ -20,3 +20,7 @@ Given unformatted XML, When formatted, Then the output is properly indented and 
 Given well-formed XML, When validated, Then the tool confirms it is valid.
 Given malformed XML (e.g., unclosed tag), When validated, Then the specific error and its line/position are displayed clearly.
 Given the user selects a different indentation option, When formatting, Then the output reflects the chosen indentation style.
+
+Status: Completed
+- Implemented XML formatter, validator, and syntax highlighter.
+- Verified acceptance criteria.
