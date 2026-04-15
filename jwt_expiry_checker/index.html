@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Expiry & Time Claims Checker | online-tools.click</title>
+    <meta name="description" content="Free online JWT expiry checker. Decode JWTs and check exp, iat, nbf time claims. Get live countdowns to token expiration. 100% private and client-side.">
+    <meta name="keywords" content="jwt expiry, jwt decoder, jwt time claims, exp checker, jwt countdown, json web token">
+
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "JWT Expiry & Time Claims Checker",
+      "description": "Free online JWT expiry checker with live countdowns and time claim validation.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0" }
+    }
+    </script>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.2s, color 0.2s; }
+        .jwt-input {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl px-6 py-4 text-base font-mono outline-none focus:border-blue-500 transition-all shadow-lg;
+        }
+        .status-valid { @apply border-green-500 bg-green-50 dark:bg-green-900/20; }
+        .status-expired { @apply border-red-500 bg-red-50 dark:bg-red-900/20; }
+        .status-warning { @apply border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20; }
+        .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">JWT Expiry Checker</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Decode JWTs and check time-based claims with live countdowns.</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="mb-8">
+            <label class="block text-sm font-bold uppercase tracking-widest text-gray-400 mb-3">JWT Token</label>
+            <textarea
+                id="jwt-input"
+                class="jwt-input resize-y"
+                rows="4"
+                placeholder="Paste your JWT token here..."
+            ></textarea>
+            <div class="flex gap-3 mt-4">
+                <button id="btn-check" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors">
+                    Check Token
+                </button>
+                <button id="btn-clear" class="px-6 py-2.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-semibold rounded-xl transition-colors">
+                    Clear
+                </button>
+                <button id="btn-example" class="px-6 py-2.5 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 font-semibold rounded-xl transition-colors">
+                    Load Example
+                </button>
+            </div>
+        </section>
+
+        <!-- Error Message -->
+        <div id="error-message" class="hidden mb-8 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-300 dark:border-red-700 text-red-700 dark:text-red-300 text-sm">
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden space-y-6">
+
+            <!-- Token Status Banner -->
+            <div id="status-banner" class="rounded-2xl border-2 p-6 text-center shadow-lg">
+                <div id="status-icon" class="text-5xl mb-2">⚠️</div>
+                <div id="status-title" class="text-2xl font-bold mb-1">Checking...</div>
+                <div id="status-description" class="text-gray-600 dark:text-gray-400"></div>
+            </div>
+
+            <!-- Time Claims Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Expiration (exp) -->
+                <div id="card-exp" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                        exp <span class="text-gray-500">(Expiration)</span>
+                    </div>
+                    <div id="exp-status" class="text-xs font-semibold mb-2 text-gray-400">Not Found</div>
+                    <div id="exp-countdown" class="text-2xl font-mono font-bold mb-1">---</div>
+                    <div id="exp-local" class="text-xs text-gray-500 dark:text-gray-400 mb-1">---</div>
+                    <div id="exp-utc" class="text-xs text-gray-500 dark:text-gray-400 font-mono">---</div>
+                </div>
+
+                <!-- Not Before (nbf) -->
+                <div id="card-nbf" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                        nbf <span class="text-gray-500">(Not Before)</span>
+                    </div>
+                    <div id="nbf-status" class="text-xs font-semibold mb-2 text-gray-400">Not Found</div>
+                    <div id="nbf-countdown" class="text-2xl font-mono font-bold mb-1">---</div>
+                    <div id="nbf-local" class="text-xs text-gray-500 dark:text-gray-400 mb-1">---</div>
+                    <div id="nbf-utc" class="text-xs text-gray-500 dark:text-gray-400 font-mono">---</div>
+                </div>
+
+                <!-- Issued At (iat) -->
+                <div id="card-iat" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">
+                        iat <span class="text-gray-500">(Issued At)</span>
+                    </div>
+                    <div id="iat-status" class="text-xs font-semibold mb-2 text-gray-400">Not Found</div>
+                    <div id="iat-countdown" class="text-2xl font-mono font-bold mb-1">---</div>
+                    <div id="iat-local" class="text-xs text-gray-500 dark:text-gray-400 mb-1">---</div>
+                    <div id="iat-utc" class="text-xs text-gray-500 dark:text-gray-400 font-mono">---</div>
+                </div>
+            </div>
+
+            <!-- Decoded Payload -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-gray-400">Decoded Payload</h3>
+                    <button id="btn-copy" class="text-xs font-bold text-gray-400 hover:text-blue-500 uppercase transition-colors">Copy</button>
+                </div>
+                <pre id="decoded-payload" class="text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-gray-700 dark:text-gray-300"></pre>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Private: All JWT decoding happens client-side in your browser. Your tokens are never sent to any server.</p>
+            <div class="flex justify-center gap-4">
+                <button id="btn-theme" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        (() => {
+            'use strict';
+
+            // DOM Elements
+            const jwtInput = document.getElementById('jwt-input');
+            const btnCheck = document.getElementById('btn-check');
+            const btnClear = document.getElementById('btn-clear');
+            const btnExample = document.getElementById('btn-example');
+            const btnTheme = document.getElementById('btn-theme');
+            const btnCopy = document.getElementById('btn-copy');
+            const errorMessage = document.getElementById('error-message');
+            const results = document.getElementById('results');
+            const statusBanner = document.getElementById('status-banner');
+            const statusIcon = document.getElementById('status-icon');
+            const statusTitle = document.getElementById('status-title');
+            const statusDescription = document.getElementById('status-description');
+            const decodedPayload = document.getElementById('decoded-payload');
+            const toast = document.getElementById('toast');
+
+            // Time claim elements
+            const expCard = document.getElementById('card-exp');
+            const expStatus = document.getElementById('exp-status');
+            const expCountdown = document.getElementById('exp-countdown');
+            const expLocal = document.getElementById('exp-local');
+            const expUtc = document.getElementById('exp-utc');
+
+            const nbfCard = document.getElementById('card-nbf');
+            const nbfStatus = document.getElementById('nbf-status');
+            const nbfCountdown = document.getElementById('nbf-countdown');
+            const nbfLocal = document.getElementById('nbf-local');
+            const nbfUtc = document.getElementById('nbf-utc');
+
+            const iatCard = document.getElementById('card-iat');
+            const iatStatus = document.getElementById('iat-status');
+            const iatCountdown = document.getElementById('iat-countdown');
+            const iatLocal = document.getElementById('iat-local');
+            const iatUtc = document.getElementById('iat-utc');
+
+            let countdownInterval = null;
+            let currentPayload = null;
+
+            // Utility Functions
+            function base64UrlDecode(str) {
+                str = str.replace(/-/g, '+').replace(/_/g, '/');
+                while (str.length % 4) str += '=';
+                try {
+                    return decodeURIComponent(atob(str).split('').map(c =>
+                        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                    ).join(''));
+                } catch (e) {
+                    return atob(str);
+                }
+            }
+
+            function formatTimestamp(timestamp) {
+                const date = new Date(timestamp * 1000);
+                return date.toLocaleString();
+            }
+
+            function formatUTC(timestamp) {
+                const date = new Date(timestamp * 1000);
+                return date.toUTCString();
+            }
+
+            function formatRelativeTime(timestamp) {
+                const now = Math.floor(Date.now() / 1000);
+                const diff = timestamp - now;
+                const absDiff = Math.abs(diff);
+
+                if (absDiff < 60) return `${Math.sign(diff) * absDiff}s`;
+                if (absDiff < 3600) return `${Math.sign(diff) * Math.floor(absDiff / 60)}m`;
+                if (absDiff < 86400) return `${Math.sign(diff) * Math.floor(absDiff / 3600)}h`;
+                return `${Math.sign(diff) * Math.floor(absDiff / 86400)}d`;
+            }
+
+            function formatCountdown(timestamp) {
+                const now = Math.floor(Date.now() / 1000);
+                const diff = timestamp - now;
+
+                if (diff <= 0) return 'Expired';
+
+                const days = Math.floor(diff / 86400);
+                const hours = Math.floor((diff % 86400) / 3600);
+                const minutes = Math.floor((diff % 3600) / 60);
+                const seconds = diff % 60;
+
+                const parts = [];
+                if (days > 0) parts.push(`${days}d`);
+                if (hours > 0 || days > 0) parts.push(`${hours}h`);
+                if (minutes > 0 || hours > 0 || days > 0) parts.push(`${minutes}m`);
+                parts.push(`${seconds}s`);
+
+                return parts.join(' ');
+            }
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.remove('hidden');
+                results.classList.add('hidden');
+            }
+
+            function hideError() {
+                errorMessage.classList.add('hidden');
+            }
+
+            function showToast(message) {
+                toast.textContent = message;
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            }
+
+            function updateClaimCard(claim, timestamp) {
+                const now = Math.floor(Date.now() / 1000);
+                const card = document.getElementById(`card-${claim}`);
+                const status = document.getElementById(`${claim}-status`);
+                const countdown = document.getElementById(`${claim}-countdown`);
+                const local = document.getElementById(`${claim}-local`);
+                const utc = document.getElementById(`${claim}-utc`);
+
+                // Reset classes
+                card.classList.remove('status-valid', 'status-expired', 'status-warning');
+
+                if (timestamp === null) {
+                    status.textContent = 'Not Found';
+                    status.className = 'text-xs font-semibold mb-2 text-gray-400';
+                    countdown.textContent = '---';
+                    local.textContent = '---';
+                    utc.textContent = '---';
+                    return;
+                }
+
+                local.textContent = formatTimestamp(timestamp);
+                utc.textContent = formatUTC(timestamp);
+
+                if (claim === 'exp') {
+                    if (now >= timestamp) {
+                        card.classList.add('status-expired');
+                        status.textContent = 'Expired';
+                        status.className = 'text-xs font-semibold mb-2 text-red-600 dark:text-red-400';
+                        countdown.textContent = 'Expired';
+                    } else {
+                        card.classList.add('status-valid');
+                        status.textContent = 'Valid';
+                        status.className = 'text-xs font-semibold mb-2 text-green-600 dark:text-green-400';
+                        countdown.textContent = formatCountdown(timestamp);
+                    }
+                } else if (claim === 'nbf') {
+                    if (now < timestamp) {
+                        card.classList.add('status-warning');
+                        status.textContent = 'Not Yet Valid';
+                        status.className = 'text-xs font-semibold mb-2 text-yellow-600 dark:text-yellow-400';
+                        countdown.textContent = formatCountdown(timestamp);
+                    } else {
+                        card.classList.add('status-valid');
+                        status.textContent = 'Active';
+                        status.className = 'text-xs font-semibold mb-2 text-green-600 dark:text-green-400';
+                        countdown.textContent = formatRelativeTime(timestamp);
+                    }
+                } else if (claim === 'iat') {
+                    card.classList.add('status-valid');
+                    status.textContent = 'Issued';
+                    status.className = 'text-xs font-semibold mb-2 text-blue-600 dark:text-blue-400';
+                    countdown.textContent = formatRelativeTime(timestamp);
+                }
+            }
+
+            function updateStatusBanner(payload) {
+                const now = Math.floor(Date.now() / 1000);
+                const hasExp = payload.exp !== undefined;
+                const hasNbf = payload.nbf !== undefined;
+                const isExpired = hasExp && now >= payload.exp;
+                const notYetValid = hasNbf && now < payload.nbf;
+
+                statusBanner.classList.remove('status-valid', 'status-expired', 'status-warning');
+
+                if (isExpired) {
+                    statusBanner.classList.add('status-expired');
+                    statusIcon.textContent = '❌';
+                    statusTitle.textContent = 'Token Expired';
+                    statusDescription.textContent = hasExp
+                        ? `This token expired on ${formatTimestamp(payload.exp)}`
+                        : 'Token is expired';
+                } else if (notYetValid) {
+                    statusBanner.classList.add('status-warning');
+                    statusIcon.textContent = '⏳';
+                    statusTitle.textContent = 'Not Yet Valid';
+                    statusDescription.textContent = `This token will be valid on ${formatTimestamp(payload.nbf)}`;
+                } else if (hasExp) {
+                    statusBanner.classList.add('status-valid');
+                    statusIcon.textContent = '✅';
+                    statusTitle.textContent = 'Token Valid';
+                    statusDescription.textContent = `Expires in ${formatCountdown(payload.exp)}`;
+                    statusIcon.classList.add('pulse');
+                } else {
+                    statusBanner.classList.add('status-valid');
+                    statusIcon.textContent = '✅';
+                    statusTitle.textContent = 'Token Valid';
+                    statusDescription.textContent = 'No expiration time set';
+                    statusIcon.classList.remove('pulse');
+                }
+            }
+
+            function startCountdown() {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+
+                function update() {
+                    if (!currentPayload) return;
+
+                    const now = Math.floor(Date.now() / 1000);
+
+                    // Update exp
+                    if (currentPayload.exp !== undefined) {
+                        updateClaimCard('exp', currentPayload.exp);
+                    }
+
+                    // Update nbf
+                    if (currentPayload.nbf !== undefined) {
+                        updateClaimCard('nbf', currentPayload.nbf);
+                    }
+
+                    // Update status banner
+                    updateStatusBanner(currentPayload);
+                }
+
+                update();
+                countdownInterval = setInterval(update, 1000);
+            }
+
+            function checkJWT() {
+                hideError();
+                results.classList.add('hidden');
+
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+
+                const jwt = jwtInput.value.trim();
+                if (!jwt) {
+                    showError('Please enter a JWT token.');
+                    return;
+                }
+
+                const parts = jwt.split('.');
+                if (parts.length !== 3) {
+                    showError('Invalid JWT format. A JWT must have 3 parts separated by dots.');
+                    return;
+                }
+
+                try {
+                    const payloadJson = base64UrlDecode(parts[1]);
+                    currentPayload = JSON.parse(payloadJson);
+
+                    // Display decoded payload
+                    decodedPayload.textContent = JSON.stringify(currentPayload, null, 2);
+
+                    // Update claim cards
+                    updateClaimCard('exp', currentPayload.exp !== undefined ? currentPayload.exp : null);
+                    updateClaimCard('nbf', currentPayload.nbf !== undefined ? currentPayload.nbf : null);
+                    updateClaimCard('iat', currentPayload.iat !== undefined ? currentPayload.iat : null);
+
+                    // Update status banner
+                    updateStatusBanner(currentPayload);
+
+                    // Show results
+                    results.classList.remove('hidden');
+
+                    // Start countdown
+                    startCountdown();
+
+                } catch (err) {
+                    if (err instanceof SyntaxError) {
+                        showError('Invalid JSON in JWT payload. The token may be corrupted or improperly encoded.');
+                    } else {
+                        showError(`Failed to decode JWT: ${err.message}`);
+                    }
+                }
+            }
+
+            function clearAll() {
+                jwtInput.value = '';
+                hideError();
+                results.classList.add('hidden');
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                currentPayload = null;
+            }
+
+            function loadExample() {
+                const now = Math.floor(Date.now() / 1000);
+                const exp = now + 3600; // 1 hour from now
+                const nbf = now - 300; // 5 minutes ago
+                const iat = now - 600; // 10 minutes ago
+
+                const examplePayload = {
+                    sub: '1234567890',
+                    name: 'John Doe',
+                    iat: iat,
+                    exp: exp,
+                    nbf: nbf,
+                    iss: 'https://example.com'
+                };
+
+                const header = { alg: 'HS256', typ: 'JWT' };
+
+                const headerB64 = btoa(JSON.stringify(header))
+                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                const payloadB64 = btoa(JSON.stringify(examplePayload))
+                    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                const signature = 'signature-placeholder';
+
+                jwtInput.value = `${headerB64}.${payloadB64}.${signature}`;
+                checkJWT();
+            }
+
+            // Event Listeners
+            btnCheck.addEventListener('click', checkJWT);
+            btnClear.addEventListener('click', clearAll);
+            btnExample.addEventListener('click', loadExample);
+
+            jwtInput.addEventListener('input', () => {
+                if (jwtInput.value.trim()) {
+                    checkJWT();
+                } else {
+                    clearAll();
+                }
+            });
+
+            btnCopy.addEventListener('click', () => {
+                const text = decodedPayload.textContent;
+                if (text) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('Copied to clipboard');
+                    });
+                }
+            });
+
+            btnTheme.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+            });
+
+            // Initialize theme
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+</body>
+</html>
