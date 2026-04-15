@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Reverser & Transformer | Online Tools</title>
+    <meta name="description" content="Free online tool to reverse strings, flip text upside down, or apply character transformations. Fast, private, client-side.">
+    <meta property="og:title" content="String Reverser & Transformer | Online Tools">
+    <meta property="og:description" content="Reverse, flip, and mirror text instantly. 100% private and client-side.">
+    <meta property="og:url" content="https://online-tools.click/string_reverser_transformer/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="String Reverser & Transformer | Online Tools">
+    <meta name="twitter:description" content="Reverse, flip, and mirror text instantly. 100% private.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/string_reverser_transformer/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Input Section */
+        .input-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Transformation Buttons */
+        .transform-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .transform-btn {
+            padding: 16px 24px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-family: var(--font-sans);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .transform-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-focus);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .transform-btn:active {
+            transform: translateY(0);
+        }
+
+        .transform-btn .icon {
+            font-size: 18px;
+        }
+
+        /* Output Section */
+        .output-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .output-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .output-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-elevated);
+            border-color: var(--border-focus);
+            color: var(--text);
+        }
+
+        .output-display {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            min-height: 120px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            line-height: 1.6;
+            word-break: break-all;
+            white-space: pre-wrap;
+            color: var(--text);
+        }
+
+        .output-display.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Info Section */
+        .info-section {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .info-section h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .info-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0;
+        }
+
+        .info-section li {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+            padding-left: 24px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .info-section li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+            font-family: var(--font-mono);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 20px;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .input-section,
+            .output-section,
+            .info-section {
+                padding: 20px;
+            }
+
+            .transform-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="/" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">String Reverser & Transformer</span>
+        </div>
+        <div class="header-right">
+            <a href="/">← Back to Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>String Reverser & Transformer</h1>
+            <p>Reverse, flip, and mirror text instantly with powerful character transformations.</p>
+        </section>
+
+        <!-- Input Section -->
+        <section class="input-section">
+            <div class="input-group">
+                <label for="input-text">Enter Your Text</label>
+                <textarea
+                    id="input-text"
+                    placeholder="Type or paste your text here..."
+                    autofocus
+                ></textarea>
+            </div>
+
+            <div class="transform-buttons">
+                <button class="transform-btn" onclick="reverseText()">
+                    <span class="icon">🔄</span>
+                    Reverse Text
+                </button>
+                <button class="transform-btn" onclick="flipText()">
+                    <span class="icon">🙃</span>
+                    Flip Upside Down
+                </button>
+                <button class="transform-btn" onclick="mirrorText()">
+                    <span class="icon">🪞</span>
+                    Mirror Text
+                </button>
+            </div>
+        </section>
+
+        <!-- Output Section -->
+        <section class="output-section">
+            <div class="output-header">
+                <span class="output-label">Transformed Result</span>
+                <div class="output-actions">
+                    <button class="action-btn" onclick="copyResult()">Copy</button>
+                    <button class="action-btn" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+            <div id="output-display" class="output-display empty">
+                Your transformed text will appear here...
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Characters</div>
+                    <div class="stat-value" id="char-count">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Words</div>
+                    <div class="stat-value" id="word-count">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Lines</div>
+                    <div class="stat-value" id="line-count">0</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Section -->
+        <section class="info-section">
+            <h3>About Text Transformations</h3>
+            <p>This tool provides three powerful text transformations, all processed entirely in your browser for maximum privacy and speed.</p>
+
+            <ul>
+                <li><strong>Reverse Text:</strong> Flips the entire string backwards, character by character. Useful for creating palindromes or reversing sequences.</li>
+                <li><strong>Flip Upside Down:</strong> Uses special Unicode characters to create an upside-down version of your text. Great for creative messages and social media posts.</li>
+                <li><strong>Mirror Text:</strong> Creates a horizontal mirror effect by reversing characters and using mirrored equivalents where available.</li>
+            </ul>
+
+            <p><strong>Privacy Note:</strong> All transformations are performed client-side in your browser. No data is sent to any server.</p>
+        </section>
+    </main>
+
+    <script>
+        // Character mappings for transformations
+        const flipMap = {
+            'a': '\u0250', 'b': 'q', 'c': '\u0254', 'd': 'p', 'e': '\u01DD', 'f': '\u025F',
+            'g': '\u0253', 'h': '\u0265', 'i': '\u0131', 'j': '\u027E', 'k': '\u029E', 'l': '\u0283',
+            'm': '\u026F', 'n': 'u', 'o': 'o', 'p': 'd', 'q': 'b', 'r': '\u0279', 's': 's',
+            't': '\u0287', 'u': 'n', 'v': '\u028C', 'w': '\u028D', 'x': 'x', 'y': '\u028E', 'z': 'z',
+            'A': '\u2200', 'B': 'q', 'C': '\u0186', 'D': 'p', 'E': '\u018E', 'F': '\u025F',
+            'G': '\u0253', 'H': '\u0265', 'I': '\u0131', 'J': '\u027E', 'K': '\u029E', 'L': '\u0283',
+            'M': '\u026F', 'N': 'N', 'O': 'O', 'P': '\u0250', 'Q': '\u15FA', 'R': '\u0279',
+            'S': 'S', 'T': '\u0287', 'U': 'N', 'V': '\u028C', 'W': '\u028D', 'X': 'X', 'Y': '\u028E', 'Z': 'Z',
+            '0': '0', '1': '\u21C2', '2': '\u0289', '3': '\u018E', '4': '\u15FA', '5': '\u03DB', '6': '9',
+            '7': '\u3123', '8': '8', '9': '6', '.': '\u02D9', ',': '\u02D9', "'": '\u0326',
+            '?': '\u00BF', '!': '\u00A1', '"': '\u201E', '\u2018': '\u0326', '\u2019': '\u0326',
+            '(': ')', ')': '(', '[': ']', ']': '[', '{': '}', '}': '{', '<': '>', '>': '<'
+        };
+
+        const mirrorMap = {
+            'a': 'a', 'b': 'd', 'c': '\u0254', 'd': 'b', 'e': '3', 'f': '\u025F',
+            'g': '\u0253', 'h': '\u0265', 'i': 'i', 'j': '\u027E', 'k': '\u029E', 'l': 'l',
+            'm': 'm', 'n': 'u', 'o': 'o', 'p': 'q', 'q': 'p', 'r': '\u0279', 's': 's',
+            't': '\u0287', 'u': 'n', 'v': 'v', 'w': 'w', 'x': 'x', 'y': '\u028E', 'z': 'z',
+            'A': 'A', 'B': '\u15FA', 'C': '\u0186', 'D': '\u15FA', 'E': '3', 'F': '\u025F',
+            'G': '\u0253', 'H': 'H', 'I': 'I', 'J': '\u027E', 'K': '\u029E', 'L': 'V',
+            'M': 'M', 'N': 'N', 'O': 'O', 'P': '\u0250', 'Q': '\u15FA', 'R': '\u0279',
+            'S': 'S', 'T': '\u0287', 'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X', 'Y': '\u028E', 'Z': 'Z'
+        };
+
+        // Get input and output elements
+        const inputText = document.getElementById('input-text');
+        const outputDisplay = document.getElementById('output-display');
+        const charCount = document.getElementById('char-count');
+        const wordCount = document.getElementById('word-count');
+        const lineCount = document.getElementById('line-count');
+
+        // Reverse text function
+        function reverseText() {
+            const text = inputText.value;
+            if (!text.trim()) {
+                showError('Please enter some text first');
+                return;
+            }
+
+            const reversed = text.split('').reverse().join('');
+            displayResult(reversed);
+        }
+
+        // Flip text upside down
+        function flipText() {
+            const text = inputText.value;
+            if (!text.trim()) {
+                showError('Please enter some text first');
+                return;
+            }
+
+            const flipped = text.split('').reverse().map(char => {
+                return flipMap[char] || char;
+            }).join('');
+
+            displayResult(flipped);
+        }
+
+        // Mirror text
+        function mirrorText() {
+            const text = inputText.value;
+            if (!text.trim()) {
+                showError('Please enter some text first');
+                return;
+            }
+
+            const mirrored = text.split('').reverse().map(char => {
+                return mirrorMap[char] || char;
+            }).join('');
+
+            displayResult(mirrored);
+        }
+
+        // Display result with stats
+        function displayResult(result) {
+            outputDisplay.textContent = result;
+            outputDisplay.classList.remove('empty');
+            outputDisplay.classList.add('fade-in');
+
+            // Update stats
+            charCount.textContent = result.length;
+            wordCount.textContent = result.trim() ? result.trim().split(/\s+/).length : 0;
+            lineCount.textContent = result.split('\n').length;
+
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                outputDisplay.classList.remove('fade-in');
+            }, 300);
+        }
+
+        // Show error message
+        function showError(message) {
+            outputDisplay.textContent = message;
+            outputDisplay.classList.remove('empty');
+            outputDisplay.classList.add('fade-in');
+
+            setTimeout(() => {
+                outputDisplay.classList.remove('fade-in');
+            }, 300);
+        }
+
+        // Copy result to clipboard
+        function copyResult() {
+            const text = outputDisplay.textContent;
+            if (text && !outputDisplay.classList.contains('empty')) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard!');
+                }).catch(err => {
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast('Copied to clipboard!');
+                });
+            }
+        }
+
+        // Clear all
+        function clearAll() {
+            inputText.value = '';
+            outputDisplay.textContent = 'Your transformed text will appear here...';
+            outputDisplay.classList.add('empty');
+            charCount.textContent = '0';
+            wordCount.textContent = '0';
+            lineCount.textContent = '0';
+            inputText.focus();
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                right: 24px;
+                background: var(--success);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+
+        // Add CSS for toast animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Auto-update stats when input changes
+        inputText.addEventListener('input', function() {
+            const text = this.value;
+            charCount.textContent = text.length;
+            wordCount.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+            lineCount.textContent = text.split('\n').length;
+        });
+
+        // Allow Enter key to trigger reverse (quick action)
+        inputText.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                reverseText();
+            }
+        });
+    </script>
+</body>
+</html>
