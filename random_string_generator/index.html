@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random String & Secret Generator | online-tools.click</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+    <div class="max-w-2xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider">online-tools.click</a>
+            <h1 class="text-4xl font-bold mt-4">Random String & Secret Generator</h1>
+        </header>
+
+        <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm space-y-6">
+            <div class="space-y-4">
+                <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Length</label>
+                <input type="range" id="length" min="1" max="128" value="16" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                <span id="len-val" class="text-xl font-mono font-bold text-blue-600 dark:text-blue-400">16</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <label class="flex items-center gap-2"><input type="checkbox" id="upper" checked> Uppercase</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="lower" checked> Lowercase</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="numbers" checked> Numbers</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="symbols"> Symbols</label>
+            </div>
+
+            <button id="generate" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors">Generate</button>
+
+            <div class="mt-8 space-y-4">
+                <div class="p-4 bg-gray-100 dark:bg-gray-800 rounded-xl font-mono text-center break-all" id="result">---</div>
+                <div class="text-xs text-gray-500 text-center" id="entropy">Entropy: --</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const chars = {
+            upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lower: 'abcdefghijklmnopqrstuvwxyz',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        };
+        const lenInput = document.getElementById('length');
+        const lenVal = document.getElementById('len-val');
+        lenInput.oninput = (e) => lenVal.textContent = e.target.value;
+
+        function generate() {
+            let pool = '';
+            if (document.getElementById('upper').checked) pool += chars.upper;
+            if (document.getElementById('lower').checked) pool += chars.lower;
+            if (document.getElementById('numbers').checked) pool += chars.numbers;
+            if (document.getElementById('symbols').checked) pool += chars.symbols;
+
+            if (!pool) { alert('Select at least one character set'); return; }
+
+            const len = parseInt(lenInput.value);
+            let result = '';
+            for (let i = 0; i < len; i++) {
+                result += pool.charAt(Math.floor(Math.random() * pool.length));
+            }
+            document.getElementById('result').textContent = result;
+            const entropy = len * Math.log2(pool.length);
+            document.getElementById('entropy').textContent = `Entropy: ${Math.round(entropy)} bits`;
+        }
+        document.getElementById('generate').onclick = generate;
+        generate();
+    </script>
+</body>
+</html>
