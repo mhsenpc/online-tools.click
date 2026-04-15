@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Slug Generator | online-tools.click</title>
+    <meta name="description" content="Free, fast, and secure online URL slug generator. Transform titles and strings into URL-friendly slugs instantly. Perfect for blog posts and SEO.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-card: #ffffff;
+            --text-main: #1a1a1a;
+        }
+        .dark {
+            --bg-card: #111827;
+            --text-main: #f9fafb;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .input-area {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-sm leading-relaxed outline-none focus:border-blue-500 transition-all shadow-inner overflow-y-auto;
+            min-height: 150px;
+        }
+
+        .output-area {
+            @apply w-full bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-sm leading-relaxed outline-none transition-all shadow-inner overflow-y-auto;
+            min-height: 150px;
+        }
+
+        .radio-group {
+            @apply flex gap-2;
+        }
+
+        .radio-option {
+            @apply flex-1 relative;
+        }
+
+        .radio-option input[type="radio"] {
+            @apply sr-only;
+        }
+
+        .radio-option label {
+            @apply flex items-center justify-center gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer transition-all text-sm font-medium;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            @apply bg-blue-50 dark:bg-blue-900/20 border-blue-500 text-blue-600 dark:text-blue-400;
+        }
+
+        .radio-option label:hover {
+            @apply border-blue-400;
+        }
+    </style>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">URL Slug Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Transform titles into clean, URL-friendly slugs instantly.</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Settings -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                    <!-- Separator -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Separator</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="sep-hyphen" name="separator" value="hyphen" checked>
+                                <label for="sep-hyphen">
+                                    <span class="text-lg">−</span>
+                                    <span>Hyphen</span>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="sep-underscore" name="separator" value="underscore">
+                                <label for="sep-underscore">
+                                    <span class="text-lg">_</span>
+                                    <span>Underscore</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="space-y-3">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400">Options</label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="opt-lowercase" checked class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm group-hover:text-blue-500 transition-colors">Convert to lowercase</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" id="opt-remove-stopwords" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm group-hover:text-blue-500 transition-colors">Remove stopwords (a, an, the, etc.)</span>
+                        </label>
+                    </div>
+
+                    <button id="btn-copy" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95">
+                        Copy Slug
+                    </button>
+                </div>
+            </div>
+
+            <!-- Input & Output -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- Input -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Input Text</h2>
+                        <button id="btn-clear" class="text-xs font-bold text-blue-500 hover:text-blue-600 uppercase tracking-tighter transition-colors">Clear</button>
+                    </div>
+                    <textarea id="input-text" class="input-area" placeholder="Enter your title or text here..." autofocus></textarea>
+                </div>
+
+                <!-- Output -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400">Generated Slug</h2>
+                        <span id="char-count" class="text-xs text-gray-400">0 characters</span>
+                    </div>
+                    <div id="output-slug" class="output-area font-mono text-blue-600 dark:text-blue-400"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Client-Side: Your content stays in the browser. No tracking or logging.</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="document.documentElement.classList.toggle('dark')" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Toggle Theme</button>
+                <span>&bull;</span>
+                <a href="https://online-tools.click" class="hover:text-blue-500 transition-colors uppercase font-bold tracking-tighter">Utility Hub</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        const inputText = document.getElementById('input-text');
+        const outputSlug = document.getElementById('output-slug');
+        const charCount = document.getElementById('char-count');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnClear = document.getElementById('btn-clear');
+        const optLowercase = document.getElementById('opt-lowercase');
+        const optRemoveStopwords = document.getElementById('opt-remove-stopwords');
+        const sepHyphen = document.getElementById('sep-hyphen');
+        const sepUnderscore = document.getElementById('sep-underscore');
+        const toast = document.getElementById('toast');
+
+        // Common stopwords to remove
+        const stopwords = new Set([
+            'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+            'of', 'with', 'by', 'from', 'as', 'is', 'was', 'are', 'were', 'been',
+            'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
+            'could', 'should', 'may', 'might', 'must', 'can', 'this', 'that',
+            'these', 'those'
+        ]);
+
+        function generateSlug() {
+            const text = inputText.value;
+            if (!text.trim()) {
+                outputSlug.textContent = '';
+                charCount.textContent = '0 characters';
+                return;
+            }
+
+            const separator = sepHyphen.checked ? '-' : '_';
+            const toLower = optLowercase.checked;
+            const removeStop = optRemoveStopwords.checked;
+
+            // Process the text
+            let slug = text
+                // Convert to lowercase if option is enabled
+                .pipe(s => toLower ? s.toLowerCase() : s)
+                // Remove special characters but keep spaces, hyphens, underscores
+                .replace(/[^\w\s\-_]/g, '')
+                // Replace whitespace and mixed separators with chosen separator
+                .replace(/[\s_\-]+/g, separator)
+                // Remove separators from start and end
+                .replace(new RegExp(`^${separator}+|${separator}+$`, 'g'), '')
+                // Remove consecutive separators
+                .replace(new RegExp(`${separator}{2,}`, 'g'), separator);
+
+            // Remove stopwords if option is enabled
+            if (removeStop) {
+                const words = slug.split(separator);
+                const filtered = words.filter(word => word && !stopwords.has(word.toLowerCase()));
+                slug = filtered.join(separator);
+            }
+
+            // Final cleanup
+            slug = slug
+                .replace(new RegExp(`^${separator}+|${separator}+$`, 'g'), '')
+                .replace(new RegExp(`${separator}{2,}`, 'g'), separator);
+
+            outputSlug.textContent = slug || '';
+            charCount.textContent = `${slug.length} character${slug.length !== 1 ? 's' : ''}`;
+        }
+
+        // String pipe helper
+        String.prototype.pipe = function(fn) {
+            return fn(this);
+        };
+
+        // Event listeners
+        inputText.addEventListener('input', generateSlug);
+        optLowercase.addEventListener('change', generateSlug);
+        optRemoveStopwords.addEventListener('change', generateSlug);
+        sepHyphen.addEventListener('change', generateSlug);
+        sepUnderscore.addEventListener('change', generateSlug);
+
+        btnCopy.onclick = () => {
+            const slug = outputSlug.textContent;
+            if (!slug) return;
+            navigator.clipboard.writeText(slug).then(() => {
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+
+        btnClear.onclick = () => {
+            inputText.value = '';
+            generateSlug();
+            inputText.focus();
+        };
+
+        // Init Theme
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Initial generation
+        generateSlug();
+    </script>
+</body>
+</html>
