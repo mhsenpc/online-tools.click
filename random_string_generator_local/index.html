@@ -54,16 +54,11 @@
                 <label>Length</label>
                 <input type="number" id="length" value="16" min="1" max="1024">
             </div>
-            <div class="controls">
-                <div class="input-group">
-                    <label>Character Set</label>
-                    <select id="charset">
-                        <option value="alphanumeric">Alphanumeric (A-Z, a-z, 0-9)</option>
-                        <option value="alphabetic">Alphabetic (A-Z, a-z)</option>
-                        <option value="numeric">Numeric (0-9)</option>
-                        <option value="hex">Hexadecimal (0-9, a-f)</option>
-                    </select>
-                </div>
+            <div class="controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px;">
+                <label style="margin-bottom: 0;"><input type="checkbox" id="upper" checked> Uppercase (A-Z)</label>
+                <label style="margin-bottom: 0;"><input type="checkbox" id="lower" checked> Lowercase (a-z)</label>
+                <label style="margin-bottom: 0;"><input type="checkbox" id="numbers" checked> Numbers (0-9)</label>
+                <label style="margin-bottom: 0;"><input type="checkbox" id="symbols"> Symbols (!@#$%^&*)</label>
             </div>
             <div class="result-box" id="result">---</div>
             <button id="generate">Generate String</button>
@@ -74,17 +69,20 @@
         const generate = document.getElementById('generate');
         const result = document.getElementById('result');
         const lengthInput = document.getElementById('length');
-        const charsetInput = document.getElementById('charset');
         const toast = document.getElementById('toast');
 
         function generateString() {
             const length = parseInt(lengthInput.value);
-            const type = charsetInput.value;
             let charset = '';
-            if (type === 'alphanumeric') charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            else if (type === 'alphabetic') charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-            else if (type === 'numeric') charset = '0123456789';
-            else if (type === 'hex') charset = '0123456789abcdef';
+            if (document.getElementById('upper').checked) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (document.getElementById('lower').checked) charset += 'abcdefghijklmnopqrstuvwxyz';
+            if (document.getElementById('numbers').checked) charset += '0123456789';
+            if (document.getElementById('symbols').checked) charset += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+            
+            if (charset === '') {
+                alert('Please select at least one character set');
+                return;
+            }
             
             let str = '';
             const values = new Uint32Array(length);
