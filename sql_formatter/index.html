@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Formatter & Beautifier | Online Tools</title>
+    <meta name="description" content="Format and beautify messy SQL queries instantly. Fast, private, client-side SQL formatting.">
+    <meta property="og:title" content="SQL Formatter & Beautifier | Online Tools">
+    <meta property="og:description" content="Format and beautify messy SQL queries instantly. Fast, private, client-side SQL formatting.">
+    <meta property="og:url" content="https://online-tools.click/sql_formatter/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SQL Formatter & Beautifier | Online Tools">
+    <meta name="twitter:description" content="Format and beautify messy SQL queries instantly. Fast, private, client-side SQL formatting.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/sql_formatter/">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SQL Formatter",
+      "url": "https://online-tools.click/sql_formatter/",
+      "description": "Format and beautify messy SQL queries instantly.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+
+            --sql-keyword: #f472b6;
+            --sql-function: #60a5fa;
+            --sql-string: #34d399;
+            --sql-comment: #6b7280;
+            --sql-operator: #fbbf24;
+            --sql-number: #a78bfa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .navbar-brand:hover {
+            color: var(--accent-primary);
+        }
+
+        .navbar-sep {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .navbar-current {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .navbar-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .navbar-right a:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            animation: fadeIn 0.6s ease-out 0.1s both;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toolbar-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            padding: 0.625rem 2.5rem 0.625rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.875rem;
+            cursor: pointer;
+            appearance: none;
+            min-width: 140px;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .panel-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+        }
+
+        .line-numbers {
+            padding: 1rem 0.75rem;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--border-color);
+            min-width: 50px;
+            overflow: hidden;
+        }
+
+        textarea, .output-display {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            border: none;
+            outline: none;
+            resize: none;
+            overflow: auto;
+            white-space: pre;
+            tab-size: 2;
+        }
+
+        .output-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1rem;
+            overflow: auto;
+            white-space: pre;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* Syntax highlighting */
+        .sql-keyword { color: var(--sql-keyword); font-weight: 600; }
+        .sql-function { color: var(--sql-function); }
+        .sql-string { color: var(--sql-string); }
+        .sql-comment { color: var(--sql-comment); font-style: italic; }
+        .sql-operator { color: var(--sql-operator); }
+        .sql-number { color: var(--sql-number); }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--success);
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="navbar-brand">Online Tools</a>
+            <span class="navbar-sep">/</span>
+            <span class="navbar-current">SQL Formatter</span>
+        </div>
+        <div class="navbar-right">
+            <a href="/">All Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>SQL Formatter</h1>
+            <p class="subtitle">Format and beautify SQL queries instantly</p>
+        </header>
+
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="btn btn-primary" id="formatBtn">Format SQL</button>
+            </div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">Indentation</span>
+                <div class="select-wrapper">
+                    <select id="indentSelect">
+                        <option value="2">2 spaces</option>
+                        <option value="4" selected>4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="panels">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Input SQL</span>
+                </div>
+                <div class="panel-content">
+                    <div class="editor-container">
+                        <div class="line-numbers" id="inputLineNumbers">1</div>
+                        <textarea id="inputSql" placeholder="Paste your SQL query here..." spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <span id="inputStats">0 characters</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Formatted SQL</span>
+                    <button class="btn" id="copyBtn">Copy</button>
+                </div>
+                <div class="panel-content">
+                    <div class="editor-container">
+                        <div class="line-numbers" id="outputLineNumbers">1</div>
+                        <div class="output-display" id="outputDisplay">
+                            <div class="output-content" id="outputContent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <span id="outputStats">Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+
+    <script>
+        const inputSql = document.getElementById('inputSql');
+        const outputContent = document.getElementById('outputContent');
+        const formatBtn = document.getElementById('formatBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const indentSelect = document.getElementById('indentSelect');
+        const inputLineNumbers = document.getElementById('inputLineNumbers');
+        const outputLineNumbers = document.getElementById('outputLineNumbers');
+        const inputStats = document.getElementById('inputStats');
+        const copyNotification = document.getElementById('copyNotification');
+
+        const KEYWORDS = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'INSERT', 'UPDATE', 'DELETE', 'JOIN', 'LEFT', 'RIGHT', 'INNER', 'OUTER', 'ON', 'GROUP', 'BY', 'ORDER', 'HAVING', 'LIMIT', 'OFFSET', 'UNION', 'ALL', 'AS', 'IN', 'IS', 'NULL', 'NOT', 'EXISTS', 'BETWEEN', 'LIKE', 'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'WITH', 'RECURSIVE', 'VALUES', 'INTO', 'SET', 'CREATE', 'TABLE', 'DROP', 'ALTER', 'INDEX'];
+        const FUNCTIONS = ['COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'COALESCE', 'IFNULL', 'NOW', 'DATE', 'CONCAT'];
+
+        function formatSQL(sql, indent = '    ') {
+            // Very basic formatter logic:
+            // 1. Normalize whitespace
+            // 2. Add newlines before major keywords
+            // 3. Simple indentation level tracking
+            
+            let tokens = sql
+                .replace(/\s+/g, ' ')
+                .replace(/\(/g, ' ( ')
+                .replace(/\)/g, ' ) ')
+                .replace(/,/g, ' , ')
+                .trim()
+                .split(' ');
+
+            let formatted = '';
+            let depth = 0;
+            const newlines = ['SELECT', 'FROM', 'WHERE', 'AND', 'OR', 'JOIN', 'LEFT', 'RIGHT', 'GROUP', 'ORDER', 'LIMIT', 'SET', 'VALUES'];
+
+            for (let i = 0; i < tokens.length; i++) {
+                let token = tokens[i];
+                let upperToken = token.toUpperCase();
+
+                if (newlines.includes(upperToken) && i > 0) {
+                    formatted += '\n' + indent.repeat(depth);
+                }
+
+                if (token === '(') {
+                    formatted += ' ' + token;
+                    depth++;
+                } else if (token === ')') {
+                    depth = Math.max(0, depth - 1);
+                    formatted += ' ' + token;
+                } else if (token === ',') {
+                    formatted += token + '\n' + indent.repeat(depth);
+                } else {
+                    formatted += (formatted.endsWith('\n') || formatted === '' ? '' : ' ') + token;
+                }
+            }
+            return formatted.trim();
+        }
+
+        function highlightSQL(sql) {
+            let escaped = sql.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            
+            // Strings
+            escaped = escaped.replace(/'([^']*)'/g, '<span class="sql-string">\'$1\'</span>');
+            
+            // Keywords
+            const keywordRegex = new RegExp('\\b(' + KEYWORDS.join('|') + ')\\b', 'gi');
+            escaped = escaped.replace(keywordRegex, match => `<span class="sql-keyword">${match.toUpperCase()}</span>`);
+            
+            // Functions
+            const funcRegex = new RegExp('\\b(' + FUNCTIONS.join('|') + ')\\b', 'gi');
+            escaped = escaped.replace(funcRegex, match => `<span class="sql-function">${match.toUpperCase()}</span>`);
+
+            return escaped;
+        }
+
+        function updateLineNumbers(textarea, display) {
+            const lines = textarea.value.split('\n').length;
+            display.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+        }
+
+        formatBtn.addEventListener('click', () => {
+            const sql = inputSql.value;
+            const indentSize = indentSelect.value === 'tab' ? '\t' : ' '.repeat(parseInt(indentSelect.value));
+            const formatted = formatSQL(sql, indentSize);
+            outputContent.innerHTML = highlightSQL(formatted);
+            updateLineNumbers({ value: formatted }, outputLineNumbers);
+        });
+
+        inputSql.addEventListener('input', () => {
+            inputStats.textContent = `${inputSql.value.length} characters`;
+            updateLineNumbers(inputSql, inputLineNumbers);
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const text = outputContent.innerText;
+            if (text) {
+                navigator.clipboard.writeText(text);
+                copyNotification.classList.add('show');
+                setTimeout(() => copyNotification.classList.remove('show'), 2000);
+            }
+        });
+    </script>
+</body>
+</html>
