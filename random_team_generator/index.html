@@ -171,7 +171,10 @@
             const teamCount = parseInt(document.getElementById('team-count').value);
             
             const names = input.split(/[\n,]+/).map(n => n.trim()).filter(n => n.length > 0);
-            if (names.length === 0) return alert('Enter some names first!');
+            if (names.length === 0) {
+                alert('Please enter at least one name!');
+                return;
+            }
             
             // Shuffle
             for (let i = names.length - 1; i > 0; i--) {
