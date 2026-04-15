@@ -124,7 +124,9 @@
             if(!pool) { res.textContent = 'Select a character set'; return; }
 
             let out = '';
-            for(let i=0; i<length.value; i++) out += pool[Math.floor(Math.random() * pool.length)];
+            const array = new Uint32Array(length.value);
+            window.crypto.getRandomValues(array);
+            for(let i=0; i<length.value; i++) out += pool[array[i] % pool.length];
             res.textContent = out;
         }
 
