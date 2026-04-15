@@ -6,12 +6,22 @@ function App() {
   const [error, setError] = useState('')
 
   const [delimiter, setDelimiter] = useState(',')
+  const [arraySeparator, setArraySeparator] = useState(';')
+  const [maxDepth, setMaxDepth] = useState<number | null>(null) // null = infinite
 
-  const flattenObject = (obj: any, prefix = ''): any => {
+  const [columnMap, setColumnMap] = useState<Record<string, string>>({})
+  const [headers, setHeaders] = useState<string[]>([])
+
+  const flattenObject = (obj: any, prefix = '', currentDepth = 0): any => {
     return Object.keys(obj).reduce((acc: any, k) => {
       const pre = prefix.length ? prefix + '.' : '';
-      if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
-        Object.assign(acc, flattenObject(obj[k], pre + k));
+      const isObject = typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k]);
+      const isArray = Array.isArray(obj[k]);
+
+      if (isObject && (maxDepth === null || currentDepth < maxDepth)) {
+        Object.assign(acc, flattenObject(obj[k], pre + k, currentDepth + 1));
+      } else if (isArray) {
+        acc[pre + k] = obj[k].join(arraySeparator);
       } else {
         acc[pre + k] = obj[k];
       }
@@ -19,7 +29,7 @@ function App() {
     }, {});
   };
 
-  const convertToCSV = () => {
+  const convertToCSV = (useMapping = true) => {
     try {
       const data = JSON.parse(jsonInput)
       if (!Array.isArray(data)) {
@@ -28,12 +38,16 @@ function App() {
       }
 
       const flattenedData = data.map((item) => flattenObject(item))
-      const headers = Array.from(new Set(flattenedData.flatMap((item) => Object.keys(item))))
+      const allHeaders = Array.from(new Set(flattenedData.flatMap((item) => Object.keys(item))))
       
+      setHeaders(allHeaders)
+
+      const csvHeaders = allHeaders.map(h => useMapping ? (columnMap[h] || h) : h)
+
       const csv = [
-        headers.join(delimiter),
+        csvHeaders.join(delimiter),
         ...flattenedData.map((item) => 
-          headers.map((h) => {
+          allHeaders.map((h) => {
             const val = item[h] ?? '';
             // Escape double quotes and wrap in quotes
             const stringVal = typeof val === 'string' ? val : JSON.stringify(val);
@@ -67,7 +81,7 @@ function App() {
         onChange={(e) => setJsonInput(e.target.value)}
         placeholder='Paste JSON array here, e.g. [{"name": "John", "age": 30}]'
       />
-      <div style={{ marginBottom: '1rem' }}>
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem' }}>
         <label>
           Delimiter: 
           <select value={delimiter} onChange={(e) => setDelimiter(e.target.value)}>
@@ -76,8 +90,45 @@ function App() {
             <option value="\t">Tab</option>
           </select>
         </label>
+        <label>
+          Array Separator: 
+          <input 
+            type="text" 
+            value={arraySeparator} 
+            onChange={(e) => setArraySeparator(e.target.value)} 
+            style={{ width: '40px' }}
+          />
+        </label>
+        <label>
+          Max Depth: 
+          <input 
+            type="number" 
+            value={maxDepth ?? ''} 
+            onChange={(e) => setMaxDepth(e.target.value ? parseInt(e.target.value) : null)} 
+            style={{ width: '40px' }}
+            placeholder="∞"
+          />
+        </label>
       </div>
-      <button onClick={convertToCSV}>Convert to CSV</button>
+      {headers.length > 0 && (
+        <div style={{ marginTop: '1rem' }}>
+          <h3>Column Mapping</h3>
+          {headers.map(h => (
+            <div key={h} style={{ marginBottom: '0.5rem' }}>
+              <label>
+                {h}: 
+                <input 
+                  type="text" 
+                  value={columnMap[h] || h} 
+                  onChange={(e) => setColumnMap({...columnMap, [h]: e.target.value})} 
+                />
+              </label>
+            </div>
+          ))}
+          <button onClick={() => convertToCSV(true)}>Apply Mapping & Convert</button>
+        </div>
+      )}
+      <button onClick={() => convertToCSV(false)}>Convert to CSV</button>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {csvOutput && (
         <div style={{ marginTop: '1rem' }}>
