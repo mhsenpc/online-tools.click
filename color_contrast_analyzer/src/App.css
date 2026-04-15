@@ -1,0 +1,45 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.picker-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.picker-container label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.preview {
+  padding: 2rem;
+  border: 1px solid #ccc;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.result {
+  font-size: 1.25rem;
+}
+
+.status {
+  padding: 0.5rem;
+  margin: 0.5rem;
+  font-weight: bold;
+}
+
+.status.pass {
+  color: green;
+}
+
+.status.fail {
+  color: red;
+}
