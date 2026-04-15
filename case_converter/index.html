@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter | online-tools.click</title>
+    <meta name="description" content="Convert text between camelCase, snake_case, kebab-case, PascalCase, and CONSTANT_CASE.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { --bg-card: #ffffff; }
+        .dark { --bg-card: #111827; }
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Case Converter</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg">Convert text between camelCase, snake_case, kebab-case, PascalCase, and CONSTANT_CASE.</p>
+        </header>
+
+        <main class="space-y-6">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm space-y-6">
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Input Text</label>
+                    <textarea id="input-text" rows="6" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-transparent focus:border-blue-500 rounded-xl px-4 py-3 text-sm font-mono outline-none transition-all" placeholder="Enter text to convert..."></textarea>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div id="result-camel" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">camelCase</label>
+                        <div class="font-mono text-sm break-all">---</div>
+                        <button onclick="copyToClipboard('result-camel')" class="mt-2 text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                    </div>
+                    <div id="result-snake" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">snake_case</label>
+                        <div class="font-mono text-sm break-all">---</div>
+                        <button onclick="copyToClipboard('result-snake')" class="mt-2 text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                    </div>
+                    <div id="result-kebab" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">kebab-case</label>
+                        <div class="font-mono text-sm break-all">---</div>
+                        <button onclick="copyToClipboard('result-kebab')" class="mt-2 text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                    </div>
+                    <div id="result-pascal" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">PascalCase</label>
+                        <div class="font-mono text-sm break-all">---</div>
+                        <button onclick="copyToClipboard('result-pascal')" class="mt-2 text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                    </div>
+                    <div id="result-constant" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-gray-500 mb-2 block">CONSTANT_CASE</label>
+                        <div class="font-mono text-sm break-all">---</div>
+                        <button onclick="copyToClipboard('result-constant')" class="mt-2 text-[10px] font-bold text-gray-400 hover:text-blue-500 uppercase tracking-widest transition-colors">COPY</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 border-t border-gray-200 dark:border-gray-800 pt-8 space-y-4">
+            <p>🔒 100% Private: All conversions are performed locally in your browser.</p>
+        </footer>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied!
+    </div>
+
+    <script>
+        const inputText = document.getElementById('input-text');
+        const results = {
+            camel: document.querySelector('#result-camel div'),
+            snake: document.querySelector('#result-snake div'),
+            kebab: document.querySelector('#result-kebab div'),
+            pascal: document.querySelector('#result-pascal div'),
+            constant: document.querySelector('#result-constant div'),
+        };
+
+        function convert(str) {
+            const words = str.match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g) || [];
+            
+            const camel = words.map((w, i) => i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+            const snake = words.map(w => w.toLowerCase()).join('_');
+            const kebab = words.map(w => w.toLowerCase()).join('-');
+            const pascal = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('');
+            const constant = words.map(w => w.toUpperCase()).join('_');
+
+            return { camel, snake, kebab, pascal, constant };
+        }
+
+        inputText.oninput = () => {
+            const val = inputText.value;
+            if (!val) {
+                Object.values(results).forEach(r => r.textContent = '---');
+                return;
+            }
+            const converted = convert(val);
+            results.camel.textContent = converted.camel;
+            results.snake.textContent = converted.snake;
+            results.kebab.textContent = converted.kebab;
+            results.pascal.textContent = converted.pascal;
+            results.constant.textContent = converted.constant;
+        };
+
+        window.copyToClipboard = function(id) {
+            const div = document.querySelector(`#${id} div`);
+            const text = div.textContent;
+            if (text === '---') return;
+            navigator.clipboard.writeText(text).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                setTimeout(() => toast.classList.add('opacity-0', 'translate-y-10'), 2000);
+            });
+        };
+    </script>
+</body>
+</html>
