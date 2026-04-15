@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random String & Secret Generator | Online Tools</title>
+    <meta name="description" content="Generate random strings, secrets, and API keys. Customizable character sets and lengths. 100% private and client-side.">
+    <meta property="og:title" content="Random String Generator | Online Tools">
+    <meta property="og:description" content="Secure, client-side random string and secret generator.">
+    <meta property="og:url" content="https://online-tools.click/random_string_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/random_string_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: var(--text); }
+        main { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+        .result-container { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 40px; }
+        .password-display { font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--text); background: var(--bg-input); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border); text-align: center; margin-bottom: 24px; word-break: break-all; cursor: pointer; }
+        .btn-generate { background: var(--accent); color: white; border: none; border-radius: var(--radius-md); width: 100%; padding: 16px; font-weight: 700; cursor: pointer; transition: background-color 0.2s; }
+        .btn-generate:hover { background: #ff5522; }
+        .settings-grid { display: flex; flex-direction: column; gap: 24px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; }
+        .setting-label { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 8px; }
+        .length-control { display: flex; align-items: center; gap: 16px; }
+        .length-slider { flex: 1; accent-color: var(--accent); }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: var(--radius-sm); background: var(--bg-input); border: 1px solid var(--border); transition: all 0.2s; }
+        .checkbox-item:hover { border-color: var(--border-focus); }
+        .checkbox-item.active { border-color: var(--accent); background: var(--accent-glow); }
+        .checkbox-item input { accent-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://online-tools.click" class="logo">Online Tools / String Generator</a>
+    </header>
+    <main>
+        <div class="result-container">
+            <div class="password-display" id="output" title="Click to copy">Loading...</div>
+            <button class="btn-generate" id="generate-btn">Generate New String</button>
+        </div>
+        <div class="settings-grid">
+            <div class="setting-group">
+                <label class="setting-label">Length</label>
+                <div class="length-control">
+                    <input type="range" class="length-slider" id="length-slider" min="4" max="64" value="16">
+                    <span id="length-val">16</span>
+                </div>
+            </div>
+            <div class="checkbox-group">
+                <label class="checkbox-item active"><input type="checkbox" id="upper" checked> Upper</label>
+                <label class="checkbox-item active"><input type="checkbox" id="lower" checked> Lower</label>
+                <label class="checkbox-item active"><input type="checkbox" id="num" checked> Numbers</label>
+                <label class="checkbox-item active"><input type="checkbox" id="sym" checked> Symbols</label>
+            </div>
+        </div>
+    </main>
+    <script>
+        const output = document.getElementById('output');
+        const generateBtn = document.getElementById('generate-btn');
+        const lengthSlider = document.getElementById('length-slider');
+        const lengthVal = document.getElementById('length-val');
+        
+        function generate() {
+            const len = parseInt(lengthSlider.value);
+            const sets = {
+                upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lower: 'abcdefghijklmnopqrstuvwxyz',
+                num: '0123456789',
+                sym: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+            };
+            let pool = '';
+            if (document.getElementById('upper').checked) pool += sets.upper;
+            if (document.getElementById('lower').checked) pool += sets.lower;
+            if (document.getElementById('num').checked) pool += sets.num;
+            if (document.getElementById('sym').checked) pool += sets.sym;
+            
+            if (!pool) { output.textContent = 'Select an option'; return; }
+            
+            let res = '';
+            const array = new Uint32Array(len);
+            window.crypto.getRandomValues(array);
+            for(let i=0; i<len; i++) res += pool[array[i] % pool.length];
+            output.textContent = res;
+        }
+
+        generateBtn.addEventListener('click', generate);
+        lengthSlider.addEventListener('input', (e) => { lengthVal.textContent = e.target.value; generate(); });
+        document.querySelectorAll('input').forEach(i => i.addEventListener('change', (e) => {
+            e.target.closest('.checkbox-item').classList.toggle('active', e.target.checked);
+            generate();
+        }));
+        output.addEventListener('click', () => navigator.clipboard.writeText(output.textContent));
+        generate();
+    </script>
+</body>
+</html>
