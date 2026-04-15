@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>YAML Linter</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #yaml-input { width: 100%; height: 300px; font-family: monospace; }
+        #output-display { padding: 10px; border-radius: 5px; white-space: pre-wrap; margin-top: 10px; }
+        .valid { background-color: #d4edda; color: #155724; }
+        .invalid { background-color: #f8d7da; color: #721c24; }
+    </style>
 </head>
 <body>
     <h1>YAML Linter</h1>
     <textarea id="yaml-input" placeholder="Paste YAML here..."></textarea>
+    <br>
     <button id="validate-btn">Validate</button>
-    <pre id="output-display"></pre>
+    <button id="format-btn">Prettify</button>
+    <div id="output-display"></div>
     <script type="module" src="dist/bundle.js"></script>
 </body>
 </html>
