@@ -19,28 +19,34 @@
         </header>
 
         <div class="space-y-6">
-            <input type="text" id="in-url" class="w-full bg-white dark:bg-gray-900 rounded-2xl p-4 font-mono text-sm outline-none border border-gray-200 dark:border-gray-800 focus:border-blue-500" placeholder="https://example.com/path?query=1#hash">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
+                <label class="font-bold text-xs text-gray-400 uppercase mb-2 block">URL</label>
+                <input type="text" id="in-url" class="w-full font-mono text-sm outline-none bg-transparent" placeholder="https://example.com/path?query=1#hash">
+            </div>
             
             <div id="components" class="grid grid-cols-2 gap-4 text-sm">
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Protocol</label>
-                    <div id="out-protocol" class="font-mono"></div>
+                    <input type="text" id="out-protocol" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Host</label>
-                    <div id="out-host" class="font-mono"></div>
+                    <input type="text" id="out-host" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Path</label>
-                    <div id="out-path" class="font-mono"></div>
+                    <input type="text" id="out-path" class="font-mono w-full bg-transparent outline-none">
                 </div>
                 <div class="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
                     <label class="font-bold text-xs text-gray-400 uppercase">Hash</label>
-                    <div id="out-hash" class="font-mono"></div>
+                    <input type="text" id="out-hash" class="font-mono w-full bg-transparent outline-none">
                 </div>
             </div>
 
-            <h2 class="font-bold">Query Parameters</h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-bold">Query Parameters</h2>
+                <button id="add-param" class="text-xs bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700">+ Add</button>
+            </div>
             <div id="params" class="space-y-2"></div>
         </div>
     </div>
@@ -52,14 +58,15 @@
         const outPath = document.getElementById('out-path');
         const outHash = document.getElementById('out-hash');
         const paramsList = document.getElementById('params');
+        const addParamBtn = document.getElementById('add-param');
 
         function parseUrl() {
             try {
                 const url = new URL(inUrl.value);
-                outProtocol.innerText = url.protocol;
-                outHost.innerText = url.host;
-                outPath.innerText = url.pathname;
-                outHash.innerText = url.hash;
+                outProtocol.value = url.protocol.replace(':', '');
+                outHost.value = url.host;
+                outPath.value = url.pathname;
+                outHash.value = url.hash.replace('#', '');
 
                 paramsList.innerHTML = '';
                 url.searchParams.forEach((value, key) => {
@@ -70,15 +77,44 @@
             }
         }
 
+        function reconstructUrl() {
+            try {
+                const protocol = outProtocol.value || 'https';
+                const host = outHost.value || 'example.com';
+                const path = outPath.value || '/';
+                const hash = outHash.value ? `#${outHash.value}` : '';
+                
+                const url = new URL(`${protocol}://${host}${path}${hash}`);
+                
+                Array.from(paramsList.children).forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    if (inputs[0].value) {
+                        url.searchParams.append(inputs[0].value, inputs[1].value);
+                    }
+                });
+                
+                inUrl.value = url.toString();
+            } catch(e) {
+                // Ignore reconstruction errors
+            }
+        }
+
         function addParamRow(key = '', value = '') {
             const row = document.createElement('div');
             row.className = 'flex gap-2';
-            row.innerHTML = `<input value="${key}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-                             <input value="${value}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800">`;
+            row.innerHTML = `<input value="${key}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 param-key">
+                             <input value="${value}" class="w-1/2 p-2 rounded-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 param-val">
+                             <button class="remove-btn text-gray-400 hover:text-red-500">×</button>`;
+            
+            row.querySelector('.remove-btn').onclick = () => { row.remove(); reconstructUrl(); };
+            row.querySelectorAll('input').forEach(input => input.oninput = reconstructUrl);
+            
             paramsList.appendChild(row);
         }
 
         inUrl.oninput = parseUrl;
+        [outProtocol, outHost, outPath, outHash].forEach(el => el.oninput = reconstructUrl);
+        addParamBtn.onclick = () => addParamRow();
     </script>
 
     <!-- Google tag (gtag.js) -->
