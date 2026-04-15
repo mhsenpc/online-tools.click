@@ -234,6 +234,16 @@
             color: var(--text-secondary);
         }
 
+        .entropy-bits {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--bg-input);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
         /* Settings Grid */
         .settings-grid {
             display: grid;
@@ -485,8 +495,9 @@
                 <div class="strength-segment"></div>
             </div>
             <div class="strength-text">
-                <span class="strength-label">Security Strength</span>
+                <span class="strength-label">Entropy</span>
                 <span class="strength-value" id="strength-value">Not Generated</span>
+                <span class="entropy-bits" id="entropy-bits"></span>
             </div>
         </div>
 
@@ -494,7 +505,7 @@
             <div class="setting-group" id="random-settings">
                 <label class="setting-label">Password Length</label>
                 <div class="length-control">
-                    <input type="range" class="length-slider" id="length-slider" min="8" max="128" value="16">
+                    <input type="range" class="length-slider" id="length-slider" min="8" max="64" value="16">
                     <span class="length-number" id="length-number">16</span>
                 </div>
 
@@ -581,6 +592,7 @@
         const wordCountNumber = document.getElementById('word-count-number');
         const strengthSegments = document.querySelectorAll('.strength-segment');
         const strengthValue = document.getElementById('strength-value');
+        const entropyBits = document.getElementById('entropy-bits');
         const toast = document.getElementById('toast');
         const historyList = document.getElementById('history-list');
         const batchList = document.getElementById('batch-list');
@@ -641,33 +653,46 @@
             }
         }
 
-        function calculateStrength(pw) {
-            let score = 0;
-            if (pw.length > 8) score++;
-            if (pw.length > 12) score++;
-            if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
-            if (/[0-9]/.test(pw)) score++;
-            if (/[^A-Za-z0-9]/.test(pw)) score++;
-            
-            // Passphrase weight
-            if (mode === 'passphrase') {
-                const count = parseInt(wordCountSlider.value);
-                if (count >= 4) return 4;
-                if (count >= 3) return 3;
-            }
+        function calculateEntropy(pw) {
+            // Calculate pool size based on character sets used
+            let poolSize = 0;
+            if (/[A-Z]/.test(pw)) poolSize += 26;
+            if (/[a-z]/.test(pw)) poolSize += 26;
+            if (/[0-9]/.test(pw)) poolSize += 10;
+            if (/[^A-Za-z0-9]/.test(pw)) poolSize += 32;
 
-            return Math.min(4, Math.floor(score * 0.8));
+            // Entropy = length * log2(poolSize)
+            if (poolSize === 0) return 0;
+            return Math.floor(pw.length * Math.log2(poolSize));
+        }
+
+        function calculateStrength(pw) {
+            const entropy = calculateEntropy(pw);
+
+            // Map entropy to strength levels (based on NIST guidelines)
+            // < 28 bits = Weak (0)
+            // 28-35 bits = Fair (1)
+            // 36-59 bits = Good (2)
+            // 60-127 bits = Strong (3)
+            // 128+ bits = Very Strong (4)
+            if (entropy < 28) return 0;
+            if (entropy < 36) return 1;
+            if (entropy < 60) return 2;
+            if (entropy < 128) return 3;
+            return 4;
         }
 
         function updateUI(pw) {
             passwordDisplay.textContent = pw;
             const strength = calculateStrength(pw);
-            
+            const entropy = calculateEntropy(pw);
+
             const labels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
             const colors = ['#ef4444', '#f59e0b', '#facc15', '#22c55e', '#10b981'];
-            
+
             strengthValue.textContent = labels[strength];
             strengthValue.style.color = colors[strength];
+            entropyBits.textContent = `${entropy} bits`;
 
             strengthSegments.forEach((seg, i) => {
                 if (i <= strength - 1) {
