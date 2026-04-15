@@ -466,8 +466,8 @@ SELECT * FROM users WHERE id = 1;"></textarea>
                         <input type="number" id="indent-size" value="4" min="2" max="8">
                     </div>
                     <div class="option">
-                        <input type="checkbox" id="uppercase" checked>
-                        <label for="uppercase">Uppercase keywords</label>
+                        <input type="checkbox" id="minify">
+                        <label for="minify">Minify</label>
                     </div>
                 </div>
             </div>
@@ -512,6 +512,12 @@ SELECT * FROM users WHERE id = 1;"></textarea>
             'REPLACE', 'SPLIT_PART', 'REGEXP_REPLACE', 'ARRAY_AGG', 'JSON_AGG',
             'ROW_TO_JSON', 'JSONB_BUILD_OBJECT', 'GENSERIAL'
         ]);
+
+        // Minify SQL query
+        function minifySQL(input) {
+            const tokens = tokenizeSQL(input);
+            return tokens.filter(t => !t.startsWith('--')).join(' ').replace(/\s+/g, ' ').trim();
+        }
 
         // Format SQL query
         function formatSQL(input, options = {}) {
@@ -743,6 +749,7 @@ SELECT * FROM users WHERE id = 1;"></textarea>
         const pasteBtn = document.getElementById('paste-btn');
         const indentSizeInput = document.getElementById('indent-size');
         const uppercaseInput = document.getElementById('uppercase');
+        const minifyInput = document.getElementById('minify');
         const errorMessage = document.getElementById('error-message');
         const exampleItems = document.querySelectorAll('.example-item');
 
@@ -752,17 +759,18 @@ SELECT * FROM users WHERE id = 1;"></textarea>
                 const input = inputSQL.value;
                 const indentSize = parseInt(indentSizeInput.value) || 4;
                 const uppercase = uppercaseInput.checked;
+                const minify = minifyInput.checked;
 
                 if (!input.trim()) {
                     showError('Please enter a SQL query to format');
                     return;
                 }
 
-                const formatted = formatSQL(input, { indentSize, uppercase });
+                const formatted = minify ? minifySQL(input) : formatSQL(input, { indentSize, uppercase });
                 outputSQL.innerHTML = highlightSQL(formatted);
                 hideError();
             } catch (error) {
-                showError('Error formatting SQL: ' + error.message);
+                showError('Error processing SQL: ' + error.message);
             }
         });
 
@@ -830,6 +838,12 @@ SELECT * FROM users WHERE id = 1;"></textarea>
         });
 
         uppercaseInput.addEventListener('change', () => {
+            if (inputSQL.value.trim()) {
+                formatBtn.click();
+            }
+        });
+
+        minifyInput.addEventListener('change', () => {
             if (inputSQL.value.trim()) {
                 formatBtn.click();
             }
