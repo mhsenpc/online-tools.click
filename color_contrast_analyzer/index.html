@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Contrast Analyzer | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online WCAG color contrast analyzer. Check foreground and background color compliance for AA and AAA standards.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .color-preview {
+            width: 100%;
+            height: 200px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            transition: background-color 0.1s, color 0.1s;
+        }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 50px;
+            cursor: pointer;
+            background: none;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold mb-2">Color Contrast Analyzer</h1>
+            <p class="text-gray-500 dark:text-gray-400">Validate contrast ratios against WCAG 2.1 standards.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Controls -->
+            <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 space-y-6">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Background Color</label>
+                    <input type="color" id="bg-picker" value="#ffffff">
+                    <input type="text" id="bg-hex" class="w-full mt-2 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 text-center font-mono text-sm border border-gray-200 dark:border-gray-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-2">Foreground Color</label>
+                    <input type="color" id="fg-picker" value="#000000">
+                    <input type="text" id="fg-hex" class="w-full mt-2 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 text-center font-mono text-sm border border-gray-200 dark:border-gray-700">
+                </div>
+            </div>
+
+            <!-- Preview & Result -->
+            <div class="space-y-6">
+                <div id="preview" class="color-preview shadow-lg">Aa</div>
+                
+                <div class="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-gray-500">Contrast Ratio</span>
+                        <span id="ratio" class="text-2xl font-bold font-mono">21.00:1</span>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div id="wcag-aa" class="p-3 rounded-lg flex justify-between text-sm font-bold border border-gray-200 dark:border-gray-700">
+                            <span>WCAG AA</span>
+                            <span class="status">Pass</span>
+                        </div>
+                        <div id="wcag-aaa" class="p-3 rounded-lg flex justify-between text-sm font-bold border border-gray-200 dark:border-gray-700">
+                            <span>WCAG AAA</span>
+                            <span class="status">Pass</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const bgPicker = document.getElementById('bg-picker');
+        const fgPicker = document.getElementById('fg-picker');
+        const bgHex = document.getElementById('bg-hex');
+        const fgHex = document.getElementById('fg-hex');
+        const preview = document.getElementById('preview');
+        const ratioText = document.getElementById('ratio');
+        const wcagAA = document.getElementById('wcag-aa');
+        const wcagAAA = document.getElementById('wcag-aaa');
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+
+        function getLuminance(r, g, b) {
+            const a = [r, g, b].map(v => {
+                v /= 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+            });
+            return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+        }
+
+        function update() {
+            const bg = hexToRgb(bgPicker.value);
+            const fg = hexToRgb(fgPicker.value);
+            
+            bgHex.value = bgPicker.value.toUpperCase();
+            fgHex.value = fgPicker.value.toUpperCase();
+
+            const lumBg = getLuminance(bg.r, bg.g, bg.b);
+            const lumFg = getLuminance(fg.r, fg.g, fg.b);
+            
+            const ratio = (Math.max(lumBg, lumFg) + 0.05) / (Math.min(lumBg, lumFg) + 0.05);
+            ratioText.textContent = ratio.toFixed(2) + ':1';
+
+            preview.style.backgroundColor = bgPicker.value;
+            preview.style.color = fgPicker.value;
+
+            // WCAG AA: 4.5:1 (normal), 3:1 (large text)
+            // WCAG AAA: 7:1 (normal), 4.5:1 (large text)
+            // Using 4.5 and 7 for general compliance
+            
+            updateStatus(wcagAA, ratio >= 4.5);
+            updateStatus(wcagAAA, ratio >= 7);
+        }
+
+        function updateStatus(el, passed) {
+            el.className = `p-3 rounded-lg flex justify-between text-sm font-bold border ${passed ? 'bg-emerald-50 dark:bg-emerald-950 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'}`;
+            el.querySelector('.status').textContent = passed ? 'PASS' : 'FAIL';
+        }
+
+        bgPicker.oninput = update;
+        fgPicker.oninput = update;
+        update();
+    </script>
+</body>
+</html>
