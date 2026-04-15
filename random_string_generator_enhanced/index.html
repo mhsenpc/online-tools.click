@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random String & Secret Generator (Enhanced) | Online Tools</title>
+    <meta name="description" content="Generate secure random strings and secrets with customizable character sets. Features entropy indicator and length control up to 128 characters. 100% client-side security.">
+    <meta property="og:title" content="Random String & Secret Generator (Enhanced) | Online Tools">
+    <meta property="og:description" content="Generate secure random strings and secrets with customizable character sets. 100% private.">
+    <meta property="og:url" content="https://online-tools.click/random_string_generator_enhanced/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Random String & Secret Generator (Enhanced) | Online Tools">
+    <meta name="twitter:description" content="Generate secure random strings and secrets. 100% private.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/random_string_generator_enhanced/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Result Area */
+        .result-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .main-result {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .string-display {
+            flex: 1;
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--bg-input);
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            word-break: break-all;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+        }
+
+        .string-display:hover {
+            border-color: var(--border-focus);
+        }
+
+        .btn-generate {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            width: 64px;
+            height: 64px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-generate:hover {
+            transform: rotate(30deg);
+            background: #ff5522;
+        }
+
+        .btn-generate svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Entropy Indicator */
+        .entropy-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 12px;
+        }
+
+        .entropy-meter {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-input);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .entropy-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--error), var(--warning), var(--success));
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .entropy-value {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .entropy-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .entropy-label {
+            color: var(--text-muted);
+        }
+
+        .entropy-description {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* Settings Section */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .length-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .length-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .length-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid var(--bg-elevated);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .length-number {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            width: 50px;
+            text-align: right;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--border-focus);
+        }
+
+        .checkbox-item.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        .checkbox-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .checkbox-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item.active .checkbox-indicator {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .checkbox-indicator svg {
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .checkbox-item.active .checkbox-indicator svg {
+            opacity: 1;
+        }
+
+        .checkbox-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .checkbox-chars {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Batch Mode */
+        .batch-container {
+            margin-top: 40px;
+            display: none;
+        }
+
+        .batch-container.visible {
+            display: block;
+        }
+
+        .batch-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .batch-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            word-break: break-all;
+        }
+
+        .batch-item:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        /* History Section */
+        .history-container {
+            margin-top: 40px;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .history-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            word-break: break-all;
+        }
+
+        .history-item:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        .history-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .history-item:hover svg {
+            opacity: 1;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .string-display {
+                font-size: 20px;
+            }
+            .entropy-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .entropy-value {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">Random String & Secret Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Random String & Secret Generator</h1>
+            <p>Generate secure random strings and secrets with full control over character sets and entropy. 100% client-side.</p>
+        </section>
+
+        <div class="result-container">
+            <div class="main-result">
+                <div class="string-display" id="string-display" title="Click to copy">
+                    Click Generate
+                </div>
+                <button class="btn-generate" id="generate-btn" title="Generate New">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                </button>
+            </div>
+
+            <div class="entropy-section">
+                <div style="flex: 1;">
+                    <div class="entropy-text">
+                        <span class="entropy-label">Entropy Strength</span>
+                    </div>
+                    <div style="height: 4px;"></div>
+                    <div class="entropy-meter">
+                        <div class="entropy-bar" id="entropy-bar"></div>
+                    </div>
+                </div>
+                <div class="entropy-value" id="entropy-value">0 bits</div>
+            </div>
+            <div class="entropy-description" id="entropy-description">
+                Generate a string to see entropy calculation
+            </div>
+        </div>
+
+        <div class="settings-grid">
+            <div class="setting-group">
+                <label class="setting-label">String Length</label>
+                <div class="length-control">
+                    <input type="range" class="length-slider" id="length-slider" min="1" max="128" value="32">
+                    <span class="length-number" id="length-number">32</span>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Character Sets</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item active" id="uppercase-item">
+                        <div class="checkbox-left">
+                            <div class="checkbox-indicator">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="checkbox-text">Uppercase Letters</div>
+                                <div class="checkbox-chars">A-Z</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="include-uppercase" checked>
+                    </label>
+                    <label class="checkbox-item active" id="lowercase-item">
+                        <div class="checkbox-left">
+                            <div class="checkbox-indicator">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="checkbox-text">Lowercase Letters</div>
+                                <div class="checkbox-chars">a-z</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="include-lowercase" checked>
+                    </label>
+                    <label class="checkbox-item active" id="numbers-item">
+                        <div class="checkbox-left">
+                            <div class="checkbox-indicator">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="checkbox-text">Numbers</div>
+                                <div class="checkbox-chars">0-9</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="include-numbers" checked>
+                    </label>
+                    <label class="checkbox-item active" id="symbols-item">
+                        <div class="checkbox-left">
+                            <div class="checkbox-indicator">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="checkbox-text">Symbols</div>
+                                <div class="checkbox-chars">!@#$%^&*()_+-=[]{}|;:,.<>?</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="include-symbols" checked>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Options</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <div class="checkbox-left">
+                            <div class="checkbox-indicator">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="checkbox-text">Batch Mode (10x)</div>
+                                <div class="checkbox-chars">Generate 10 strings at once</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="batch-mode">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="batch-container" id="batch-container">
+            <div class="setting-label">Batch Results</div>
+            <div class="batch-list" id="batch-list"></div>
+        </div>
+
+        <div class="history-container">
+            <div class="setting-label">Recently Generated</div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+        // --- Character Sets ---
+        const CHAR_SETS = {
+            uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lowercase: 'abcdefghijklmnopqrstuvwxyz',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        };
+
+        // --- State ---
+        let history = [];
+
+        // --- Elements ---
+        const stringDisplay = document.getElementById('string-display');
+        const generateBtn = document.getElementById('generate-btn');
+        const lengthSlider = document.getElementById('length-slider');
+        const lengthNumber = document.getElementById('length-number');
+        const entropyBar = document.getElementById('entropy-bar');
+        const entropyValue = document.getElementById('entropy-value');
+        const entropyDescription = document.getElementById('entropy-description');
+        const toast = document.getElementById('toast');
+        const historyList = document.getElementById('history-list');
+        const batchList = document.getElementById('batch-list');
+        const batchContainer = document.getElementById('batch-container');
+
+        // --- Security Utils ---
+        function secureRandom(max) {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] % max;
+        }
+
+        function secureRandomBytes(length) {
+            const array = new Uint8Array(length);
+            window.crypto.getRandomValues(array);
+            return array;
+        }
+
+        // --- Core Logic ---
+        function getCharset() {
+            let charset = '';
+            if (document.getElementById('include-uppercase').checked) charset += CHAR_SETS.uppercase;
+            if (document.getElementById('include-lowercase').checked) charset += CHAR_SETS.lowercase;
+            if (document.getElementById('include-numbers').checked) charset += CHAR_SETS.numbers;
+            if (document.getElementById('include-symbols').checked) charset += CHAR_SETS.symbols;
+            return charset;
+        }
+
+        function generateString() {
+            const charset = getCharset();
+            const length = parseInt(lengthSlider.value);
+
+            if (charset === '') {
+                return 'Select at least one character set';
+            }
+
+            // Use cryptographically secure random generation
+            const randomBytes = secureRandomBytes(length);
+            let result = '';
+
+            for (let i = 0; i < length; i++) {
+                result += charset[secureRandom(charset.length)];
+            }
+
+            return result;
+        }
+
+        function calculateEntropy(string) {
+            const charset = getCharset();
+            const poolSize = charset.length;
+            const length = string.length;
+
+            if (poolSize === 0 || length === 0) return 0;
+
+            // Entropy = length * log2(poolSize)
+            const entropy = length * Math.log2(poolSize);
+            return Math.round(entropy);
+        }
+
+        function getEntropyDescription(entropy) {
+            if (entropy === 0) return 'Generate a string to see entropy calculation';
+            if (entropy < 28) return 'Very Weak - Vulnerable to brute force attacks';
+            if (entropy < 36) return 'Weak - May be cracked with modern hardware';
+            if (entropy < 60) return 'Moderate - Suitable for non-critical uses';
+            if (entropy < 80) return 'Strong - Good for most applications';
+            if (entropy < 128) return 'Very Strong - Excellent security';
+            return 'Extremely Strong - Military-grade security';
+        }
+
+        function getEntropyColor(entropy) {
+            if (entropy < 28) return 'var(--error)';
+            if (entropy < 36) return 'var(--warning)';
+            if (entropy < 60) return '#facc15';
+            if (entropy < 80) return 'var(--success)';
+            return '#10b981';
+        }
+
+        function getEntropyPercent(entropy) {
+            // Scale: 0-256 bits to 0-100%
+            const maxEntropy = 256;
+            return Math.min(100, (entropy / maxEntropy) * 100);
+        }
+
+        function updateUI(str) {
+            stringDisplay.textContent = str;
+            const entropy = calculateEntropy(str);
+
+            // Update entropy display
+            entropyValue.textContent = `${entropy} bits`;
+            entropyBar.style.width = `${getEntropyPercent(entropy)}%`;
+            entropyBar.style.background = getEntropyColor(entropy);
+            entropyDescription.textContent = getEntropyDescription(entropy);
+            entropyValue.style.color = getEntropyColor(entropy);
+
+            if (!document.getElementById('batch-mode').checked) {
+                addToHistory(str);
+            }
+        }
+
+        function addToHistory(str) {
+            if (str.includes('Select') || str === 'Click Generate') return;
+            if (history.some(item => item.str === str)) return;
+
+            history.unshift({ str, entropy: calculateEntropy(str) });
+            if (history.length > 12) history.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item" onclick="copyText('${item.str.replace(/'/g, "\\'")}')">
+                    <span style="flex: 1;">${item.str.length > 30 ? item.str.substring(0, 27) + '...' : item.str}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+            `).join('');
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.classList.add('visible');
+                setTimeout(() => toast.classList.remove('visible'), 1500);
+            });
+        }
+
+        // --- Handlers ---
+        generateBtn.addEventListener('click', () => {
+            const batchMode = document.getElementById('batch-mode').checked;
+
+            if (batchMode) {
+                batchContainer.classList.add('visible');
+                let batch = [];
+                for (let i = 0; i < 10; i++) {
+                    batch.push(generateString());
+                }
+
+                batchList.innerHTML = batch.map(str => `
+                    <div class="batch-item" onclick="copyText('${str.replace(/'/g, "\\'")}')">
+                        ${str}
+                    </div>
+                `).join('');
+
+                updateUI(batch[0]);
+            } else {
+                batchContainer.classList.remove('visible');
+                updateUI(generateString());
+            }
+        });
+
+        stringDisplay.addEventListener('click', () => {
+            const text = stringDisplay.textContent;
+            if (!text.includes('Select') && !text.includes('Click')) {
+                copyText(text);
+            }
+        });
+
+        lengthSlider.addEventListener('input', () => {
+            lengthNumber.textContent = lengthSlider.value;
+        });
+
+        // Character set checkboxes
+        ['uppercase', 'lowercase', 'numbers', 'symbols'].forEach(set => {
+            const checkbox = document.getElementById(`include-${set}`);
+            const item = document.getElementById(`${set}-item`);
+
+            checkbox.addEventListener('change', (e) => {
+                item.classList.toggle('active', e.target.checked);
+
+                // Ensure at least one set is selected
+                const anyChecked = ['uppercase', 'lowercase', 'numbers', 'symbols']
+                    .some(s => document.getElementById(`include-${s}`).checked);
+
+                if (!anyChecked) {
+                    checkbox.checked = true;
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Batch mode checkbox
+        const batchModeCheckbox = document.getElementById('batch-mode');
+        const batchModeItem = batchModeCheckbox.closest('.checkbox-item');
+
+        batchModeCheckbox.addEventListener('change', (e) => {
+            batchModeItem.classList.toggle('active', e.target.checked);
+            if (!e.target.checked) {
+                batchContainer.classList.remove('visible');
+            }
+        });
+
+        // Initial generation
+        updateUI(generateString());
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date);
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
