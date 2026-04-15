@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Team Generator | online-tools.click</title>
+    <meta name="description" content="Randomly split a list of names into balanced groups or teams. Fast, client-side, and easy to use.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+
+    <div class="max-w-4xl mx-auto px-6 py-12">
+        <header class="text-center mb-10">
+            <div class="mb-4">
+                <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                    online-tools.click
+                </a>
+            </div>
+            <h1 class="text-4xl font-bold mb-2 tracking-tight">Random Team Generator</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-lg font-medium">Split your list into balanced groups instantly.</p>
+        </header>
+
+        <main class="space-y-8">
+            <div class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-8 shadow-xl space-y-6">
+                <div class="space-y-4">
+                    <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Names (one per line or comma-separated)</label>
+                    <textarea id="input-names" rows="8" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-800 focus:border-blue-500 rounded-2xl px-6 py-4 text-sm font-mono transition-all outline-none" placeholder="Alice, Bob, Charlie..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold uppercase tracking-wider text-gray-500">Number of Groups</label>
+                        <input id="input-groups" type="number" min="1" value="2" class="w-full bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-800 focus:border-blue-500 rounded-2xl px-6 py-3 text-sm font-bold outline-none">
+                    </div>
+                    <div class="flex items-end">
+                        <button id="btn-generate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl transition-all">Generate Teams</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="output-area" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Results go here -->
+            </div>
+        </main>
+
+        <footer class="mt-16 text-center text-xs text-gray-400 dark:text-gray-600 pt-8 space-y-4">
+            <p>🔒 Privacy First: All processing is done locally in your browser.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('btn-generate').onclick = () => {
+            const names = document.getElementById('input-names').value
+                .split(/[\n,]+/)
+                .map(n => n.trim())
+                .filter(n => n.length > 0);
+            
+            const groupCount = parseInt(document.getElementById('input-groups').value);
+            
+            if (names.length === 0 || groupCount < 1) return;
+
+            // Shuffle
+            const shuffled = [...names].sort(() => Math.random() - 0.5);
+            
+            const groups = Array.from({ length: groupCount }, () => []);
+            
+            shuffled.forEach((name, index) => {
+                groups[index % groupCount].push(name);
+            });
+
+            const outputArea = document.getElementById('output-area');
+            outputArea.innerHTML = '';
+            outputArea.classList.remove('hidden');
+
+            groups.forEach((group, index) => {
+                const div = document.createElement('div');
+                div.className = "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm";
+                div.innerHTML = `
+                    <h3 class="font-bold text-lg mb-4 text-blue-600 dark:text-blue-400">Team ${index + 1}</h3>
+                    <ul class="space-y-2">
+                        ${group.map(name => `<li class="font-mono text-sm">${name}</li>`).join('')}
+                    </ul>
+                `;
+                outputArea.appendChild(div);
+            });
+        };
+    </script>
+</body>
+</html>
