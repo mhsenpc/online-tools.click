@@ -681,6 +681,14 @@
 
         <div class="error-bar" id="error-bar"></div>
 
+        <div id="explanation-panel" class="substitution-section" style="margin-bottom: 24px; display: none;">
+            <div class="substitution-header">
+                <label>Pattern Breakdown</label>
+            </div>
+            <div class="substitution-result-area" id="explanation-content" style="font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            </div>
+        </div>
+
         <div class="panels">
             <div class="panel left-panel">
                 <div>
@@ -887,7 +895,24 @@
             });
         }
 
-        function findMatches(pattern, flags, testStr) {
+        function explainRegex(pattern) {
+            if (!pattern) return '';
+            let explanation = '';
+            // A simple parser for common regex parts
+            const parts = pattern.split(/((?:\\.|\[.*?\]|\{.*?\})+)/).filter(Boolean);
+            parts.forEach(part => {
+                if (part === '.') explanation += '• <code>.</code>: Matches any character (except newline)\n';
+                else if (part === '\\d') explanation += '• <code>\\d</code>: Matches any digit [0-9]\n';
+                else if (part === '\\w') explanation += '• <code>\\w</code>: Matches any word character [a-zA-Z0-9_]\n';
+                else if (part === '\\s') explanation += '• <code>\\s</code>: Matches any whitespace\n';
+                else if (part === '*') explanation += '• <code>*</code>: Matches zero or more of the previous token\n';
+                else if (part === '+') explanation += '• <code>+</code>: Matches one or more of the previous token\n';
+                else if (part === '?') explanation += '• <code>?</code>: Matches zero or one of the previous token\n';
+                else if (part.startsWith('[') && part.endsWith(']')) explanation += '• <code>' + part + '</code>: Matches any character in ' + part + '\n';
+                else explanation += '• <code>' + part + '</code>: Matches literal ' + part + '\n';
+            });
+            return explanation;
+        }
             if (!pattern) return { matches: [], error: null };
 
             try {
@@ -1056,8 +1081,13 @@
 
             if (pattern) {
                 renderMatchDetails(result.matches);
+                const explanationPanel = document.getElementById('explanation-panel');
+                const explanationContent = document.getElementById('explanation-content');
+                explanationPanel.style.display = 'block';
+                explanationContent.innerHTML = explainRegex(pattern);
             } else {
                 matchDetails.innerHTML = '<div class="match-details-empty">Enter a pattern to see matches</div>';
+                document.getElementById('explanation-panel').style.display = 'none';
             }
 
             if (pattern && !result.error) {
