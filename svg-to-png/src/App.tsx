@@ -18,14 +18,20 @@ export default function App() {
       const canvas = canvasRef.current;
       if (!canvas) return;
       
-      const w = width ? parseInt(width) : img.width * scale;
-      const h = height ? parseInt(height) : img.height * scale;
+      const baseWidth = width ? parseInt(width) : img.width;
+      const baseHeight = height ? parseInt(height) : img.height;
+      
+      const w = baseWidth * scale;
+      const h = baseHeight * scale;
       
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.clearRect(0, 0, w, h);
+        // Ensure image quality when scaling
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, w, h);
         setPngData(canvas.toDataURL('image/png'));
       }
