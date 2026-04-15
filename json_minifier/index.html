@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Minifier | online-tools.click</title>
+    <meta name="description" content="Free, secure, and fast online JSON minifier. Compress JSON data by removing whitespace for reduced payload sizes. 100% client-side.">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-editor: #ffffff;
+            --text-editor: #1a1a1a;
+        }
+        .dark {
+            --bg-editor: #0d1117;
+            --text-editor: #c9d1d9;
+        }
+
+        body { transition: background-color 0.2s, color 0.2s; }
+
+        .editor-textarea {
+            background-color: var(--bg-editor);
+            color: var(--text-editor);
+            caret-color: #3b82f6;
+            resize: none;
+            outline: none;
+            tab-size: 2;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #30363d; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    </style>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-GHGXLWQR4V');
+  </script>
+</head>
+<body class="h-full overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 z-20 relative">
+        <div class="flex items-center gap-4">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                online-tools.click
+            </a>
+            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+            <h1 class="text-lg font-semibold">JSON Minifier</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="btn-theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                <svg id="sun-icon" class="hidden w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364-.707.707M6.343 17.657l-.707.707M17.657 17.657l.707.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+                <svg id="moon-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="flex items-center gap-4 px-6 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 overflow-x-auto">
+        <div class="flex items-center gap-2">
+            <button id="btn-minify" class="px-3 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all">Minify</button>
+            <button id="btn-pretty" class="px-3 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium transition-all">Pretty Print</button>
+        </div>
+        <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-xs font-medium text-gray-500">Indent:</span>
+            <select id="opt-indent" class="bg-transparent text-xs text-gray-600 dark:text-gray-400 border-none outline-none cursor-pointer focus:ring-0">
+                <option value="2">2 Spaces</option>
+                <option value="4" selected>4 Spaces</option>
+                <option value="\t">Tab</option>
+            </select>
+        </div>
+        <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+        <div id="stats" class="text-xs text-gray-500 font-medium hidden sm:block"></div>
+        <div class="flex-1"></div>
+        <button id="btn-copy" class="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 transition-colors">Copy Output</button>
+        <button id="btn-clear" class="text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-red-600 transition-colors ml-4">Clear</button>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="flex h-full flex-1 overflow-hidden">
+        <div class="flex flex-col md:flex-row w-full h-full">
+            <!-- Input -->
+            <section class="w-full md:w-1/2 flex flex-col h-1/2 md:h-full border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800">
+                <div class="px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">Input JSON</div>
+                <textarea id="input-area" class="editor-textarea flex-1 p-6 font-mono text-sm leading-relaxed" placeholder="Paste your JSON here..."></textarea>
+            </section>
+
+            <!-- Output -->
+            <section class="w-full md:w-1/2 flex flex-col h-1/2 md:h-full bg-white dark:bg-gray-950">
+                <div class="px-4 py-1 bg-gray-100 dark:bg-gray-800 text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-gray-200 dark:border-gray-800">
+                    Output JSON <span id="output-mode" class="text-blue-600 dark:text-blue-400 ml-2">(Minified)</span>
+                </div>
+                <textarea id="output-area" class="editor-textarea flex-1 p-6 font-mono text-sm leading-relaxed" readonly placeholder="Results will appear here..."></textarea>
+            </section>
+        </div>
+    </main>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="fixed top-20 right-6 px-6 py-3 bg-red-600 text-white text-sm font-medium rounded-lg shadow-2xl opacity-0 translate-x-10 pointer-events-none transition-all duration-300 z-50 max-w-md">
+        Invalid JSON
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 px-6 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-2xl opacity-0 translate-y-10 pointer-events-none transition-all duration-300 z-50">
+        Copied to clipboard
+    </div>
+
+    <script>
+        const inputArea = document.getElementById('input-area');
+        const outputArea = document.getElementById('output-area');
+        const btnMinify = document.getElementById('btn-minify');
+        const btnPretty = document.getElementById('btn-pretty');
+        const optIndent = document.getElementById('opt-indent');
+        const statsEl = document.getElementById('stats');
+        const outputModeEl = document.getElementById('output-mode');
+        const errorToast = document.getElementById('error-toast');
+        const successToast = document.getElementById('success-toast');
+
+        let currentMode = 'minify';
+
+        // --- Core Logic ---
+        function minifyJSON(json) {
+            try {
+                const parsed = JSON.parse(json);
+                return JSON.stringify(parsed);
+            } catch (e) {
+                throw new Error('Invalid JSON');
+            }
+        }
+
+        function prettyPrintJSON(json) {
+            try {
+                const parsed = JSON.parse(json);
+                let indent = optIndent.value;
+                if (indent === '\\t') {
+                    indent = '\t';
+                }
+                return JSON.stringify(parsed, null, indent);
+            } catch (e) {
+                throw new Error('Invalid JSON');
+            }
+        }
+
+        function updateStats(input, output) {
+            const inputSize = new Blob([input]).size;
+            const outputSize = new Blob([output]).size;
+            const reduction = Math.round((1 - outputSize / inputSize) * 100);
+
+            statsEl.textContent = `Input: ${formatBytes(inputSize)} → Output: ${formatBytes(outputSize)} (${reduction}% smaller)`;
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function showError(message) {
+            errorToast.textContent = message;
+            errorToast.classList.remove('opacity-0', 'translate-x-10');
+            setTimeout(() => {
+                errorToast.classList.add('opacity-0', 'translate-x-10');
+            }, 3000);
+        }
+
+        function processJSON() {
+            const input = inputArea.value.trim();
+
+            if (!input) {
+                outputArea.value = '';
+                statsEl.textContent = '';
+                return;
+            }
+
+            try {
+                let output;
+                if (currentMode === 'minify') {
+                    output = minifyJSON(input);
+                    outputModeEl.textContent = '(Minified)';
+                } else {
+                    output = prettyPrintJSON(input);
+                    outputModeEl.textContent = '(Pretty Print)';
+                }
+
+                outputArea.value = output;
+                updateStats(input, output);
+            } catch (e) {
+                showError('Invalid JSON: Please check your input');
+                outputArea.value = '';
+                statsEl.textContent = '';
+            }
+        }
+
+        // --- Event Listeners ---
+        btnMinify.onclick = () => {
+            currentMode = 'minify';
+            btnMinify.className = 'px-3 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all';
+            btnPretty.className = 'px-3 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium transition-all';
+            processJSON();
+        };
+
+        btnPretty.onclick = () => {
+            currentMode = 'pretty';
+            btnPretty.className = 'px-3 py-1 text-xs rounded bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all';
+            btnMinify.className = 'px-3 py-1 text-xs rounded border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium transition-all';
+            processJSON();
+        };
+
+        inputArea.oninput = processJSON;
+
+        optIndent.onchange = () => {
+            if (currentMode === 'pretty') {
+                processJSON();
+            }
+        };
+
+        document.getElementById('btn-copy').onclick = () => {
+            if (outputArea.value) {
+                navigator.clipboard.writeText(outputArea.value).then(() => {
+                    successToast.classList.remove('opacity-0', 'translate-y-10');
+                    setTimeout(() => successToast.classList.add('opacity-0', 'translate-y-10'), 2000);
+                });
+            }
+        };
+
+        document.getElementById('btn-clear').onclick = () => {
+            inputArea.value = '';
+            outputArea.value = '';
+            statsEl.textContent = '';
+        };
+
+        document.getElementById('btn-theme-toggle').onclick = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        };
+
+        // --- Initialize ---
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Auto-process on load if there's input
+        if (inputArea.value) {
+            processJSON();
+        }
+    </script>
+</body>
+</html>
