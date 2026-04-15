@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Formatter & Beautifier | Online Tools</title>
+    <meta name="description" content="Clean, pretty-print, and beautify messy SVG code. Fast, private, client-side.">
+    <meta property="og:title" content="SVG Formatter & Beautifier | Online Tools">
+    <meta property="og:description" content="Clean, pretty-print, and beautify messy SVG code instantly. Fast, private, client-side.">
+    <meta property="og:url" content="https://online-tools.click/svg_formatter/">
+    <meta name="twitter:title" content="SVG Formatter & Beautifier | Online Tools">
+    <meta name="twitter:description" content="Clean, pretty-print, and beautify messy SVG code. Fast, private, client-side.">
+    <link rel="canonical" href="https://online-tools.click/svg_formatter/">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SVG Formatter",
+      "url": "https://online-tools.click/svg_formatter/",
+      "description": "Clean, pretty-print, and beautify messy SVG code.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+
+            --svg-tag: #f472b6;
+            --svg-attribute: #60a5fa;
+            --svg-value: #34d399;
+            --svg-comment: #6b7280;
+            --svg-cdata: #fbbf24;
+            --svg-processing: #a78bfa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-secondary);
+            position: relative;
+            z-index: 10;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-brand {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .navbar-brand:hover {
+            color: var(--accent-primary);
+        }
+
+        .navbar-sep {
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .navbar-current {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .navbar-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .navbar-right a:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            animation: fadeIn 0.6s ease-out 0.1s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .toolbar-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            border: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            padding: 0.625rem 2.5rem 0.625rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 8px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.875rem;
+            cursor: pointer;
+            appearance: none;
+            min-width: 140px;
+        }
+
+        select:hover {
+            border-color: var(--accent-primary);
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .panels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            animation: fadeIn 0.6s ease-out 0.2s both;
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            padding: 0.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .panel-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+        }
+
+        .line-numbers {
+            padding: 1rem 0.75rem;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--border-color);
+            min-width: 50px;
+            overflow: hidden;
+        }
+
+        textarea, .output-display {
+            flex: 1;
+            padding: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            border: none;
+            outline: none;
+            resize: none;
+            overflow: auto;
+            white-space: pre;
+            tab-size: 2;
+        }
+
+        textarea {
+            caret-color: var(--accent-primary);
+        }
+
+        .output-display {
+            position: relative;
+        }
+
+        .output-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 1rem;
+            overflow: auto;
+            white-space: pre;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .error-panel {
+            display: none;
+            padding: 1rem 1.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            margin-top: 1rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-panel.visible {
+            display: block;
+        }
+
+        .error-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--error);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .error-location {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Syntax highlighting */
+        .svg-tag { color: var(--svg-tag); }
+        .svg-attribute { color: var(--svg-attribute); }
+        .svg-value { color: var(--svg-value); }
+        .svg-comment { color: var(--svg-comment); font-style: italic; }
+        .svg-cdata { color: var(--svg-cdata); }
+        .svg-processing { color: var(--svg-processing); }
+
+        /* Status bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-indicator.error {
+            background: var(--error);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .panels {
+                grid-template-columns: 1fr;
+            }
+
+            .panel {
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toolbar-group {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Copy notification */
+        .copy-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--success);
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="https://online-tools.click" class="navbar-brand">Online Tools</a>
+            <span class="navbar-sep">/</span>
+            <span class="navbar-current">SVG Formatter</span>
+        </div>
+        <div class="navbar-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>SVG Formatter</h1>
+            <p class="subtitle">Format and beautify SVG code instantly</p>
+        </header>
+
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="btn btn-primary" id="formatBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10H3M21 6H3M21 14H3M21 18H3"/>
+                    </svg>
+                    Format
+                </button>
+                <button class="btn" id="validateBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                    </svg>
+                    Validate
+                </button>
+            </div>
+
+            <div class="toolbar-group">
+                <span class="toolbar-label">Indentation</span>
+                <div class="select-wrapper">
+                    <select id="indentSelect">
+                        <option value="2">2 spaces</option>
+                        <option value="4" selected>4 spaces</option>
+                        <option value="tab">Tab</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="toolbar-group">
+                <label class="btn" style="cursor: pointer;">
+                    <input type="checkbox" id="lineNumbersCheck" checked style="margin-right: 0.5rem;">
+                    Line Numbers
+                </label>
+            </div>
+        </div>
+
+        <div class="panels">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Input</span>
+                    <div class="panel-actions">
+                        <button class="icon-btn" id="clearInputBtn" title="Clear">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" id="pasteBtn" title="Paste">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                                <rect x="8" y="2" width="8" height="4" rx="1"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="editor-container">
+                        <div class="line-numbers" id="inputLineNumbers">1</div>
+                        <textarea id="inputSvg" placeholder="Paste your SVG here..." spellcheck="false"></textarea>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-indicator" id="inputStatus"></span>
+                        <span id="inputStats">0 characters</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Output</span>
+                    <div class="panel-actions">
+                        <button class="icon-btn" id="previewBtn" title="Preview">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" id="codeBtn" title="Code">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn" id="copyOutputBtn" title="Copy to clipboard">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2"/>
+                                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div class="editor-container">
+                        <div class="line-numbers" id="outputLineNumbers" style="display: none;"></div>
+                        <div class="output-display" id="outputDisplay">
+                            <div class="output-content" id="outputContent"></div>
+                            <div class="output-content" id="previewContent" style="display: none; align-items: center; justify-content: center; padding: 2rem;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span class="status-indicator" id="outputStatus"></span>
+                        <span id="outputStats">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="error-panel" id="errorPanel">
+            <div class="error-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4M12 16h.01"/>
+                </svg>
+                Validation Error
+            </div>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="error-location" id="errorLocation"></div>
+        </div>
+    </div>
+
+    <div class="copy-notification" id="copyNotification">Copied to clipboard!</div>
+
+    <script>
+        const inputSvg = document.getElementById('inputSvg');
+        const outputContent = document.getElementById('outputContent');
+        const outputDisplay = document.getElementById('outputDisplay');
+        const formatBtn = document.getElementById('formatBtn');
+        const validateBtn = document.getElementById('validateBtn');
+        const indentSelect = document.getElementById('indentSelect');
+        const lineNumbersCheck = document.getElementById('lineNumbersCheck');
+        const inputLineNumbers = document.getElementById('inputLineNumbers');
+        const outputLineNumbers = document.getElementById('outputLineNumbers');
+        const clearInputBtn = document.getElementById('clearInputBtn');
+        const pasteBtn = document.getElementById('pasteBtn');
+        const copyOutputBtn = document.getElementById('copyOutputBtn');
+        const errorPanel = document.getElementById('errorPanel');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorLocation = document.getElementById('errorLocation');
+        const inputStats = document.getElementById('inputStats');
+        const outputStats = document.getElementById('outputStats');
+        const inputStatus = document.getElementById('inputStatus');
+        const outputStatus = document.getElementById('outputStatus');
+        const copyNotification = document.getElementById('copyNotification');
+        const previewBtn = document.getElementById('previewBtn');
+        const codeBtn = document.getElementById('codeBtn');
+        const previewContent = document.getElementById('previewContent');
+
+        // State
+        let currentIndent = '4';
+        let showLineNumbers = true;
+        let currentOutput = '';
+        let previewUrl = null;
+
+        // Initialize
+        function init() {
+            updateInputStats();
+            setupEventListeners();
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            formatBtn.addEventListener('click', formatSvg);
+            validateBtn.addEventListener('click', validateSvg);
+            indentSelect.addEventListener('change', (e) => {
+                currentIndent = e.target.value;
+                if (currentOutput) formatSvg();
+            });
+            lineNumbersCheck.addEventListener('change', (e) => {
+                showLineNumbers = e.target.checked;
+                updateLineNumbersVisibility();
+            });
+            inputSvg.addEventListener('input', updateInputStats);
+            inputSvg.addEventListener('scroll', syncInputScroll);
+            outputDisplay.addEventListener('scroll', syncOutputScroll);
+            clearInputBtn.addEventListener('click', clearInput);
+            pasteBtn.addEventListener('click', pasteFromClipboard);
+            copyOutputBtn.addEventListener('click', copyToClipboard);
+            previewBtn.addEventListener('click', showPreview);
+            codeBtn.addEventListener('click', showCode);
+        }
+
+        function showPreview() {
+            outputContent.style.display = 'none';
+            previewContent.style.display = 'flex';
+            
+            // Clean up old preview URL
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+            // Render SVG
+            const svgCode = inputSvg.value;
+            if (!svgCode.trim()) {
+                previewContent.innerHTML = '<span style="color: var(--text-secondary);">Nothing to preview</span>';
+                return;
+            }
+
+            try {
+                const blob = new Blob([svgCode], {type: 'image/svg+xml'});
+                previewUrl = URL.createObjectURL(blob);
+                previewContent.innerHTML = `<img src="${previewUrl}" style="max-width: 100%; max-height: 100%; object-fit: contain;" />`;
+            } catch (error) {
+                previewContent.innerHTML = '<span style="color: var(--error);">Failed to preview SVG</span>';
+            }
+        }
+
+        function showCode() {
+            outputContent.style.display = 'block';
+            previewContent.style.display = 'none';
+        }
+
+        // Format SVG
+        function formatSvg() {
+            const input = inputSvg.value.trim();
+            if (!input) {
+                showError('Please enter some SVG to format.');
+                return;
+            }
+
+            hideError();
+
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(input, 'image/svg+xml');
+
+                // Check for parsing errors
+                const parseError = xmlDoc.getElementsByTagName('parsererror');
+                if (parseError.length > 0) {
+                    throw new Error(parseError[0].textContent);
+                }
+
+                const formatted = formatSvgNode(xmlDoc.documentElement, '');
+                setOutput(formatted);
+                setOutputStats('Formatted', 'success');
+            } catch (error) {
+                showError(error.message || 'Invalid SVG');
+                setOutputStats('Error', 'error');
+            }
+        }
+
+        // Format SVG node recursively
+        function formatSvgNode(node, indent, depth = 0) {
+            const MAX_DEPTH = 500;
+            if (depth > MAX_DEPTH) {
+                throw new Error('SVG is too deeply nested to format (max depth exceeded).');
+            }
+            const indentStr = getIndentString();
+            let result = '';
+
+            if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent.trim();
+                return text ? text : '';
+            }
+
+            if (node.nodeType === Node.CDATA_SECTION_NODE) {
+                return `${indent}<![CDATA[${node.textContent}]]>`;
+            }
+
+            if (node.nodeType === Node.COMMENT_NODE) {
+                return `${indent}<!--${node.textContent}-->`;
+            }
+
+            if (node.nodeType === Node.PROCESSING_INSTRUCTION_NODE) {
+                return `${indent}<?${node.target} ${node.data}?>`;
+            }
+
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return '';
+            }
+
+            const tagName = node.tagName;
+            const attributes = Array.from(node.attributes)
+                .map(attr => ` ${attr.name}="${attr.value}"`)
+                .join('');
+
+            const children = Array.from(node.childNodes);
+            const elementChildren = children.filter(child => child.nodeType === Node.ELEMENT_NODE);
+            const textChildren = children.filter(child => child.nodeType === Node.TEXT_NODE && child.textContent.trim());
+            const hasChildren = elementChildren.length > 0 || textChildren.length > 0;
+
+            if (!hasChildren) {
+                result = `${indent}<${tagName}${attributes} />`;
+            } else {
+                result = `${indent}<${tagName}${attributes}>`;
+
+                if (elementChildren.length > 0) {
+                    result += '\n';
+                    children.forEach(child => {
+                        const formatted = formatSvgNode(child, indent + indentStr, depth + 1);
+                        if (formatted) {
+                            result += formatted + '\n';
+                        }
+                    });
+                    result += `${indent}</${tagName}>`;
+                } else {
+                    const text = children.map(c => c.textContent).join('').trim();
+                    result += text + `</${tagName}>`;
+                }
+            }
+
+            return result;
+        }
+
+        // Validate SVG
+        function validateSvg() {
+            const input = inputSvg.value.trim();
+            if (!input) {
+                showError('Please enter some SVG to validate.');
+                return;
+            }
+
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(input, 'image/svg+xml');
+
+                const parseError = xmlDoc.getElementsByTagName('parsererror');
+                if (parseError.length > 0) {
+                    throw new Error(parseError[0].textContent);
+                }
+
+                setOutput('✓ Valid SVG\n\nYour SVG is well-formed and ready to use.');
+                setOutputStats('Valid', 'success');
+                hideError();
+            } catch (error) {
+                const errorInfo = parseSvgError(error.message || 'Invalid SVG', input);
+                showError(errorInfo.message, errorInfo.location);
+                setOutputStats('Invalid', 'error');
+            }
+        }
+
+        // Parse SVG error to extract line and column
+        function parseSvgError(errorMsg, svg) {
+            let location = '';
+
+            // Try to extract line/column from common error formats
+            const lineMatch = errorMsg.match(/line (\d+)/i);
+            const columnMatch = errorMsg.match(/column (\d+)/i);
+            const positionMatch = errorMsg.match(/position (\d+)/i);
+
+            if (lineMatch) {
+                location = `Line ${lineMatch[1]}`;
+                if (columnMatch) {
+                    location += `, Column ${columnMatch[1]}`;
+                }
+            } else if (positionMatch) {
+                const pos = parseInt(positionMatch[1]);
+                const lines = svg.substring(0, pos).split('\n');
+                location = `Line ${lines.length}, Column ${lines[lines.length - 1].length + 1}`;
+            } else {
+                location = 'Error location unknown';
+            }
+
+            // Clean up error message
+            let message = errorMsg.replace(/Parser Error:\s*/i, '');
+            message = message.replace(/at line \d+.*$/i, '').trim();
+
+            return { message: message || 'Invalid SVG structure', location };
+        }
+
+        // Get indent string
+        function getIndentString() {
+            if (currentIndent === 'tab') return '\t';
+            return ' '.repeat(parseInt(currentIndent) || 4);
+        }
+
+        // Set output content
+        function setOutput(content) {
+            currentOutput = content;
+            outputContent.innerHTML = highlightSvg(content);
+            updateOutputLineNumbers();
+        }
+
+        // Syntax highlight SVG
+        function highlightSvg(svg) {
+            // Escape HTML
+            let escaped = svg
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+
+            // Highlight CDATA
+            escaped = escaped.replace(/(&lt;!\[CDATA\[.*?\]\]&gt;)/gs, '<span class="svg-cdata">$1</span>');
+
+            // Highlight comments
+            escaped = escaped.replace(/(&lt;!--.*?--&gt;)/gs, '<span class="svg-comment">$1</span>');
+
+            // Highlight processing instructions
+            escaped = escaped.replace(/(&lt;\?.*?\?&gt;)/g, '<span class="svg-processing">$1</span>');
+
+            // Highlight tags
+            escaped = escaped.replace(/(&lt;\/?)([\w-]+)(.*?)(\/?&gt;)/g, (match, start, tag, attrs, end) => {
+                let highlighted = start + '<span class="svg-tag">' + tag + '</span>';
+
+                // Highlight attributes
+                if (attrs.trim()) {
+                    attrs = attrs.replace(/\s([\w-]+)=/g, ' <span class="svg-attribute">$1</span>=');
+                    // Highlight attribute values
+                    attrs = attrs.replace(/="([^"]*)"/g, '="<span class="svg-value">$1</span>"');
+                    attrs = attrs.replace(/='([^']*)'/g, "='<span class=\"svg-value\">$1</span>'");
+                }
+
+                highlighted += attrs + end;
+                return highlighted;
+            });
+
+            return escaped;
+        }
+
+        // Update line numbers
+        function updateInputLineNumbers() {
+            const lines = inputSvg.value.split('\n').length;
+            inputLineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+        }
+
+        function updateOutputLineNumbers() {
+            if (!showLineNumbers) return;
+            const lines = currentOutput.split('\n').length;
+            outputLineNumbers.innerHTML = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+        }
+
+        function updateLineNumbersVisibility() {
+            inputLineNumbers.style.display = showLineNumbers ? 'block' : 'none';
+            outputLineNumbers.style.display = showLineNumbers ? 'block' : 'none';
+            if (showLineNumbers) {
+                updateInputLineNumbers();
+                updateOutputLineNumbers();
+            }
+        }
+
+        // Sync scroll between editor and line numbers
+        function syncInputScroll() {
+            inputLineNumbers.scrollTop = inputSvg.scrollTop;
+        }
+
+        function syncOutputScroll() {
+            outputLineNumbers.scrollTop = outputDisplay.scrollTop;
+        }
+
+        // Update stats
+        function updateInputStats() {
+            const chars = inputSvg.value.length;
+            const lines = inputSvg.value.split('\n').length;
+            inputStats.textContent = `${chars} characters, ${lines} lines`;
+            updateInputLineNumbers();
+        }
+
+        function setOutputStats(message, status) {
+            outputStats.textContent = message;
+            outputStatus.className = 'status-indicator' + (status === 'error' ? ' error' : '');
+        }
+
+        // Clear input
+        function clearInput() {
+            inputSvg.value = '';
+            currentOutput = '';
+            outputContent.innerHTML = '';
+            hideError();
+            updateInputStats();
+            setOutputStats('Ready', 'success');
+        }
+
+        // Paste from clipboard
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                inputSvg.value = text;
+                updateInputStats();
+            } catch (error) {
+                showError('Failed to paste from clipboard. Please check permissions.');
+            }
+        }
+
+        // Copy to clipboard
+        async function copyToClipboard() {
+            if (!currentOutput) {
+                showError('Nothing to copy.');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(currentOutput);
+                showCopyNotification();
+            } catch (error) {
+                showError('Failed to copy to clipboard.');
+            }
+        }
+
+        // Show/hide error
+        function showError(message, location = '') {
+            errorMessage.textContent = message;
+            errorLocation.textContent = location;
+            errorPanel.classList.add('visible');
+        }
+
+        function hideError() {
+            errorPanel.classList.remove('visible');
+        }
+
+        // Show copy notification
+        function showCopyNotification() {
+            copyNotification.classList.add('show');
+            setTimeout(() => {
+                copyNotification.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialize on load
+        init();
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
