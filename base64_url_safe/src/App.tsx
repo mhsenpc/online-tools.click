@@ -27,32 +27,56 @@ function App() {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Base64 URL Safe Encoder/Decoder</h1>
-      <div>
-        <button onClick={() => { setMode('encode'); setOutput(''); setInput(''); }}>Encode (URL-Safe)</button>
-        <button onClick={() => { setMode('decode'); setOutput(''); setInput(''); }}>Decode (URL-Safe)</button>
-      </div>
-      <div>
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Base64 URL Safe Encoder/Decoder</h1>
+      <p style={{ marginBottom: '1rem', color: '#666' }}>
+        This tool encodes text to URL-safe Base64 (using - and _) or decodes it back. 
+        Everything happens in your browser for maximum privacy.
+      </p>
+      
+      <div style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
         <label>
-          <input type="checkbox" checked={stripPadding} onChange={(e) => setStripPadding(e.target.checked)} />
+          <input type="radio" name="mode" checked={mode === 'encode'} onChange={() => { setMode('encode'); setOutput(''); setInput(''); }} />
+          Encode (Text → URL-Safe Base64)
+        </label>
+        <label>
+          <input type="radio" name="mode" checked={mode === 'decode'} onChange={() => { setMode('decode'); setOutput(''); setInput(''); }} />
+          Decode (URL-Safe Base64 → Text)
+        </label>
+      </div>
+      
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          <input type="checkbox" checked={stripPadding} onChange={(e) => {
+             const val = e.target.checked;
+             setStripPadding(val);
+             processBase64(input, mode, val);
+          }} />
           Strip Padding (=)
         </label>
       </div>
-      <textarea 
-        style={{ width: '100%', height: '200px', marginBottom: '1rem' }}
-        value={input}
-        onChange={(e) => {
-          setInput(e.target.value);
-          processBase64(e.target.value, mode, stripPadding);
-        }}
-        placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter URL-safe Base64...'}
-      />
-      <textarea 
-        style={{ width: '100%', height: '200px' }}
-        value={output}
-        readOnly
-      />
+      
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem' }}>{mode === 'encode' ? 'Input Text' : 'Input URL-Safe Base64'}</label>
+        <textarea 
+          style={{ width: '100%', height: '150px', padding: '0.5rem' }}
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value);
+            processBase64(e.target.value, mode, stripPadding);
+          }}
+          placeholder={mode === 'encode' ? 'Enter text to encode...' : 'Enter URL-safe Base64...'}
+        />
+      </div>
+      
+      <div>
+        <label style={{ display: 'block', marginBottom: '0.5rem' }}>Output</label>
+        <textarea 
+          style={{ width: '100%', height: '150px', padding: '0.5rem', backgroundColor: '#f0f0f0' }}
+          value={output}
+          readOnly
+        />
+      </div>
     </div>
   );
 }
