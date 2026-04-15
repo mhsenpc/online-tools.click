@@ -14,7 +14,7 @@ const VennDiagram = ({ joinType, table1, table2 }: { joinType: string; table1: s
   };
 
   const getLeftFillOpacity = () => {
-    if (joinType === 'LEFT JOIN') return '0.3';
+    if (joinType === 'LEFT JOIN' || joinType === 'FULL OUTER JOIN') return '0.5';
     return '0.15';
   };
 
@@ -25,7 +25,7 @@ const VennDiagram = ({ joinType, table1, table2 }: { joinType: string; table1: s
   };
 
   const getRightFillOpacity = () => {
-    if (joinType === 'RIGHT JOIN') return '0.3';
+    if (joinType === 'RIGHT JOIN' || joinType === 'FULL OUTER JOIN') return '0.5';
     return '0.15';
   };
 
