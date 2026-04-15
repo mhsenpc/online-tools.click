@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to CSV Converter | Online Tools</title>
+    <meta name="description" content="Convert JSON arrays to CSV format with nested object flattening. Fast, private, client-side.">
+    <meta property="og:title" content="JSON to CSV Converter | Online Tools">
+    <meta property="og:description" content="Convert JSON arrays to CSV format with nested object flattening.">
+    <meta property="og:url" content="https://online-tools.click/json_csv_converter/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="JSON to CSV Converter | Online Tools">
+    <meta name="twitter:description" content="Convert JSON arrays to CSV format with nested object flattening.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/json_csv_converter/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .converter-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-sans);
+        }
+
+        .btn:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #ff5522;
+            border-color: #ff5522;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            min-height: 400px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--border-focus);
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .options-bar {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .checkbox-wrapper:hover {
+            border-color: var(--border-focus);
+        }
+
+        .checkbox-wrapper.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .checkbox-wrapper input {
+            display: none;
+        }
+
+        .checkbox-text {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .status-info {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-item.error {
+            color: var(--error);
+        }
+
+        .status-item.success {
+            color: var(--success);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 1024px) {
+            .converter-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            .options-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">JSON to CSV Converter</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>JSON to CSV Converter</h1>
+            <p>Convert JSON arrays to CSV format with automatic nested object flattening. 100% client-side privacy.</p>
+        </section>
+
+        <div class="options-bar">
+            <div class="option-group">
+                <span class="option-label">Flattening:</span>
+                <label class="checkbox-wrapper active" id="flatten-wrapper">
+                    <input type="checkbox" id="flatten-nested" checked>
+                    <span class="checkbox-text">Flatten Nested Objects</span>
+                </label>
+            </div>
+            <div class="option-group">
+                <span class="option-label">Delimiter:</span>
+                <label class="checkbox-wrapper active" id="comma-wrapper">
+                    <input type="radio" name="delimiter" value="comma" checked>
+                    <span class="checkbox-text">Comma (,)</span>
+                </label>
+                <label class="checkbox-wrapper" id="semicolon-wrapper">
+                    <input type="radio" name="delimiter" value="semicolon">
+                    <span class="checkbox-text">Semicolon (;)</span>
+                </label>
+                <label class="checkbox-wrapper" id="tab-wrapper">
+                    <input type="radio" name="delimiter" value="tab">
+                    <span class="checkbox-text">Tab</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="converter-container">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">JSON Input</span>
+                    <div class="panel-actions">
+                        <button class="btn" id="clear-btn">Clear</button>
+                        <button class="btn" id="sample-btn">Load Sample</button>
+                    </div>
+                </div>
+                <textarea id="json-input" placeholder='Enter or paste JSON array of objects...
+Example:
+[
+  {"name": "John", "age": 30, "address": {"city": "NYC"}},
+  {"name": "Jane", "age": 25, "address": {"city": "LA"}}
+]'></textarea>
+                <div class="status-bar">
+                    <div class="status-info">
+                        <span class="status-item" id="json-status">Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">CSV Output</span>
+                    <div class="panel-actions">
+                        <button class="btn" id="copy-btn">Copy</button>
+                        <button class="btn btn-primary" id="download-btn">Download CSV</button>
+                    </div>
+                </div>
+                <textarea id="csv-output" readonly placeholder="CSV output will appear here..."></textarea>
+                <div class="status-bar">
+                    <div class="status-info">
+                        <span class="status-item" id="csv-rows">0 rows</span>
+                        <span class="status-item" id="csv-cols">0 columns</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+        // --- State ---
+        let flattenNested = true;
+        let delimiter = ',';
+
+        // --- Elements ---
+        const jsonInput = document.getElementById('json-input');
+        const csvOutput = document.getElementById('csv-output');
+        const flattenCheckbox = document.getElementById('flatten-nested');
+        const flattenWrapper = document.getElementById('flatten-wrapper');
+        const jsonStatus = document.getElementById('json-status');
+        const csvRows = document.getElementById('csv-rows');
+        const csvCols = document.getElementById('csv-cols');
+        const toast = document.getElementById('toast');
+
+        // --- Flattening Logic ---
+        function flattenObject(obj, prefix = '') {
+            const result = {};
+
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    const newKey = prefix ? `${prefix}.${key}` : key;
+
+                    if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                        Object.assign(result, flattenObject(obj[key], newKey));
+                    } else {
+                        result[newKey] = obj[key];
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        // --- CSV Conversion ---
+        function jsonToCSV(json, flatten, delim) {
+            if (!Array.isArray(json)) {
+                throw new Error('Input must be an array of objects');
+            }
+
+            if (json.length === 0) {
+                return '';
+            }
+
+            // Process objects
+            const processed = json.map(item => {
+                if (typeof item !== 'object' || item === null) {
+                    throw new Error('Array must contain only objects');
+                }
+                return flatten ? flattenObject(item) : item;
+            });
+
+            // Collect all unique keys
+            const allKeys = new Set();
+            processed.forEach(obj => {
+                Object.keys(obj).forEach(key => allKeys.add(key));
+            });
+
+            const keys = Array.from(allKeys);
+            const delimiterChar = delim === 'tab' ? '\t' : (delim === 'semicolon' ? ';' : ',');
+
+            // Build header
+            const header = keys.map(escapeCSV).join(delimiterChar);
+
+            // Build rows
+            const rows = processed.map(obj => {
+                return keys.map(key => {
+                    const value = obj[key];
+                    return escapeCSV(value);
+                }).join(delimiterChar);
+            });
+
+            return [header, ...rows].join('\n');
+        }
+
+        function escapeCSV(value) {
+            if (value === null || value === undefined) {
+                return '';
+            }
+
+            const strValue = String(value);
+
+            // Escape quotes and wrap in quotes if contains delimiter, quote, or newline
+            if (strValue.includes(',') || strValue.includes(';') || strValue.includes('\t') ||
+                strValue.includes('"') || strValue.includes('\n') || strValue.includes('\r')) {
+                return '"' + strValue.replace(/"/g, '""') + '"';
+            }
+
+            return strValue;
+        }
+
+        // --- UI Updates ---
+        function updateConversion() {
+            const jsonStr = jsonInput.value.trim();
+
+            if (!jsonStr) {
+                csvOutput.value = '';
+                jsonStatus.textContent = 'Ready';
+                jsonStatus.className = 'status-item';
+                csvRows.textContent = '0 rows';
+                csvCols.textContent = '0 columns';
+                return;
+            }
+
+            try {
+                const json = JSON.parse(jsonStr);
+                const csv = jsonToCSV(json, flattenNested, delimiter);
+                csvOutput.value = csv;
+
+                // Update stats
+                const lines = csv.split('\n').filter(line => line.trim());
+                csvRows.textContent = `${Math.max(0, lines.length - 1)} rows`;
+
+                if (lines.length > 0) {
+                    const colCount = lines[0].split(delimiter === 'tab' ? '\t' : (delimiter === 'semicolon' ? ';' : ',')).length;
+                    csvCols.textContent = `${colCount} columns`;
+                }
+
+                jsonStatus.textContent = 'Valid JSON';
+                jsonStatus.className = 'status-item success';
+            } catch (e) {
+                csvOutput.value = '';
+                jsonStatus.textContent = `Error: ${e.message}`;
+                jsonStatus.className = 'status-item error';
+                csvRows.textContent = '0 rows';
+                csvCols.textContent = '0 columns';
+            }
+        }
+
+        // --- Event Handlers ---
+        jsonInput.addEventListener('input', updateConversion);
+
+        flattenCheckbox.addEventListener('change', (e) => {
+            flattenNested = e.target.checked;
+            flattenWrapper.classList.toggle('active', flattenNested);
+            updateConversion();
+        });
+
+        document.querySelectorAll('input[name="delimiter"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                delimiter = e.target.value;
+                document.querySelectorAll('.checkbox-wrapper').forEach(wrapper => {
+                    if (wrapper.querySelector('input[type="radio"]')) {
+                        wrapper.classList.toggle('active', wrapper.querySelector('input').checked);
+                    }
+                });
+                updateConversion();
+            });
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            jsonInput.value = '';
+            csvOutput.value = '';
+            jsonStatus.textContent = 'Ready';
+            jsonStatus.className = 'status-item';
+            csvRows.textContent = '0 rows';
+            csvCols.textContent = '0 columns';
+        });
+
+        document.getElementById('sample-btn').addEventListener('click', () => {
+            const sample = [
+                {
+                    "id": 1,
+                    "name": "John Doe",
+                    "email": "john@example.com",
+                    "address": {
+                        "street": "123 Main St",
+                        "city": "New York",
+                        "state": "NY",
+                        "zipCode": "10001"
+                    },
+                    "company": {
+                        "name": "Tech Corp",
+                        "department": "Engineering"
+                    },
+                    "active": true
+                },
+                {
+                    "id": 2,
+                    "name": "Jane Smith",
+                    "email": "jane@example.com",
+                    "address": {
+                        "street": "456 Oak Ave",
+                        "city": "Los Angeles",
+                        "state": "CA",
+                        "zipCode": "90001"
+                    },
+                    "company": {
+                        "name": "Design Co",
+                        "department": "UX Design"
+                    },
+                    "active": false
+                },
+                {
+                    "id": 3,
+                    "name": "Bob Johnson",
+                    "email": "bob@example.com",
+                    "address": {
+                        "street": "789 Pine Rd",
+                        "city": "Chicago",
+                        "state": "IL",
+                        "zipCode": "60601"
+                    },
+                    "company": {
+                        "name": "Data Systems",
+                        "department": "Data Science"
+                    },
+                    "active": true
+                }
+            ];
+            jsonInput.value = JSON.stringify(sample, null, 2);
+            updateConversion();
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            if (csvOutput.value) {
+                navigator.clipboard.writeText(csvOutput.value).then(() => {
+                    toast.classList.add('visible');
+                    setTimeout(() => toast.classList.remove('visible'), 1500);
+                });
+            }
+        });
+
+        document.getElementById('download-btn').addEventListener('click', () => {
+            if (csvOutput.value) {
+                const blob = new Blob([csvOutput.value], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'data.csv');
+                link.style.visibility = 'hidden';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+
+        // Initialize checkbox wrapper states
+        flattenWrapper.classList.toggle('active', flattenNested);
+        document.querySelectorAll('input[name="delimiter"]').forEach(radio => {
+            radio.closest('.checkbox-wrapper').classList.toggle('active', radio.checked);
+        });
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date);
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
