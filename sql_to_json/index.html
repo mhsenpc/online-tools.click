@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL to JSON Converter | Online Tools</title>
+    <meta name="description" content="Convert SQL table results to JSON. Fast, private, client-side.">
+    <link rel="canonical" href="https://online-tools.click/sql_to_json/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --radius-md: 12px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: var(--text); }
+
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .editor-panel {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-input);
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            background: var(--bg-input);
+            border: none;
+            color: var(--text);
+            font-family: var(--font-mono);
+            padding: 20px;
+            resize: none;
+        }
+
+        .btn-primary {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="logo">Online Tools / SQL to JSON</a>
+        </header>
+
+        <div class="editor-container">
+            <div class="editor-panel">
+                <div class="panel-header">Input (SQL result table)</div>
+                <textarea id="input-sql" placeholder="Paste your SQL table here...
+id | name | age
+1 | Alice | 30
+2 | Bob | 25"></textarea>
+            </div>
+            <div class="editor-panel">
+                <div class="panel-header">Output (JSON)</div>
+                <textarea id="output-json" readonly></textarea>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <button class="btn-primary" id="convert-btn">Convert to JSON</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('convert-btn').addEventListener('click', () => {
+            const input = document.getElementById('input-sql').value;
+            const lines = input.trim().split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                alert('Please provide at least a header and one data row.');
+                return;
+            }
+
+            // Simple auto-detect delimiter
+            const firstLine = lines[0];
+            let delimiter = '|';
+            if (firstLine.includes('\t')) delimiter = '\t';
+            else if (firstLine.includes(',')) delimiter = ',';
+
+            const headers = lines[0].split(delimiter).map(h => h.trim());
+            const result = lines.slice(1).map(line => {
+                const values = line.split(delimiter).map(v => v.trim());
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = values[index] || null;
+                });
+                return obj;
+            });
+
+            document.getElementById('output-json').value = JSON.stringify(result, null, 2);
+        });
+    </script>
+</body>
+</html>
