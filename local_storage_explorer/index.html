@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local & Session Storage Explorer — Free Online Tool</title>
+  <meta name="description" content="View, edit, and clear Local Storage and Session Storage entries. 100% private, client-side browser storage diagnostic tool." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4">
+      <h1 class="text-xl font-bold">Local & Session Storage Explorer</h1>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <div class="flex gap-4 mb-6">
+      <button id="tab-local" class="px-4 py-2 bg-blue-600 text-white rounded shadow">Local Storage</button>
+      <button id="tab-session" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">Session Storage</button>
+    </div>
+
+    <div class="flex justify-between items-center mb-4">
+      <input type="text" id="search" placeholder="Search keys..." class="px-4 py-2 border rounded w-64 dark:bg-gray-800 dark:border-gray-600">
+      <button id="add-btn" class="px-4 py-2 bg-green-600 text-white rounded">+ Add Entry</button>
+    </div>
+
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-gray-100 dark:bg-gray-800">
+          <th class="p-3 border">Key</th>
+          <th class="p-3 border">Value</th>
+          <th class="p-3 border">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="storage-body"></tbody>
+    </table>
+  </main>
+
+  <script>
+    const storageBody = document.getElementById('storage-body');
+    const searchInput = document.getElementById('search');
+    const tabLocal = document.getElementById('tab-local');
+    const tabSession = document.getElementById('tab-session');
+    let currentStorage = localStorage;
+
+    function render() {
+      storageBody.innerHTML = '';
+      const filter = searchInput.value.toLowerCase();
+      for (let i = 0; i < currentStorage.length; i++) {
+        const key = currentStorage.key(i);
+        if (key.toLowerCase().includes(filter)) {
+          const value = currentStorage.getItem(key);
+          const row = document.createElement('tr');
+          row.className = 'border-b dark:border-gray-700';
+          row.innerHTML = `
+            <td class="p-3 font-mono">${key}</td>
+            <td class="p-3 font-mono truncate max-w-xs cursor-pointer" title="${value}">${formatJSON(value)}</td>
+            <td class="p-3">
+              <button onclick="editKey('${key}')" class="text-blue-500 mr-2">Edit</button>
+              <button onclick="deleteKey('${key}')" class="text-red-500">Delete</button>
+            </td>
+          `;
+          storageBody.appendChild(row);
+        }
+      }
+    }
+
+    // JSON Formatting helper
+    function formatJSON(val) {
+      try {
+        return JSON.stringify(JSON.parse(val), null, 2);
+      } catch (e) {
+        return val;
+      }
+    }
+
+    tabLocal.addEventListener('click', () => { currentStorage = localStorage; render(); });
+    tabSession.addEventListener('click', () => { currentStorage = sessionStorage; render(); });
+    searchInput.addEventListener('input', render);
+
+    window.editKey = (key) => {
+      const val = prompt('Edit value for ' + key, currentStorage.getItem(key));
+      if (val !== null) { currentStorage.setItem(key, val); render(); }
+    };
+
+    window.deleteKey = (key) => {
+      if (confirm('Delete ' + key + '?')) { currentStorage.removeItem(key); render(); }
+    };
+
+    document.getElementById('add-btn').addEventListener('click', () => {
+      const key = prompt('Enter key');
+      const val = prompt('Enter value');
+      if (key) { currentStorage.setItem(key, val || ''); render(); }
+    });
+
+    render();
+  </script>
+</body>
+</html>
