@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Flexbox Generator</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .container { display: flex; border: 2px solid #333; padding: 10px; height: 300px; }
+        .item { background: #007bff; color: white; padding: 20px; margin: 5px; border-radius: 4px; }
+        .controls { margin-top: 20px; }
+        label { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>CSS Flexbox Generator</h1>
+    <div id="flex-container" class="container">
+        <div class="item">Item 1</div>
+        <div class="item">Item 2</div>
+        <div class="item">Item 3</div>
+    </div>
+    <div class="controls">
+        <label>flex-direction:
+            <select id="flex-direction">
+                <option value="row">row</option>
+                <option value="column">column</option>
+                <option value="row-reverse">row-reverse</option>
+                <option value="column-reverse">column-reverse</option>
+            </select>
+        </label>
+        <label>justify-content:
+            <select id="justify-content">
+                <option value="flex-start">flex-start</option>
+                <option value="flex-end">flex-end</option>
+                <option value="center">center</option>
+                <option value="space-between">space-between</option>
+                <option value="space-around">space-around</option>
+            </select>
+        </label>
+        <label>align-items:
+            <select id="align-items">
+                <option value="stretch">stretch</option>
+                <option value="flex-start">flex-start</option>
+                <option value="flex-end">flex-end</option>
+                <option value="center">center</option>
+                <option value="baseline">baseline</option>
+            </select>
+        </label>
+    </div>
+    <div style="margin-top: 20px;">
+        <h3>CSS Code:</h3>
+        <pre id="code-output" style="background: #eee; padding: 10px; border-radius: 4px;"></pre>
+    </div>
+    <script>
+        const container = document.getElementById('flex-container');
+        const codeOutput = document.getElementById('code-output');
+
+        function update() {
+            container.style.flexDirection = document.getElementById('flex-direction').value;
+            container.style.justifyContent = document.getElementById('justify-content').value;
+            container.style.alignItems = document.getElementById('align-items').value;
+
+            codeOutput.innerText = `.container {
+  display: flex;
+  flex-direction: ${container.style.flexDirection};
+  justify-content: ${container.style.justifyContent};
+  align-items: ${container.style.alignItems};
+}`;
+        }
+
+        document.querySelectorAll('select').forEach(el => el.addEventListener('change', update));
+        update();
+    </script>
+</body>
+</html>
