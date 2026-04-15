@@ -2,9 +2,17 @@
   "name": "css-shadow-generator",
   "version": "1.0.0",
   "scripts": {
-    "build": "esbuild main.js --bundle --outfile=dist/bundle.js && cp index.html dist/"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "devDependencies": {
-    "esbuild": "^0.20.2"
+  "dependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
   }
 }
