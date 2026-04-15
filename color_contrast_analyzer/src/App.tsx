@@ -18,6 +18,24 @@ function App() {
     };
   };
 
+  const getSuggestions = () => {
+    const suggestions = [];
+    const checkRatio = (f: any, b: any) => tinycolor.readability(f, b);
+    
+    // Try to lighten/darken FG
+    for (let i = 5; i <= 50; i += 5) {
+      const variants = [colorFg.lighten(i), colorFg.darken(i)];
+      for (const v of variants) {
+        if (checkRatio(v, colorBg) >= 4.5) {
+          suggestions.push({ fg: v.toHexString(), bg: colorBg.toHexString(), label: `Foreground ${v.getBrightness() > colorFg.getBrightness() ? 'lighter' : 'darker'}` });
+          return suggestions;
+        }
+      }
+    }
+    return suggestions;
+  };
+  
+  const suggestions = getSuggestions();
   const status = getStatus(ratio);
 
   return (
@@ -42,6 +60,18 @@ function App() {
             <p style={{ color: status.largeAAA ? 'green' : 'red', fontWeight: 'bold' }}>AAA: {status.largeAAA ? 'Pass' : 'Fail'}</p>
           </div>
         </div>
+        {suggestions.length > 0 && (
+          <div style={{ marginTop: '1rem', padding: '1rem', background: '#f0f0f0' }}>
+            <strong>Suggested Colors:</strong>
+            <ul>
+              {suggestions.map((s, i) => (
+                <li key={i} style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }} onClick={() => { setFg(s.fg); setBg(s.bg); }}>
+                  {s.label} ({s.fg})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );
