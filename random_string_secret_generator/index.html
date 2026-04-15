@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random String & Secret Generator | Online Tools</title>
+    <meta name="description" content="Secure, client-side random string and secret generator. Customizable character sets and length. 100% private.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 20px; font-weight: 700; text-decoration: none; color: var(--text); }
+        .logo-sub { color: var(--text-secondary); }
+
+        main { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 48px; }
+        .hero h1 { font-size: 40px; margin-bottom: 12px; }
+
+        .result-container { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 32px; margin-bottom: 32px; }
+        .password-display { font-family: var(--font-mono); font-size: 24px; background: var(--bg-input); padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 24px; word-break: break-all; cursor: pointer; }
+        
+        .controls { display: grid; gap: 24px; }
+        .setting-group { display: flex; flex-direction: column; gap: 12px; }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .checkbox-item { background: var(--bg-input); padding: 12px; border-radius: 8px; border: 1px solid var(--border); cursor: pointer; }
+        .checkbox-item.active { border-color: var(--accent); background: var(--accent-glow); }
+        
+        .button-group { display: flex; gap: 12px; margin-top: 20px; }
+        button { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-main { background: var(--accent); color: white; flex: 1; }
+        .btn-preset { background: var(--bg-elevated); color: var(--text); border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="https://online-tools.click" class="logo">Online Tools <span class="logo-sub">/ Random String Generator</span></a>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Random String Generator</h1>
+            <p>Generate secure random strings and secrets instantly.</p>
+        </section>
+
+        <div class="result-container">
+            <div class="password-display" id="result" title="Click to copy">Click Generate</div>
+            <button class="btn-main" id="generate-btn" style="width:100%">Generate</button>
+        </div>
+
+        <div class="controls">
+            <div class="setting-group">
+                <label>Length: <span id="len-val">16</span></label>
+                <input type="range" id="length" min="1" max="128" value="16">
+            </div>
+            
+            <div class="checkbox-group">
+                <label class="checkbox-item active"><input type="checkbox" id="upper" checked> Uppercase</label>
+                <label class="checkbox-item active"><input type="checkbox" id="lower" checked> Lowercase</label>
+                <label class="checkbox-item active"><input type="checkbox" id="numbers" checked> Numbers</label>
+                <label class="checkbox-item active"><input type="checkbox" id="symbols" checked> Symbols</label>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-preset" onclick="setPreset('strong')">Strong Password</button>
+                <button class="btn-preset" onclick="setPreset('simple')">Simple String</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const res = document.getElementById('result');
+        const length = document.getElementById('length');
+        const lenVal = document.getElementById('len-val');
+        const generateBtn = document.getElementById('generate-btn');
+        const cbs = ['upper', 'lower', 'numbers', 'symbols'];
+
+        length.addEventListener('input', () => lenVal.textContent = length.value);
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', () => cb.parentElement.classList.toggle('active', cb.checked));
+        });
+
+        function setPreset(type) {
+            if(type === 'strong') {
+                length.value = 32;
+                ['upper', 'lower', 'numbers', 'symbols'].forEach(id => document.getElementById(id).checked = true);
+            } else {
+                length.value = 12;
+                ['upper', 'lower', 'numbers'].forEach(id => document.getElementById(id).checked = true);
+                document.getElementById('symbols').checked = false;
+            }
+            length.dispatchEvent(new Event('input'));
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.parentElement.classList.toggle('active', cb.checked));
+            generate();
+        }
+
+        function generate() {
+            const charset = {
+                upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lower: 'abcdefghijklmnopqrstuvwxyz',
+                numbers: '0123456789',
+                symbols: '!@#$%^&*()_+~`|}{[]:;?><,./-='
+            };
+            let pool = '';
+            cbs.forEach(id => { if(document.getElementById(id).checked) pool += charset[id]; });
+            
+            if(!pool) { res.textContent = 'Select a character set'; return; }
+
+            let out = '';
+            for(let i=0; i<length.value; i++) out += pool[Math.floor(Math.random() * pool.length)];
+            res.textContent = out;
+        }
+
+        generateBtn.addEventListener('click', generate);
+        res.addEventListener('click', () => navigator.clipboard.writeText(res.textContent));
+    </script>
+</body>
+</html>
