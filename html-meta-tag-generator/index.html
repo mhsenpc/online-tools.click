@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HTML Meta Tag Generator — Free Online Tool</title>
+  <meta name="description" content="Free online HTML Meta Tag generator. Create SEO and social media meta tags (Open Graph, Twitter Cards) instantly for your website." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+    // Apply dark mode
+    (function() {
+      const saved = localStorage.getItem('meta_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">🏷️</span>
+      <h1 class="text-xl font-bold">HTML Meta Tag Generator</h1>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Input -->
+      <section class="space-y-4">
+        <h2 class="font-semibold text-lg">Input Details</h2>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Title</label>
+          <input id="input-title" type="text" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm" placeholder="Page Title" />
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-1">Description</label>
+          <textarea id="input-desc" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm" rows="3" placeholder="Page description..."></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Image URL</label>
+          <input id="input-img" type="text" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm" placeholder="https://example.com/image.jpg" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Keywords (comma separated)</label>
+          <input id="input-keywords" type="text" class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm" placeholder="seo, meta, generator" />
+        </div>
+      </section>
+
+      <!-- Output -->
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-lg">Generated Snippet</h2>
+            <button id="btn-copy" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors">Copy</button>
+        </div>
+        <textarea id="output" readonly class="w-full h-80 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 p-4 text-xs font-mono"></textarea>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const inputs = ['input-title', 'input-desc', 'input-img', 'input-keywords'];
+    const outputEl = document.getElementById('output');
+    
+    function generate() {
+      const title = document.getElementById('input-title').value;
+      const desc = document.getElementById('input-desc').value;
+      const img = document.getElementById('input-img').value;
+      const keywords = document.getElementById('input-keywords').value;
+
+      let code = '';
+      if (title) code += `<title>${title}</title>\n`;
+      if (desc) code += `<meta name="description" content="${desc}">\n`;
+      if (keywords) code += `<meta name="keywords" content="${keywords}">\n`;
+      
+      // OG
+      if (title) code += `<meta property="og:title" content="${title}">\n`;
+      if (desc) code += `<meta property="og:description" content="${desc}">\n`;
+      if (img) code += `<meta property="og:image" content="${img}">\n`;
+      code += `<meta property="og:type" content="website">\n`;
+      
+      // Twitter
+      if (title) code += `<meta name="twitter:title" content="${title}">\n`;
+      if (desc) code += `<meta name="twitter:description" content="${desc}">\n`;
+      if (img) code += `<meta name="twitter:image" content="${img}">\n`;
+      code += `<meta name="twitter:card" content="summary_large_image">\n`;
+      
+      outputEl.value = code;
+    }
+
+    inputs.forEach(id => {
+      document.getElementById(id).addEventListener('input', generate);
+    });
+
+    document.getElementById('btn-copy').addEventListener('click', () => {
+        outputEl.select();
+        document.execCommand('copy');
+        alert('Copied to clipboard!');
+    });
+
+    generate();
+  </script>
+</body>
+</html>
