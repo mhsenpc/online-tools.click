@@ -64,6 +64,9 @@
         .status-bar { display: flex; justify-content: space-between; padding: 0.75rem 1.5rem; background: var(--bg-tertiary); border-top: 1px solid var(--border-color); font-size: 0.875rem; color: var(--text-secondary); }
         .error-panel { display: none; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 8px; margin-top: 1rem; color: var(--error); }
         .error-panel.visible { display: block; }
+        .btn-copy { padding: 0.5rem 1rem; font-size: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .btn-copy:hover { background: var(--accent-primary); border-color: var(--accent-primary); }
+        .btn-copy.copied { background: var(--success); border-color: var(--success); }
     </style>
 </head>
 <body>
@@ -103,7 +106,10 @@
                 <div class="status-bar"><span id="inputStats">0 characters</span></div>
             </div>
             <div class="panel">
-                <div class="panel-header"><span class="panel-title">JSON Output</span></div>
+                <div class="panel-header">
+                    <span class="panel-title">JSON Output</span>
+                    <button class="btn-copy" id="copyBtn">Copy</button>
+                </div>
                 <div class="panel-content"><textarea id="outputJson" readonly></textarea></div>
                 <div class="status-bar"><span id="outputStats">Ready</span></div>
             </div>
@@ -117,6 +123,7 @@
         const includeAttrs = document.getElementById('includeAttrs');
         const indentSelect = document.getElementById('indentSelect');
         const errorPanel = document.getElementById('errorPanel');
+        const copyBtn = document.getElementById('copyBtn');
 
         convertBtn.addEventListener('click', () => {
             try {
@@ -134,25 +141,75 @@
             }
         });
 
+        copyBtn.addEventListener('click', async () => {
+            if (!outputJson.value) return;
+
+            try {
+                await navigator.clipboard.writeText(outputJson.value);
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                outputJson.select();
+                document.execCommand('copy');
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }
+        });
+
         function xmlToJson(xml, includeAttrs) {
             let obj = {};
-            if (xml.nodeType === 1) { // element
+
+            if (xml.nodeType === 1) { // element node
+                // Preserve the namespace prefix in the element name if it exists
+                let nodeName = xml.nodeName;
+
                 if (xml.attributes.length > 0 && includeAttrs) {
                     obj["@attributes"] = {};
                     for (let j = 0; j < xml.attributes.length; j++) {
                         let attribute = xml.attributes.item(j);
                         obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
                     }
+
+                    // Preserve namespace declarations if they exist
+                    const namespaceDeclarations = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        let attribute = xml.attributes.item(j);
+                        if (attribute.nodeName.startsWith('xmlns:') || attribute.nodeName === 'xmlns') {
+                            namespaceDeclarations[attribute.nodeName] = attribute.nodeValue;
+                        }
+                    }
+
+                    if (Object.keys(namespaceDeclarations).length > 0) {
+                        obj["@namespaces"] = namespaceDeclarations;
+                    }
                 }
-            } else if (xml.nodeType === 3) { // text
+            } else if (xml.nodeType === 3) { // text node
                 obj = xml.nodeValue;
+            } else if (xml.nodeType === 4) { // CDATA section
+                obj = { "@cdata": xml.nodeValue };
             }
 
             if (xml.hasChildNodes()) {
                 for (let i = 0; i < xml.childNodes.length; i++) {
                     let item = xml.childNodes.item(i);
                     let nodeName = item.nodeName;
-                    if (item.nodeType === 3 && !item.nodeValue.trim()) continue; // skip empty text
+
+                    // Skip empty text nodes and whitespace-only nodes
+                    if (item.nodeType === 3 && !item.nodeValue.trim()) continue;
+
+                    // Preserve namespace prefix in child element names
+                    if (item.nodeType === 1 && item.prefix) {
+                        nodeName = item.prefix + ':' + item.localName;
+                    }
 
                     if (typeof (obj[nodeName]) === "undefined") {
                         obj[nodeName] = xmlToJson(item, includeAttrs);

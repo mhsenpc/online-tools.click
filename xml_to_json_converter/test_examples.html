@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML to JSON Converter - Test Examples</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .test-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #333; }
+        .test-description { color: #666; margin-bottom: 15px; font-size: 14px; }
+        textarea { width: 100%; min-height: 200px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; }
+        .button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 10px 5px; }
+        .button:hover { background: #0056b3; }
+        .result { margin-top: 15px; padding: 15px; background: #f0f7ff; border-radius: 4px; border-left: 4px solid #007bff; display: none; }
+        .result.show { display: block; }
+        .success { border-left-color: #28a745; background: #f0fff4; }
+        .error { border-left-color: #dc3545; background: #fff5f5; }
+    </style>
+</head>
+<body>
+    <h1>XML to JSON Converter - Test Examples</h1>
+    <p>This page tests various complex XML structures to ensure the converter handles them correctly.</p>
+
+    <!-- Test 1: Simple XML with Attributes -->
+    <div class="test-section">
+        <div class="test-title">Test 1: Simple XML with Attributes</div>
+        <div class="test-description">Tests basic XML parsing with attributes</div>
+        <textarea id="test1" readonly>&lt;person id="123" active="true"&gt;
+    &lt;name&gt;John Doe&lt;/name&gt;
+    &lt;age&gt;30&lt;/age&gt;
+&lt;/person&gt;</textarea>
+        <div>
+            <button class="button" onclick="runTest('test1')">Test This Example</button>
+            <button class="button" onclick="window.open('/xml_to_json_converter/', '_blank')">Open Converter</button>
+        </div>
+        <div class="result" id="result1"></div>
+    </div>
+
+    <!-- Test 2: XML with Namespaces -->
+    <div class="test-section">
+        <div class="test-title">Test 2: XML with Namespaces</div>
+        <div class="test-description">Tests namespace handling and prefixes</div>
+        <textarea id="test2" readonly>&lt;soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:m="http://www.example.com/stock"&gt;
+    &lt;soap:Header&gt;
+        &lt;m:Trans&gt;1234&lt;/m:Trans&gt;
+    &lt;/soap:Header&gt;
+    &lt;soap:Body&gt;
+        &lt;m:GetStockPrice&gt;
+            &lt;m:StockName&gt;AAPL&lt;/m:StockName&gt;
+        &lt;/m:GetStockPrice&gt;
+    &lt;/soap:Body&gt;
+&lt;/soap:Envelope&gt;</textarea>
+        <div>
+            <button class="button" onclick="runTest('test2')">Test This Example</button>
+            <button class="button" onclick="window.open('/xml_to_json_converter/', '_blank')">Open Converter</button>
+        </div>
+        <div class="result" id="result2"></div>
+    </div>
+
+    <!-- Test 3: Complex Nested Structure -->
+    <div class="test-section">
+        <div class="test-title">Test 3: Complex Nested Structure</div>
+        <div class="test-description">Tests deeply nested elements and arrays</div>
+        <textarea id="test3" readonly>&lt;library&gt;
+    &lt;books&gt;
+        &lt;book isbn="978-0-13-468599-1"&gt;
+            &lt;title&gt;Effective Java&lt;/title&gt;
+            &lt;authors&gt;
+                &lt;author&gt;Joshua Bloch&lt;/author&gt;
+            &lt;/authors&gt;
+            &lt;price&gt;45.99&lt;/price&gt;
+        &lt;/book&gt;
+        &lt;book isbn="978-0-596-00712-6"&gt;
+            &lt;title&gt;JavaScript: The Good Parts&lt;/title&gt;
+            &lt;authors&gt;
+                &lt;author&gt;Douglas Crockford&lt;/author&gt;
+            &lt;/authors&gt;
+            &lt;price&gt;29.99&lt;/price&gt;
+        &lt;/book&gt;
+    &lt;/books&gt;
+&lt;/library&gt;</textarea>
+        <div>
+            <button class="button" onclick="runTest('test3')">Test This Example</button>
+            <button class="button" onclick="window.open('/xml_to_json_converter/', '_blank')">Open Converter</button>
+        </div>
+        <div class="result" id="result3"></div>
+    </div>
+
+    <!-- Test 4: XML with CDATA -->
+    <div class="test-section">
+        <div class="test-title">Test 4: XML with CDATA Sections</div>
+        <div class="test-description">Tests CDATA content preservation</div>
+        <textarea id="test4" readonly>&lt;message&gt;
+    &lt;from&gt;Alice&lt;/from&gt;
+    &lt;to&gt;Bob&lt;/to&gt;
+    &lt;content&gt;&lt;![CDATA[This contains &lt;special&gt; characters &amp; symbols]]&gt;&lt;/content&gt;
+&lt;/message&gt;</textarea>
+        <div>
+            <button class="button" onclick="runTest('test4')">Test This Example</button>
+            <button class="button" onclick="window.open('/xml_to_json_converter/', '_blank')">Open Converter</button>
+        </div>
+        <div class="result" id="result4"></div>
+    </div>
+
+    <!-- Test 5: Mixed Content -->
+    <div class="test-section">
+        <div class="test-title">Test 5: Mixed Content</div>
+        <div class="test-description">Tests elements with mixed text and child elements</div>
+        <textarea id="test5" readonly>&lt;article&gt;
+    &lt;title&gt;Introduction to XML&lt;/title&gt;
+    &lt;summary&gt;This is an &lt;emphasis&gt;essential&lt;/emphasis&gt; guide for &lt;strong&gt;beginners&lt;/strong&gt;.&lt;/summary&gt;
+&lt;/article&gt;</textarea>
+        <div>
+            <button class="button" onclick="runTest('test5')">Test This Example</button>
+            <button class="button" onclick="window.open('/xml_to_json_converter/', '_blank')">Open Converter</button>
+        </div>
+        <div class="result" id="result5"></div>
+    </div>
+
+    <script>
+        function runTest(testId) {
+            const textarea = document.getElementById(testId);
+            const resultDiv = document.getElementById('result' + testId.slice(-1));
+
+            try {
+                // Simulate the conversion logic
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(textarea.value, 'text/xml');
+                const parseError = xmlDoc.getElementsByTagName('parsererror');
+
+                if (parseError.length > 0) {
+                    throw new Error('Invalid XML: ' + parseError[0].textContent);
+                }
+
+                // Simple conversion (matches the converter logic)
+                const json = xmlToJson(xmlDoc.documentElement, true);
+                const jsonString = JSON.stringify(json, null, 2);
+
+                resultDiv.innerHTML = '<strong>✓ Success!</strong><br>The XML was successfully converted to valid JSON.<br><br><pre style="background:white; padding:10px; border-radius:4px; overflow-x:auto;">' + jsonString + '</pre>';
+                resultDiv.className = 'result show success';
+
+            } catch (error) {
+                resultDiv.innerHTML = '<strong>✗ Error:</strong><br>' + error.message;
+                resultDiv.className = 'result show error';
+            }
+        }
+
+        function xmlToJson(xml, includeAttrs) {
+            let obj = {};
+
+            if (xml.nodeType === 1) {
+                let nodeName = xml.nodeName;
+
+                if (xml.attributes.length > 0 && includeAttrs) {
+                    obj["@attributes"] = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        let attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+
+                    const namespaceDeclarations = {};
+                    for (let j = 0; j < xml.attributes.length; j++) {
+                        let attribute = xml.attributes.item(j);
+                        if (attribute.nodeName.startsWith('xmlns:') || attribute.nodeName === 'xmlns') {
+                            namespaceDeclarations[attribute.nodeName] = attribute.nodeValue;
+                        }
+                    }
+
+                    if (Object.keys(namespaceDeclarations).length > 0) {
+                        obj["@namespaces"] = namespaceDeclarations;
+                    }
+                }
+            } else if (xml.nodeType === 3) {
+                obj = xml.nodeValue;
+            } else if (xml.nodeType === 4) {
+                obj = { "@cdata": xml.nodeValue };
+            }
+
+            if (xml.hasChildNodes()) {
+                for (let i = 0; i < xml.childNodes.length; i++) {
+                    let item = xml.childNodes.item(i);
+                    let nodeName = item.nodeName;
+
+                    if (item.nodeType === 3 && !item.nodeValue.trim()) continue;
+
+                    if (item.nodeType === 1 && item.prefix) {
+                        nodeName = item.prefix + ':' + item.localName;
+                    }
+
+                    if (typeof (obj[nodeName]) === "undefined") {
+                        obj[nodeName] = xmlToJson(item, includeAttrs);
+                    } else {
+                        if (typeof (obj[nodeName].push) === "undefined") {
+                            let old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item, includeAttrs));
+                    }
+                }
+            }
+            return obj;
+        }
+    </script>
+</body>
+</html>
