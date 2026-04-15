@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Number Generator | Online Tools</title>
+    <meta name="description" content="Generate random numbers within a custom range. Choose quantity, enable unique values, and copy results. 100% client-side.">
+    <meta property="og:title" content="Random Number Generator | Online Tools">
+    <meta property="og:description" content="Generate random numbers within a custom range. Fast, private, client-side.">
+    <meta property="og:url" content="https://online-tools.click/random_number_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Random Number Generator | Online Tools">
+    <meta name="twitter:description" content="Generate random numbers within a custom range. 100% private.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/random_number_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            --space-element: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 32px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-sep {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        .logo-sub {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+
+        .header-right a:hover {
+            color: var(--text);
+            border-color: var(--border-focus);
+        }
+
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Result Area */
+        .result-container {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .main-result {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .numbers-display {
+            flex: 1;
+            font-family: var(--font-mono);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--bg-input);
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            min-height: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            transition: border-color 0.2s;
+            cursor: pointer;
+        }
+
+        .numbers-display:hover {
+            border-color: var(--border-focus);
+        }
+
+        .number-badge {
+            background: var(--bg-elevated);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            display: inline-block;
+        }
+
+        .btn-generate {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            width: 64px;
+            height: 64px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-generate:hover {
+            transform: rotate(30deg);
+            background: #ff5522;
+        }
+
+        .btn-generate svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .result-count {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .number-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: 16px;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .range-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .range-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            border: 4px solid var(--bg-elevated);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .range-number {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            width: 60px;
+            text-align: right;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .checkbox-item:hover {
+            border-color: var(--border-focus);
+        }
+
+        .checkbox-item.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        .checkbox-item input {
+            display: none;
+        }
+
+        .checkbox-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 0;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        /* History */
+        .history-container {
+            margin-top: 40px;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .history-item {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            border-color: var(--border-focus);
+            background: var(--bg-elevated);
+        }
+
+        .history-item svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .history-item:hover svg {
+            opacity: 1;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+        }
+
+        .toast.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .numbers-display {
+                font-size: 20px;
+            }
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a><span class="logo-sep"> / </span><span class="logo-sub">Random Number Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Random Number Generator</h1>
+            <p>Generate random numbers within a custom range. Choose quantity, enable unique values, and copy results.</p>
+        </section>
+
+        <div class="result-container">
+            <div class="main-result">
+                <div class="numbers-display" id="numbers-display" title="Click to copy">
+                    <span style="color: var(--text-muted);">Click Generate</span>
+                </div>
+                <button class="btn-generate" id="generate-btn" title="Generate Numbers">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                </button>
+            </div>
+
+            <div class="result-info">
+                <span class="result-count" id="result-count">Ready to generate</span>
+                <span id="result-range"></span>
+            </div>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="settings-grid">
+            <div class="setting-group">
+                <label class="setting-label">Range</label>
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <span class="input-label">Minimum</span>
+                        <input type="number" class="number-input" id="min-input" value="1" placeholder="1">
+                    </div>
+                    <div class="input-wrapper">
+                        <span class="input-label">Maximum</span>
+                        <input type="number" class="number-input" id="max-input" value="100" placeholder="100">
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Quantity</label>
+                <div class="range-control">
+                    <input type="range" class="range-slider" id="quantity-slider" min="1" max="100" value="10">
+                    <span class="range-number" id="quantity-number">10</span>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Options</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item active" id="unique-checkbox">
+                        <span class="checkbox-text">Unique Numbers Only</span>
+                        <input type="checkbox" id="unique-only" checked>
+                    </label>
+                    <label class="checkbox-item">
+                        <span class="checkbox-text">Sort Results</span>
+                        <input type="checkbox" id="sort-results">
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Output Format</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item active" id="format-comma">
+                        <span class="checkbox-text">Comma Separated</span>
+                        <input type="radio" name="format" value="comma" checked>
+                    </label>
+                    <label class="checkbox-item" id="format-space">
+                        <span class="checkbox-text">Space Separated</span>
+                        <input type="radio" name="format" value="space">
+                    </label>
+                    <label class="checkbox-item" id="format-newline">
+                        <span class="checkbox-text">New Line</span>
+                        <input type="radio" name="format" value="newline">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-container">
+            <div class="setting-label">Recently Generated</div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+        // --- State ---
+        let history = [];
+        let currentNumbers = [];
+
+        // --- Elements ---
+        const numbersDisplay = document.getElementById('numbers-display');
+        const generateBtn = document.getElementById('generate-btn');
+        const minInput = document.getElementById('min-input');
+        const maxInput = document.getElementById('max-input');
+        const quantitySlider = document.getElementById('quantity-slider');
+        const quantityNumber = document.getElementById('quantity-number');
+        const uniqueOnly = document.getElementById('unique-only');
+        const sortResults = document.getElementById('sort-results');
+        const uniqueCheckbox = document.getElementById('unique-checkbox');
+        const resultCount = document.getElementById('result-count');
+        const resultRange = document.getElementById('result-range');
+        const errorMessage = document.getElementById('error-message');
+        const toast = document.getElementById('toast');
+        const historyList = document.getElementById('history-list');
+
+        // --- Security Utils ---
+        function secureRandom(max) {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return array[0] % max;
+        }
+
+        // --- Core Logic ---
+        function generateNumbers() {
+            const min = parseInt(minInput.value) || 0;
+            const max = parseInt(maxInput.value) || 100;
+            const quantity = parseInt(quantitySlider.value) || 1;
+            const unique = uniqueOnly.checked;
+            const sort = sortResults.checked;
+
+            // Validation
+            if (min >= max) {
+                showError('Minimum must be less than Maximum');
+                return null;
+            }
+
+            const rangeSize = max - min + 1;
+            if (unique && quantity > rangeSize) {
+                showError(`Cannot generate ${quantity} unique numbers in range ${min}-${max} (only ${rangeSize} possible values)`);
+                return null;
+            }
+
+            clearError();
+
+            // Generate numbers
+            let numbers = [];
+            if (unique) {
+                const used = new Set();
+                while (numbers.length < quantity) {
+                    const num = min + secureRandom(rangeSize);
+                    if (!used.has(num)) {
+                        used.add(num);
+                        numbers.push(num);
+                    }
+                }
+            } else {
+                for (let i = 0; i < quantity; i++) {
+                    numbers.push(min + secureRandom(rangeSize));
+                }
+            }
+
+            if (sort) {
+                numbers.sort((a, b) => a - b);
+            }
+
+            return numbers;
+        }
+
+        function getFormat() {
+            const formatRadio = document.querySelector('input[name="format"]:checked');
+            return formatRadio ? formatRadio.value : 'comma';
+        }
+
+        function formatNumbers(numbers) {
+            const format = getFormat();
+            switch (format) {
+                case 'space':
+                    return numbers.join(' ');
+                case 'newline':
+                    return numbers.join('\n');
+                default:
+                    return numbers.join(', ');
+            }
+        }
+
+        function updateUI(numbers) {
+            if (!numbers) return;
+
+            currentNumbers = numbers;
+            const formatted = formatNumbers(numbers);
+            const min = parseInt(minInput.value) || 0;
+            const max = parseInt(maxInput.value) || 100;
+
+            // Update display based on format
+            const format = getFormat();
+            if (format === 'newline') {
+                numbersDisplay.innerHTML = `<span style="white-space: pre-wrap;">${formatted}</span>`;
+            } else {
+                numbersDisplay.innerHTML = numbers.map(n =>
+                    `<span class="number-badge">${n}</span>`
+                ).join('');
+            }
+
+            // Update info
+            resultCount.textContent = `${numbers.length} number${numbers.length !== 1 ? 's' : ''} generated`;
+            resultRange.textContent = `Range: ${min} - ${max}`;
+
+            // Add to history
+            addToHistory(numbers);
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('visible');
+        }
+
+        function clearError() {
+            errorMessage.classList.remove('visible');
+        }
+
+        function addToHistory(numbers) {
+            const formatted = formatNumbers(numbers);
+            const summary = numbers.length > 5
+                ? `${numbers.slice(0, 5).join(', ')}... (${numbers.length} total)`
+                : formatted;
+
+            // Avoid duplicates
+            if (history.some(h => h.numbers === formatted)) return;
+
+            history.unshift({
+                numbers: formatted,
+                summary: summary,
+                display: numbers.join(', ')
+            });
+
+            if (history.length > 12) history.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            historyList.innerHTML = history.map((item, index) => `
+                <div class="history-item" onclick="copyText('${item.display.replace(/'/g, "\\'")}')">
+                    <span>${item.summary}</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+            `).join('');
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                toast.classList.add('visible');
+                setTimeout(() => toast.classList.remove('visible'), 1500);
+            });
+        }
+
+        // --- Handlers ---
+        generateBtn.addEventListener('click', () => {
+            const numbers = generateNumbers();
+            if (numbers) {
+                updateUI(numbers);
+            }
+        });
+
+        numbersDisplay.addEventListener('click', () => {
+            if (currentNumbers.length > 0) {
+                copyText(formatNumbers(currentNumbers));
+            }
+        });
+
+        quantitySlider.addEventListener('input', () => {
+            quantityNumber.textContent = quantitySlider.value;
+        });
+
+        uniqueOnly.addEventListener('change', (e) => {
+            uniqueCheckbox.classList.toggle('active', e.target.checked);
+        });
+
+        document.querySelectorAll('input[name="format"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                document.querySelectorAll('[id^="format-"]').forEach(el => {
+                    el.classList.remove('active');
+                });
+                document.getElementById(`format-${e.target.value}`).classList.add('active');
+
+                // Re-render current numbers if available
+                if (currentNumbers.length > 0) {
+                    updateUI(currentNumbers);
+                }
+            });
+        });
+
+        // Add Enter key support for inputs
+        [minInput, maxInput].forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    generateBtn.click();
+                }
+            });
+        });
+
+        // Initial setup
+        quantityNumber.textContent = quantitySlider.value;
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GHGXLWQR4V');
+    </script>
+</body>
+</html>
