@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morse Code Converter — Free Online Tool</title>
+  <meta name="description" content="Free online Morse code converter. Encode text to Morse code or decode Morse code to text instantly. 100% private — runs in your browser." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+    (function() {
+      const saved = localStorage.getItem('morse_dark_mode');
+      if (saved === 'dark' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans">
+
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+      <span class="text-2xl" aria-hidden="true">📡</span>
+      <div>
+        <h1 class="text-xl font-bold leading-tight">Morse Code Converter</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">100% private — runs entirely in your browser</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <section class="flex flex-col gap-2">
+        <label for="input-text" class="font-medium text-sm">Input</label>
+        <textarea id="input-text" rows="10" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono" placeholder="Enter text or Morse code here..."></textarea>
+      </section>
+      <section class="flex flex-col gap-2">
+        <label for="output-text" class="font-medium text-sm">Output</label>
+        <textarea id="output-text" rows="10" class="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 p-3 text-sm font-mono" readonly placeholder="Result will appear here..."></textarea>
+      </section>
+    </div>
+
+    <div class="flex gap-3">
+      <button id="btn-encode" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">Encode (Text → Morse)</button>
+      <button id="btn-decode" class="px-5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition-colors">Decode (Morse → Text)</button>
+    </div>
+  </main>
+
+  <script>
+    const morseMap = {
+      'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..', 'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 'Y': '-.--', 'Z': '--..',
+      '1': '.----', '2': '..---', '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.', '0': '-----',
+      ' ': '/'
+    };
+    const reverseMorseMap = Object.fromEntries(Object.entries(morseMap).map(([k, v]) => [v, k]));
+
+    document.getElementById('btn-encode').addEventListener('click', () => {
+      const input = document.getElementById('input-text').value.toUpperCase();
+      const output = input.split('').map(char => morseMap[char] || '').join(' ');
+      document.getElementById('output-text').value = output;
+    });
+
+    document.getElementById('btn-decode').addEventListener('click', () => {
+      const input = document.getElementById('input-text').value.trim();
+      const output = input.split(' ').map(code => reverseMorseMap[code] || '').join('');
+      document.getElementById('output-text').value = output;
+    });
+  </script>
+</body>
+</html>
