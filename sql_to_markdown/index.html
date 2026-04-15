@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL to Markdown Converter | online-tools.click</title>
+    <meta name="description" content="Convert SQL query result text into a formatted Markdown table instantly.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <div class="flex items-center gap-4">
+            <a href="https://online-tools.click" class="text-blue-600 dark:text-blue-400 font-bold text-sm uppercase tracking-wider hover:opacity-80 transition-opacity">
+                online-tools.click
+            </a>
+            <div class="h-4 w-px bg-gray-300 dark:bg-gray-700"></div>
+            <h1 class="text-lg font-semibold">SQL to Markdown Converter</h1>
+        </div>
+    </header>
+
+    <main class="p-6 max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+                <label class="text-xs font-bold uppercase text-gray-500">SQL Result (Paste here)</label>
+                <textarea id="sql-input" class="w-full h-96 p-4 font-mono text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="Paste your SQL result here..."></textarea>
+                <button id="convert-btn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">Convert to Markdown</button>
+            </div>
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-bold uppercase text-gray-500">Markdown Table</label>
+                    <button id="copy-btn" class="text-xs text-blue-600 hover:text-blue-700 font-medium">Copy to Clipboard</button>
+                </div>
+                <textarea id="md-output" class="w-full h-96 p-4 font-mono text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 outline-none" readonly></textarea>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('convert-btn').onclick = () => {
+            const input = document.getElementById('sql-input').value;
+            const lines = input.trim().split('\n');
+            if (lines.length < 2) return;
+
+            // Simple parser: assumes space or tab separation, handles headers in first line
+            const headers = lines[0].split(/\s{2,}|[\t|]/).map(h => h.trim()).filter(Boolean);
+            
+            let markdown = `| ${headers.join(' | ')} |\n`;
+            markdown += `| ${headers.map(() => '---').join(' | ')} |\n`;
+
+            for (let i = 1; i < lines.length; i++) {
+                const cells = lines[i].split(/\s{2,}|[\t|]/).map(c => c.trim()).filter(Boolean);
+                if (cells.length > 0) {
+                    markdown += `| ${cells.join(' | ')} |\n`;
+                }
+            }
+
+            document.getElementById('md-output').value = markdown;
+        };
+
+        document.getElementById('copy-btn').onclick = () => {
+            const output = document.getElementById('md-output');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        };
+    </script>
+</body>
+</html>
