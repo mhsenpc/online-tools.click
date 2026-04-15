@@ -1,3 +1,8 @@
 .idea/
+<<<<<<< HEAD
 node_modules
 dist
+=======
+node_modules/
+dist/
+>>>>>>> origin/ai/feat/json-to-csv
