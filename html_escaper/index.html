@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Escaper & Unescaper | online-tools.click</title>
+    <meta name="description" content="Quickly escape HTML characters or unescape HTML entities.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } } }
+        }
+    </script>
+
+    <style>
+        :root { --bg-editor: #ffffff; --text-editor: #1a1a1a; }
+        .dark { --bg-editor: #0d1117; --text-editor: #c9d1d9; }
+        .editor-textarea { background-color: var(--bg-editor); color: var(--text-editor); outline: none; }
+        body { transition: background-color 0.2s, color 0.2s; }
+    </style>
+</head>
+<body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
+
+    <header class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <h1 class="text-lg font-semibold">HTML Escaper & Unescaper</h1>
+        <button id="btn-theme-toggle" class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">Toggle Theme</button>
+    </header>
+
+    <div class="flex flex-col md:flex-row h-[calc(100vh-60px)]">
+        <section class="flex-1 flex flex-col border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800">
+            <div class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500 uppercase">Input</div>
+            <textarea id="input-area" class="editor-textarea flex-1 p-6 font-mono text-sm" placeholder="Enter text to escape or HTML to unescape..."></textarea>
+        </section>
+        <section class="flex-1 flex flex-col">
+            <div class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500 uppercase">Output</div>
+            <textarea id="output-area" class="editor-textarea flex-1 p-6 font-mono text-sm" readonly></textarea>
+        </section>
+    </div>
+
+    <script>
+        const inputArea = document.getElementById('input-area');
+        const outputArea = document.getElementById('output-area');
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[m]));
+        }
+
+        function unescapeHTML(str) {
+            const doc = new DOMParser().parseFromString(str, 'text/html');
+            return doc.documentElement.textContent;
+        }
+
+        function process() {
+            const val = inputArea.value;
+            // Simple heuristic: if it looks like HTML, unescape, otherwise escape
+            if (/[<>&"']/.test(val)) {
+                outputArea.value = unescapeHTML(val);
+            } else {
+                outputArea.value = escapeHTML(val);
+            }
+        }
+
+        inputArea.addEventListener('input', process);
+        
+        document.getElementById('btn-theme-toggle').onclick = () => {
+            document.documentElement.classList.toggle('dark');
+        };
+    </script>
+</body>
+</html>
