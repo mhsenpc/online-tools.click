@@ -20,7 +20,7 @@ STATIC_EXCLUDES=(
   ".claude/"
   "agents.md"
   ".env*"
-  "deploy-to-prod.sh"
+  "deploy.sh"
 )
 # ─────────────────────────────────────────────────────────────────
 
