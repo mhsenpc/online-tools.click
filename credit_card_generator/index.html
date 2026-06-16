@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Generator | Online Tools</title>
+    <meta name="description" content="Generate test credit card numbers for development and testing. Uses valid BIN/IIN prefixes.">
+    <meta property="og:title" content="Credit Card Generator | Online Tools">
+    <meta property="og:description" content="Generate test credit card numbers for development and testing. Uses valid BIN/IIN prefixes.">
+    <meta property="og:url" content="https://online-tools.click/credit_card_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Credit Card Generator | Online Tools">
+    <meta name="twitter:description" content="Generate test credit card numbers for development and testing. Uses valid BIN/IIN prefixes.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/credit_card_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .result-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 16px 20px; font-family: var(--font-mono); font-size: 14px; margin-top: 12px; word-break: break-all; }
+        .result-box .label { color: var(--text-muted); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">Credit Card Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Credit Card Generator</h1>
+            <p>Generate test credit card numbers for development and testing. Uses valid BIN/IIN prefixes.</p>
+        </section>
+        
+<div class="card">
+    <div class="card-header">Generator Options</div>
+    <div class="grid-2">
+        <div class="field-group"><label>Card Network</label><select id="network" onchange="generate()">
+            <option value="visa">Visa</option>
+            <option value="mc">Mastercard</option>
+            <option value="amex">American Express</option>
+            <option value="disc">Discover</option>
+            <option value="jcb">JCB</option>
+            <option value="diners">Diners Club</option>
+        </select></div>
+        <div class="field-group"><label>Count</label><select id="count" onchange="generate()"><option value="1">1</option><option value="5" selected>5</option><option value="10">10</option></select></div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">Generated Test Cards</div>
+    <button class="btn" onclick="generate()">🔄 Generate</button>
+    <div id="cards" style="margin-top:16px"></div>
+    <div class="flex-row" style="margin-top:12px">
+        <button class="btn btn-sm" onclick="copyAll()">Copy All</button>
+    </div>
+</div>
+
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    
+const PREFIXES={visa:['4'],mc:['51','52','53','54','55','2221','2720'],amex:['34','37'],disc:['6011','65','644'],jcb:['3528','3529','3589'],diners:['300','301','302','303','305','36','38']};
+function luhnCheck(num){
+    let sum=0,alt=false;
+    for(let i=num.length-1;i>=0;i--){
+        let d=parseInt(num[i]);
+        if(alt){d*=2;if(d>9)d-=9;}
+        sum+=d;alt=!alt;
+    }
+    return sum%10===0;
+}
+function genCardNum(prefix,len){
+    let num=prefix;
+    while(num.length<len-1) num+=Math.floor(Math.random()*10);
+    for(let i=0;i<10;i++){
+        const test=num+i;
+        if(luhnCheck(test)) return test;
+    }
+    return num+'0';
+}
+function formatCard(num){
+    return num.replace(/(.{4})/g,'$1 ').trim();
+}
+function getCardLen(network){
+    const lens={visa:[16,13,19],mc:[16],amex:[15],disc:[16,19],jcb:[16],diners:[14,16]};
+    const l=lens[network]||[16];
+    return l[Math.floor(Math.random()*l.length)];
+}
+function generate(){
+    const network=document.getElementById('network').value;
+    const count=parseInt(document.getElementById('count').value);
+    const prefixes=PREFIXES[network];
+    const cards=[];
+    for(let i=0;i<count;i++){
+        const prefix=prefixes[Math.floor(Math.random()*prefixes.length)];
+        const len=getCardLen(network);
+        const num=genCardNum(prefix,len);
+        const month=String(Math.floor(Math.random()*12)+1).padStart(2,'0');
+        const year=String(new Date().getFullYear()+Math.floor(Math.random()*5)+1);
+        const cvv=network==='amex'?String(Math.floor(Math.random()*9000+1000)):String(Math.floor(Math.random()*900+100));
+        cards.push({num,formatted:formatCard(num),month,year,cvv,network});
+    }
+    document.getElementById('cards').innerHTML=cards.map(c=>`<div class="result-box" style="padding:12px 16px;margin:8px 0;cursor:pointer" onclick="copyCard('${c.num}')">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-family:var(--font-mono);font-size:16px">${c.formatted}</span>
+            <span style="font-size:11px;color:var(--text-muted)">${c.network.toUpperCase()}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">${c.month}/${c.year} &middot; CVV: ${c.cvv}</div>
+    </div>`).join('');
+}
+function copyCard(n){navigator.clipboard.writeText(n).then(()=>toast('Copied card number!'));}
+function copyAll(){
+    const nums=Array.from(document.querySelectorAll('#cards .result-box')).map(el=>el.querySelector('span').textContent.replace(/\s/g,''));
+    navigator.clipboard.writeText(nums.join('\n')).then(()=>toast('Copied '+nums.length+' cards'));
+}
+generate();
+
+    </script>
+</body>
+</html>

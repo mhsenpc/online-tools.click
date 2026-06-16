@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>.gitignore Generator | Online Tools</title>
+    <meta name="description" content="Generate .gitignore files for various programming languages and frameworks.">
+    <meta property="og:title" content=".gitignore Generator | Online Tools">
+    <meta property="og:description" content="Generate .gitignore files for various programming languages and frameworks.">
+    <meta property="og:url" content="https://online-tools.click/gitignore_generator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content=".gitignore Generator | Online Tools">
+    <meta name="twitter:description" content="Generate .gitignore files for various programming languages and frameworks.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/gitignore_generator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .result-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 16px 20px; font-family: var(--font-mono); font-size: 14px; margin-top: 12px; word-break: break-all; }
+        .result-box .label { color: var(--text-muted); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">.gitignore Generator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>.gitignore Generator</h1>
+            <p>Generate .gitignore files for various programming languages and frameworks.</p>
+        </section>
+        
+<div class="card">
+    <div class="card-header">Select Language / Framework</div>
+    <select id="template" onchange="generate()" style="font-size:16px">
+        <option value="node">Node.js</option>
+        <option value="python">Python</option>
+        <option value="java">Java</option>
+        <option value="go">Go</option>
+        <option value="rust">Rust</option>
+        <option value="ruby">Ruby</option>
+        <option value="php">PHP</option>
+        <option value="swift">Swift</option>
+        <option value="kotlin">Kotlin</option>
+        <option value="react">React / Next.js</option>
+        <option value="vue">Vue.js</option>
+        <option value="angular">Angular</option>
+        <option value="django">Django</option>
+        <option value="dotnet">.NET</option>
+        <option value="flutter">Flutter/Dart</option>
+        <option value="elixir">Elixir/Phoenix</option>
+    </select>
+</div>
+<div class="card">
+    <div class="card-header">.gitignore</div>
+    <div class="result-box" id="output" style="white-space:pre-wrap;min-height:200px;max-height:400px;overflow:auto;font-size:13px"></div>
+    <div class="flex-row" style="margin-top:12px">
+        <button class="btn btn-sm" onclick="copyResult()">Copy</button>
+        <button class="btn btn-sm btn-secondary" onclick="downloadFile()">Download</button>
+    </div>
+</div>
+
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    
+const TEMPLATES={node:`node_modules/\nnpm-debug.log*\nyarn-debug.log*\nyarn-error.log*\n.env\n.env.local\n.env.*.local\n*.tsbuildinfo\n.next/\ndist/\nbuild/\n.cache/\ncoverage/`,python:`__pycache__/\n*.py[cod]\n*$py.class\n*.so\n.env\n.venv/\nvenv/\nvenv/\n*.egg-info/\ndist/\nbuild/\n.tox/\n.coverage\nhtmlcov/\n.pytest_cache/\n.mypy_cache/\n*.pyc`,java:`*.class\n*.jar\n*.war\n*.nar\ntarget/\n!.mvn/wrapper/maven-wrapper.jar\ndependency-reduced-pom.xml\nbuild/\nbin/\n.settings\n.project\n.classpath\n.idea/\n*.iml\n.DS_Store`,go:`*.exe\n*.exe~\n*.dll\n*.so\n*.dylib\n*.test\n*.out\ngo.sum\nvendor/\n.idea/\n.vscode/\n*.iml`,rust:`target/\n**/*.rs.bk\nCargo.lock\n.idea/\n.vscode/\n*.iml`,ruby:`*.gem\n.bundle/\nvendor/bundle/\n.bundled_gems\nGemfile.lock\n.env\n.idea/\n.vscode/`,php:`vendor/\n*.lock\n.env\n.phpunit.result.cache\n.php_cs.cache\n.idea/\n.vscode/\n*.iml`,swift:`.build/\n.build\n*.o\n*.dylib\n*.dSYM.zip\n*.dSYM\nPackage.resolved\n.idea/\n.vscode/`,kotlin:`.gradle/\nbuild/\n!gradle/wrapper/gradle-wrapper.jar\n!**/src/main/**/build/\n!**/src/test/**/build/\n*.class\n.idea/\n*.iml\n.DS_Store`,react:`node_modules/\n.next/\ndist/\nbuild/\n.cache/\n.env.local\n.env.*.local\n*.tsbuildinfo\ncoverage/\n.vercel\n.netlify`,vue:`node_modules/\ndist/\n*.local\n.env\ncoverage/\n*.log\n.idea/\n.vscode/`,angular:`node_modules/\ndist/\n*.log\n.env\n.angular/\ncoverage/\n.idea/\n.vscode/`,django:`*.pyc\n__pycache__/\n*.sqlite3\nmedia/\nstaticfiles/\n.env\n**/migrations/\n*.pyo\n.DS_Store`,dotnet:`bin/\nobj/\n*.user\n*.suo\n*.cache\n*.log\n.vs/\npackages/\n*.nupkg\n*.dll\n*.exe`,flutter:`build/\n.dart_tool/\n.packages\n.pub/\n.flutter-plugins\n**/doc/api/\n**/ios/.symlinks/\ncoverage/`,elixir:`_build/\ndeps/\n*.ez\n*.beam\n/.elixir_ls/\nconfig/*.secret.exs\n.npm/\nnpm-debug.log*\nyarn-error.log*\nnode_modules/\n`};
+function generate(){
+    const t=document.getElementById('template').value;
+    const content=TEMPLATES[t]||'';
+    const header=`# === ${t.charAt(0).toUpperCase()+t.slice(1)} ===\n`;
+    document.getElementById('output').textContent=header+content;
+}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>toast('Copied!'));}
+function downloadFile(){
+    const blob=new Blob([document.getElementById('output').textContent],{type:'text/plain'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='.gitignore';a.click();
+}
+generate();
+
+    </script>
+</body>
+</html>

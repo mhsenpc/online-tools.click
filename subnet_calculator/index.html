@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet Calculator | Online Tools</title>
+    <meta name="description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta property="og:title" content="Subnet Calculator | Online Tools">
+    <meta property="og:description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta property="og:url" content="https://online-tools.click/subnet_calculator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Subnet Calculator | Online Tools">
+    <meta name="twitter:description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/subnet_calculator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .result-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 16px 20px; font-family: var(--font-mono); font-size: 14px; margin-top: 12px; word-break: break-all; }
+        .result-box .label { color: var(--text-muted); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">Subnet Calculator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Subnet Calculator</h1>
+            <p>Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.</p>
+        </section>
+        
+<div class="card">
+    <div class="card-header">IP Address / CIDR</div>
+    <div class="flex-row">
+        <input type="text" id="input" value="192.168.1.0/24" oninput="calc()" style="font-family:var(--font-mono);font-size:18px;flex:1">
+        <button class="btn btn-sm btn-secondary" onclick="setExample()">Example</button>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">Network Information</div>
+    <div id="net-info" class="stat-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
+</div>
+<div class="card">
+    <div class="card-header">Binary Representation</div>
+    <div id="binary" style="font-family:var(--font-mono);font-size:12px;word-break:break-all"></div>
+</div>
+
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    
+function setExample(){const exps=['192.168.1.0/24','10.0.0.0/8','172.16.0.0/16','10.0.0.0/23','192.168.0.0/28'];document.getElementById('input').value=exps[Math.floor(Math.random()*exps.length)];calc();}
+function calc(){
+    const t=document.getElementById('input').value.trim();
+    const n=document.getElementById('net-info');
+    const b=document.getElementById('binary');
+    try{
+        const [ipStr,cidr]=t.split('/');
+        const cidrInt=parseInt(cidr)||24;
+        if(cidrInt<0||cidrInt>32) throw new Error('Invalid CIDR');
+        const octets=ipStr.split('.').map(Number);
+        if(octets.length!==4||octets.some(o=>isNaN(o)||o<0||o>255)) throw new Error('Invalid IP');
+        const ipBin=((octets[0]<<24)+(octets[1]<<16)+(octets[2]<<8)+octets[3])>>>0;
+        const mask=~0<<(32-cidrInt);
+        const net=ipBin&mask;
+        const bcast=net|~mask;
+        const hosts=Math.pow(2,32-cidrInt)-2;
+        const toOct=(n)=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+        const binStr=(n)=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].map(o=>o.toString(2).padStart(8,'0')).join('.');
+        n.innerHTML=
+            `<div class="stat-card"><div class="val" style="font-size:14px">/${cidrInt}</div><div class="lbl">CIDR</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">255.255.255.${[0,128,192,224,240,248,252,254,255][cidrInt%8]}</div><div class="lbl">Subnet Mask</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">0x${mask>>>0?mask.toString(16):'00000000'}</div><div class="lbl">Mask (Hex)</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">${toOct(net)}</div><div class="lbl">Network</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">${toOct(bcast>>>0)}</div><div class="lbl">Broadcast</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">${hosts>0?hosts:0}</div><div class="lbl">Usable Hosts</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">${cidrInt<32?toOct((net|1)>>>0):'N/A'}</div><div class="lbl">First Host</div></div>
+             <div class="stat-card"><div class="val" style="font-size:14px">${cidrInt<32?toOct((bcast-1)>>>0):'N/A'}</div><div class="lbl">Last Host</div></div>`;
+        b.innerHTML=
+            `<div><strong>IP:</strong> ${binStr(ipBin)}</div>
+             <div><strong>Net:</strong> ${binStr(net)}</div>
+             <div><strong>BCast:</strong> ${binStr(bcast>>>0)}</div>`;
+    }catch(e){
+        n.innerHTML=`<div style="color:var(--error);text-align:center">${e.message}</div>`;
+        b.innerHTML='';
+    }
+}
+calc();
+
+    </script>
+</body>
+</html>

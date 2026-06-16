@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator | Online Tools</title>
+    <meta name="description" content="Calculate percentages easily: find what percent X is of Y, or apply X% to Y.">
+    <meta property="og:title" content="Percentage Calculator | Online Tools">
+    <meta property="og:description" content="Calculate percentages easily: find what percent X is of Y, or apply X% to Y.">
+    <meta property="og:url" content="https://online-tools.click/percentage_calculator/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Percentage Calculator | Online Tools">
+    <meta name="twitter:description" content="Calculate percentages easily: find what percent X is of Y, or apply X% to Y.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/percentage_calculator/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .result-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 16px 20px; font-family: var(--font-mono); font-size: 14px; margin-top: 12px; word-break: break-all; }
+        .result-box .label { color: var(--text-muted); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">Percentage Calculator</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Percentage Calculator</h1>
+            <p>Calculate percentages easily: find what percent X is of Y, or apply X% to Y.</p>
+        </section>
+        
+<div class="card">
+    <div class="card-header">Percentage Calculator</div>
+    <div id="modes">
+        <div class="flex-row" style="margin-bottom:16px">
+            <button class="btn btn-sm" data-mode="pct" onclick="setMode('pct')" style="background:var(--accent)">X% of Y</button>
+            <button class="btn btn-sm btn-secondary" data-mode="what" onclick="setMode('what')">X is what % of Y</button>
+            <button class="btn btn-sm btn-secondary" data-mode="change" onclick="setMode('change')">% Change</button>
+        </div>
+        <div id="pct-mode" class="calc-mode">
+            <div class="grid-2">
+                <div class="field-group"><label>Percentage (%)</label><input type="number" id="pct" value="15" oninput="calcPct()"></div>
+                <div class="field-group"><label>Of Value</label><input type="number" id="pct-of" value="200" oninput="calcPct()"></div>
+            </div>
+            <div class="result-box" id="pct-result" style="font-size:20px;font-weight:700"></div>
+        </div>
+        <div id="what-mode" class="calc-mode" style="display:none">
+            <div class="grid-2">
+                <div class="field-group"><label>Value X</label><input type="number" id="what-x" value="30" oninput="calcWhat()"></div>
+                <div class="field-group"><label>Of Value Y</label><input type="number" id="what-y" value="150" oninput="calcWhat()"></div>
+            </div>
+            <div class="result-box" id="what-result" style="font-size:20px;font-weight:700"></div>
+        </div>
+        <div id="change-mode" class="calc-mode" style="display:none">
+            <div class="grid-2">
+                <div class="field-group"><label>Old Value</label><input type="number" id="old-val" value="50" oninput="calcChange()"></div>
+                <div class="field-group"><label>New Value</label><input type="number" id="new-val" value="75" oninput="calcChange()"></div>
+            </div>
+            <div class="result-box" id="change-result" style="font-size:20px;font-weight:700"></div>
+        </div>
+    </div>
+</div>
+
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    
+function setMode(m){
+    document.querySelectorAll('.calc-mode').forEach(el=>el.style.display='none');
+    document.querySelectorAll('[data-mode]').forEach(b=>{b.className='btn btn-sm btn-secondary';});
+    document.getElementById(m+'-mode').style.display='block';
+    document.querySelector(`[data-mode="${m}"]`).className='btn btn-sm';
+    if(m==='pct')calcPct();else if(m==='what')calcWhat();else calcChange();
+}
+function calcPct(){
+    const p=parseFloat(document.getElementById('pct').value)||0;
+    const v=parseFloat(document.getElementById('pct-of').value)||0;
+    document.getElementById('pct-result').textContent=`${p}% of ${v} = ${(p/100*v).toFixed(2)}`;
+}
+function calcWhat(){
+    const x=parseFloat(document.getElementById('what-x').value)||0;
+    const y=parseFloat(document.getElementById('what-y').value)||0;
+    document.getElementById('what-result').textContent=y?`${x} is ${(x/y*100).toFixed(2)}% of ${y}`:'0%';
+}
+function calcChange(){
+    const o=parseFloat(document.getElementById('old-val').value)||0;
+    const n=parseFloat(document.getElementById('new-val').value)||0;
+    const change=o?((n-o)/o*100).toFixed(2):'∞';
+    document.getElementById('change-result').textContent=`Change: ${change}% (${n-o >=0 ? '+':''}${(n-o).toFixed(2)})`;
+}
+setMode('pct');
+
+    </script>
+</body>
+</html>

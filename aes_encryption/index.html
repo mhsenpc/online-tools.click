@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES Encryption | Online Tools</title>
+    <meta name="description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta property="og:title" content="AES Encryption | Online Tools">
+    <meta property="og:description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta property="og:url" content="https://online-tools.click/aes_encryption/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AES Encryption | Online Tools">
+    <meta name="twitter:description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/aes_encryption/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .result-box { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 16px 20px; font-family: var(--font-mono); font-size: 14px; margin-top: 12px; word-break: break-all; }
+        .result-box .label { color: var(--text-muted); font-family: var(--font-sans); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">AES Encryption</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>AES Encryption</h1>
+            <p>Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.</p>
+        </section>
+        
+<div class="card">
+    <div class="card-header">Encryption Settings</div>
+    <div class="field-group"><label>Password / Key</label><input type="password" id="password" value="mysecretkey" oninput="checkReady()"></div>
+</div>
+<div class="card">
+    <div class="card-header">Text to Encrypt / Decrypt</div>
+    <textarea id="input" placeholder="Enter text to encrypt, or paste ciphertext to decrypt..." oninput="checkReady()" style="min-height:100px"></textarea>
+</div>
+<div class="flex-row">
+    <button class="btn" onclick="encrypt()">🔒 Encrypt</button>
+    <button class="btn btn-secondary" onclick="decrypt()">🔓 Decrypt</button>
+    <button class="btn btn-sm btn-secondary" onclick="clearBoth()">Clear</button>
+</div>
+<div class="card" style="margin-top:16px">
+    <div class="card-header">Output</div>
+    <div class="result-box" id="output" style="min-height:60px;word-break:break-all"></div>
+    <div class="flex-row" style="margin-top:12px"><button class="btn btn-sm" onclick="copyResult()">Copy</button></div>
+</div>
+
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    
+async function encrypt(){
+    const pass=document.getElementById('password').value;
+    const text=document.getElementById('input').value;
+    if(!pass||!text){toast('Enter password and text');return;}
+    try{
+        const enc=new TextEncoder();
+        const keyMaterial=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
+        const salt=crypto.getRandomValues(new Uint8Array(16));
+        const iv=crypto.getRandomValues(new Uint8Array(12));
+        const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['encrypt']);
+        const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc.encode(text));
+        const combined=new Uint8Array(salt.length+iv.length+encrypted.byteLength);
+        combined.set(salt);combined.set(iv,salt.length);combined.set(new Uint8Array(encrypted),salt.length+iv.length);
+        document.getElementById('output').textContent=btoa(String.fromCharCode(...combined));
+        toast('Encrypted!');
+    }catch(e){document.getElementById('output').textContent='Error: '+e.message;}
+}
+async function decrypt(){
+    const pass=document.getElementById('password').value;
+    const text=document.getElementById('input').value.trim();
+    if(!pass||!text){toast('Enter password and ciphertext');return;}
+    try{
+        const raw=Uint8Array.from(atob(text),c=>c.charCodeAt(0));
+        const salt=raw.slice(0,16);const iv=raw.slice(16,28);const data=raw.slice(28);
+        const enc=new TextEncoder();
+        const keyMaterial=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
+        const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['decrypt']);
+        const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);
+        document.getElementById('output').textContent=new TextDecoder().decode(decrypted);
+        toast('Decrypted!');
+    }catch(e){document.getElementById('output').textContent='Error: Wrong password or corrupted data';}
+}
+function clearBoth(){document.getElementById('input').value='';document.getElementById('output').textContent='';}
+function checkReady(){}
+function copyResult(){navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>toast('Copied!'));}
+
+    </script>
+</body>
+</html>

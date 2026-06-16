@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to CSV | Online Tools</title>
+    <meta name="description" content="Convert JSON data to CSV format with customizable delimiters.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0b;
+            --bg-card: #141416;
+            --bg-input: #1c1c1f;
+            --border: #2a2a2e;
+            --text: #f0f0f2;
+            --text-secondary: #a1a1aa;
+            --text-muted: #6b6b76;
+            --accent: #7c3aed;
+            --accent-glow: rgba(124, 58, 237, 0.15);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-display: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 20px; width: 100%; }
+        header { padding: 20px 0; border-bottom: 1px solid var(--border); background: rgba(10,10,11,0.8); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 10; }
+        header .container { display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-size: 1.2rem; font-weight: 800; text-decoration: none; color: var(--text); letter-spacing: -0.02em; }
+        .logo span { color: var(--accent); }
+        .back-link { font-size: 0.85rem; color: var(--text-secondary); text-decoration: none; padding: 6px 14px; border-radius: var(--radius-sm); background: var(--bg-input); transition: all 0.2s; }
+        .back-link:hover { background: var(--border); color: var(--text); }
+        main { flex: 1; padding: 40px 0 60px; }
+        .tool-header { text-align: center; margin-bottom: 40px; }
+        .tool-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+        .tool-header p { color: var(--text-secondary); font-size: 1rem; max-width: 480px; margin: 0 auto; }
+        .card { background: var(--bg-card); border-radius: var(--radius-md); padding: 24px; border: 1px solid var(--border); margin-bottom: 20px; }
+        .card-header { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 16px; }
+        .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        @media (max-width: 640px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+        input, textarea, select { width: 100%; padding: 10px 14px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font); font-size: 14px; outline: none; transition: border-color 0.2s; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 120px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; }
+        select { cursor: pointer; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg-input); color: var(--text); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-sm { padding: 6px 14px; font-size: 12px; }
+        .result-box { background: var(--bg-input); border-radius: var(--radius-sm); padding: 16px; margin-top: 8px; min-height: 40px; overflow-x: auto; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border-radius: var(--radius-sm); padding: 16px; text-align: center; }
+        .stat-card .val { font-size: 14px; font-weight: 700; color: var(--text); }
+        .stat-card .lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+        .footer-meta { font-size: 12px; color: var(--text-muted); text-align: center; padding: 20px 0; border-top: 1px solid var(--border); margin-top: 40px; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
+        .toast.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <a href="/" class="logo"><span>⚡</span> Online Tools</a>
+            <a href="/" class="back-link">← All Tools</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="tool-header">
+                <h1>JSON to CSV</h1>
+                <p>Convert JSON data to CSV format with customizable delimiters.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">JSON Input</div>
+                <div class="field-group">
+                    <label>Paste your JSON array</label>
+                    <textarea id="input" placeholder='[{"name":"Alice","age":30},{"name":"Bob","age":25}]' oninput="convert()" style="min-height:200px"></textarea>
+                </div>
+                <div class="flex-row" style="margin-top:8px">
+                    <button class="btn btn-sm" onclick="loadSample()">Load Sample</button>
+                    <button class="btn btn-sm btn-secondary" onclick="document.getElementById('input').value='';convert()">Clear</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Options</div>
+                <div class="grid-2">
+                    <div class="field-group">
+                        <label>Delimiter</label>
+                        <select id="delimiter" onchange="convert()">
+                            <option value=",">Comma (,)</option>
+                            <option value=";">Semicolon (;)</option>
+                            <option value="|">Pipe (|)</option>
+                            <option value="\t">Tab</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Export Options</label>
+                        <div class="flex-row">
+                            <label style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px">
+                                <input type="checkbox" id="header" checked onchange="convert()"> Headers
+                            </label>
+                            <label style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;gap:4px">
+                                <input type="checkbox" id="quotes" checked onchange="convert()"> Quotes
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">CSV Output <span id="row-count" style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-secondary)"></span></div>
+                <div class="result-box" id="output" style="min-height:120px;overflow:auto"></div>
+                <div class="flex-row" style="margin-top:12px">
+                    <button class="btn btn-sm" onclick="copyCSV()">Copy CSV</button>
+                    <button class="btn btn-sm btn-secondary" onclick="downloadCSV()">Download</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Preview (first 5 rows)</div>
+                <div id="preview" style="overflow-x:auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <div class="footer-meta">
+        <div class="container">Online Tools — JSON to CSV</div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+
+        function convert() {
+            const input = document.getElementById('input').value.trim();
+            const delim = document.getElementById('delimiter').value === '\\t' ? '\t' : document.getElementById('delimiter').value;
+            const showHeader = document.getElementById('header').checked;
+            const useQuotes = document.getElementById('quotes').checked;
+            const out = document.getElementById('output');
+            const rc = document.getElementById('row-count');
+
+            if (!input) { out.textContent = ''; rc.textContent = ''; document.getElementById('preview').innerHTML = ''; return; }
+
+            let data;
+            try { data = JSON.parse(input); } catch(e) {
+                try { data = JSON.parse('[' + input.split('\n').filter(l => l.trim()).join(',') + ']'); } catch(e2) {
+                    out.textContent = 'Invalid JSON: ' + e.message;
+                    out.style.color = 'var(--error)';
+                    return;
+                }
+            }
+            out.style.color = 'var(--text)';
+
+            if (!Array.isArray(data)) data = [data];
+            if (data.length === 0) { out.textContent = 'Empty array'; return; }
+
+            const q = s => useQuotes ? '"' + String(s).replace(/"/g, '""') + '"' : String(s);
+            const esc = s => String(s).replace(/[\n\r\t]/g, ' ');
+
+            // Collect all keys
+            const keys = new Set();
+            data.forEach(item => { if (typeof item === 'object' && item !== null) Object.keys(item).forEach(k => keys.add(k)); });
+            const keyArr = Array.from(keys);
+
+            let csv = '';
+            if (showHeader && keyArr.length > 0) {
+                csv += keyArr.map(k => q(k)).join(delim) + '\n';
+            }
+
+            data.forEach(item => {
+                if (typeof item !== 'object' || item === null) {
+                    csv += q(esc(item)) + '\n';
+                } else {
+                    csv += keyArr.map(k => q(esc(item[k] !== undefined ? item[k] : ''))).join(delim) + '\n';
+                }
+            });
+
+            out.textContent = csv;
+            rc.textContent = '— ' + data.length + ' rows, ' + keyArr.length + ' columns';
+
+            // Preview as HTML table
+            const preview = document.getElementById('preview');
+            let table = '<table style="width:100%;border-collapse:collapse;font-size:12px">';
+            if (showHeader) {
+                table += '<thead><tr>' + keyArr.map(k => '<th style="text-align:left;padding:6px 8px;background:var(--accent);color:#fff;font-weight:600">' + k + '</th>').join('') + '</tr></thead>';
+            }
+            table += '<tbody>';
+            const rowsToShow = Math.min(data.length, 5);
+            for (let i = 0; i < rowsToShow; i++) {
+                const item = data[i];
+                if (typeof item !== 'object' || item === null) {
+                    table += '<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border)">' + esc(item) + '</td></tr>';
+                } else {
+                    table += '<tr>' + keyArr.map(k => '<td style="padding:6px 8px;border-bottom:1px solid var(--border)">' + esc(item[k] !== undefined ? item[k] : '') + '</td>').join('') + '</tr>';
+                }
+            }
+            if (data.length > 5) {
+                table += '<tr><td colspan="' + keyArr.length + '" style="padding:6px 8px;color:var(--text-muted);font-style:italic">… and ' + (data.length - 5) + ' more rows</td></tr>';
+            }
+            table += '</tbody></table>';
+            preview.innerHTML = table;
+        }
+
+        function copyCSV() { navigator.clipboard.writeText(document.getElementById('output').textContent).then(() => toast('CSV copied!')); }
+
+        function downloadCSV() {
+            const content = document.getElementById('output').textContent;
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'data.csv';
+            a.click();
+        }
+
+        function loadSample() {
+            document.getElementById('input').value = JSON.stringify([
+                { "name": "Alice Johnson", "email": "alice@example.com", "role": "Developer", "active": true, "age": 30 },
+                { "name": "Bob Smith", "email": "bob@example.com", "role": "Designer", "active": true, "age": 25 },
+                { "name": "Carol Williams", "email": "carol@example.com", "role": "Manager", "active": false, "age": 35 },
+                { "name": "David Brown", "email": "david@example.com", "role": "Developer", "active": true, "age": 28 }
+            ], null, 2);
+            convert();
+        }
+
+        // Load sample on page load
+        loadSample();
+    </script>
+</body>
+</html>
