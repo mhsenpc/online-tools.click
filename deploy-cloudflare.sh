@@ -72,8 +72,6 @@ matches_exclude() {
 # ═════════════════════════════════════════════════════════════════
 section "Validating Environment"
 
-command -v rsync >/dev/null 2>&1 \
-  || error "rsync required."
 command -v npm >/dev/null 2>&1 \
   || error "npm required."
 
@@ -120,7 +118,7 @@ for dir in "$REPO_ROOT"/*/; do
       || error "Build output not found in '$dir_name'! Checked: ${BUILD_OUTPUT_DIRS[*]}"
 
     info "Output : $(basename "$BUILD_OUT")/"
-    rsync -a "$BUILD_OUT/" "$STAGING/$dir_name/"
+    cp -r "$BUILD_OUT"/* "$STAGING/$dir_name/"
 
     log "Built & staged → $dir_name/"
     BUILT_DIRS+=("$dir_name")
@@ -129,12 +127,14 @@ for dir in "$REPO_ROOT"/*/; do
   else
     info "Type   : Static (no package.json)"
 
-    RSYNC_ARGS=()
-    for pattern in "${STATIC_EXCLUDES[@]}"; do
-      RSYNC_ARGS+=("--exclude=$pattern")
+    mkdir -p "$STAGING/$dir_name"
+    find "$dir" -maxdepth 1 -type f | while read -r file; do
+      fname=$(basename "$file")
+      if ! matches_exclude "$fname" "${STATIC_EXCLUDES[@]}"; then
+        cp "$file" "$STAGING/$dir_name/"
+      fi
     done
 
-    rsync -a "${RSYNC_ARGS[@]}" "$dir" "$STAGING/$dir_name/"
     log "Copied static → $dir_name/"
     STATIC_DIRS+=("$dir_name")
   fi
