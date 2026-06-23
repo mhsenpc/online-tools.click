@@ -79,6 +79,23 @@ log "Environment OK"
 info "Staging dir: $STAGING"
 
 # ═════════════════════════════════════════════════════════════════
+# STEP 1.5 — Generate version file
+# ═════════════════════════════════════════════════════════════════
+section "Generating Version File"
+
+COMMIT_HASH=$(git log -1 --format="%H")
+BUILD_DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+cat > "$REPO_ROOT/version" << EOF
+commit: $COMMIT_HASH
+datetime: $BUILD_DATETIME
+EOF
+
+log "Version file generated"
+info "Commit: $COMMIT_HASH"
+info "DateTime: $BUILD_DATETIME"
+
+# ═════════════════════════════════════════════════════════════════
 # STEP 2 — Process each tool directory
 # ═════════════════════════════════════════════════════════════════
 section "Processing Tool Directories"
