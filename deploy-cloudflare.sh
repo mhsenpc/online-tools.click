@@ -180,7 +180,7 @@ done < <(find "$REPO_ROOT" -maxdepth 1 -type f -print0)
 # ═════════════════════════════════════════════════════════════════
 section "Uploading to Cloudflare Workers"
 
-npx wrangler versions upload --assets="$STAGING"
+npx wrangler versions upload --assets="$STAGING" --preview-alias="$BRANCH_NAME"
 
 echo ""
 echo -e "  ${GREEN}🚀 Successfully uploaded!${NC}"
