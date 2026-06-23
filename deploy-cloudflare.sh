@@ -91,6 +91,8 @@ commit: $COMMIT_HASH
 datetime: $BUILD_DATETIME
 EOF
 
+cp "$REPO_ROOT/version" "$STAGING/version"
+
 log "Version file generated"
 info "Commit: $COMMIT_HASH"
 info "DateTime: $BUILD_DATETIME"
