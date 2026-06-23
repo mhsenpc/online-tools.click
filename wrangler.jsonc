@@ -1,7 +1,4 @@
 {
   "name": "onlinetoolsclick",
-  "compatibility_date": "2025-06-24",
-  "assets": {
-    "directory": "."
-  }
+  "compatibility_date": "2025-06-24"
 }
