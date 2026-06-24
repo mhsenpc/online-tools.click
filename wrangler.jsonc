@@ -1,4 +1,20 @@
 {
   "name": "onlinetoolsclick",
-  "compatibility_date": "2025-06-24"
+  "compatibility_date": "2025-06-24",
+  "main": "src/index.ts",  // if you have a worker
+
+  "env": {
+    "production": {
+      "routes": [
+        { "pattern": "online-tools.click/*", "zone_name": "online-tools.click" },
+        { "pattern": "*.online-tools.click/*", "zone_name": "online-tools.click" }
+      ]
+    }
+  },
+  "build": {
+    "command": "bash build.sh"
+  },
+  "observability": {
+    "enabled": true
+  }
 }
