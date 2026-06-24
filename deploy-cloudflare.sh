@@ -180,7 +180,19 @@ done < <(find "$REPO_ROOT" -maxdepth 1 -type f -print0)
 # ═════════════════════════════════════════════════════════════════
 section "Uploading to Cloudflare Workers"
 
-npx wrangler versions upload --assets="$STAGING"
+# Detect branch - Cloudflare Pages sets CF_PAGES_BRANCH environment variable
+BRANCH="${CF_PAGES_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+PRODUCTION_BRANCH="main"
+
+if [ "$BRANCH" = "$PRODUCTION_BRANCH" ]; then
+  info "Branch: $BRANCH (production)"
+  info "Deploying to live version..."
+  npx wrangler deploy --assets="$STAGING"
+else
+  info "Branch: $BRANCH (preview only)"
+  info "Creating preview version only..."
+  npx wrangler versions upload --assets="$STAGING"
+fi
 
 echo ""
 echo -e "  ${GREEN}🚀 Successfully uploaded!${NC}"
