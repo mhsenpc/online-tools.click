@@ -175,8 +175,6 @@ for dir in "$REPO_ROOT"/*/; do
     BUILT_DIRS+=("$dir_name")
 
   else
-    info "Type   : Static (no package.json)"
-
     mkdir -p "$STAGING/$dir_name"
     find "$dir" -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
       fname=$(basename "$file")
