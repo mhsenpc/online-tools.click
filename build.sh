@@ -144,7 +144,6 @@ for dir in "$REPO_ROOT"/*/; do
     cd "$REPO_ROOT"
 
   else
-    info "Type   : Static (no package.json)"
 
     mkdir -p "$STAGING/$dir_name"
     find "$dir" -maxdepth 1 -type f | while read -r file; do
