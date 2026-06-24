@@ -176,33 +176,11 @@ while IFS= read -r -d '' file; do
 done < <(find "$REPO_ROOT" -maxdepth 1 -type f -print0)
 
 # ═════════════════════════════════════════════════════════════════
-# STEP 4 — Upload to Cloudflare
+# Build Complete
 # ═════════════════════════════════════════════════════════════════
-section "Uploading to Cloudflare Workers"
+section "Build Complete"
 
-# Detect branch - Cloudflare Pages sets CF_PAGES_BRANCH environment variable
-BRANCH="${CF_PAGES_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
-PRODUCTION_BRANCH="main"
-
-if [ "$BRANCH" = "$PRODUCTION_BRANCH" ]; then
-  info "Branch: $BRANCH (production)"
-  info "Deploying to live version..."
-  npx wrangler deploy --assets="$STAGING"
-else
-  info "Branch: $BRANCH (preview only)"
-  info "Creating preview version only..."
-  npx wrangler versions upload --assets="$STAGING"
-fi
-
+log "Build artifacts staged to: $STAGING"
 echo ""
-echo -e "  ${GREEN}🚀 Successfully uploaded!${NC}"
-
-# ═════════════════════════════════════════════════════════════════
-# Summary
-# ═════════════════════════════════════════════════════════════════
-echo ""
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}  Deploy Summary${NC}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo "  Built apps : ${BUILT_DIRS[*]:-none}"
-echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo "  Static dirs: ${STATIC_DIRS[*]:-none}"
