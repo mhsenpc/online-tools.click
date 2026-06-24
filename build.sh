@@ -99,65 +99,77 @@ log "Version file generated"
 info "Commit: $COMMIT_HASH"
 
 # ═════════════════════════════════════════════════════════════════
-# STEP 2 — Process each tool directory
+# STEP 2 — Separate dynamic & static projects
 # ═════════════════════════════════════════════════════════════════
 section "Processing Tool Directories"
 
-BUILT_DIRS=()
+DYNAMIC_DIRS=()
 STATIC_DIRS=()
+BUILT_DIRS=()
 
 for dir in "$REPO_ROOT"/*/; do
   [ -d "$dir" ] || continue
-
   dir_name=$(basename "$dir")
-
-  # Skip hidden, node_modules, and the staging output itself
   [[ "$dir_name" == .* ]]             && continue
   [[ "$dir_name" == "node_modules" ]] && continue
   [[ "$dir_name" == "$OUTPUT_DIR" ]]  && continue
 
-    echo -e "  📁 ${BLUE}${dir_name}${NC}"
-
-  mkdir -p "$STAGING/$dir_name"
-
   if [ -f "$dir/package.json" ]; then
-    cd "$dir"
-
-    if [ ! -d "node_modules" ]; then
-      warn "Installing dependencies..."
-      npm ci
-    fi
-
-    info "Running: $BUILD_CMD"
-    eval "$BUILD_CMD"
-
-    BUILD_OUT=$(find_build_output "$dir") \
-      || error "Build output not found in '$dir_name'! Checked: ${BUILD_OUTPUT_DIRS[*]}"
-
-    info "Output : $(basename "$BUILD_OUT")/"
-    mv "$BUILD_OUT"/* "$STAGING/$dir_name/"
-
-    log "Built & staged → $dir_name/"
-    BUILT_DIRS+=("$dir_name")
-    cd "$REPO_ROOT"
-
+    DYNAMIC_DIRS+=("$dir")
   else
-
-    mkdir -p "$STAGING/$dir_name"
-    find "$dir" -maxdepth 1 -type f | while read -r file; do
-      fname=$(basename "$file")
-      if matches_include "$fname" "${STATIC_INCLUDES[@]}"; then
-        mv "$file" "$STAGING/$dir_name/"
-      fi
-    done
-
-    log "Copied static → $dir_name/"
-    STATIC_DIRS+=("$dir_name")
+    STATIC_DIRS+=("$dir")
   fi
 done
 
+info "Found ${#DYNAMIC_DIRS[@]} dynamic projects, ${#STATIC_DIRS[@]} static projects"
+
 # ═════════════════════════════════════════════════════════════════
-# STEP 3 — Copy root-level files
+# STEP 2a — Start building dynamic projects in background
+# ═════════════════════════════════════════════════════════════════
+info "Starting builds (background)..."
+for dir in "${DYNAMIC_DIRS[@]}"; do
+  (
+    dir_name=$(basename "$dir")
+    echo -e "  📁 ${BLUE}${dir_name}${NC}"
+    cd "$dir"
+
+    if [ ! -d "node_modules" ]; then
+      npm ci > /tmp/npm-install-$dir_name.log 2>&1 || {
+        echo "FAIL" > /tmp/build-$dir_name.status
+        exit 1
+      }
+    fi
+
+    eval "$BUILD_CMD" > /tmp/build-$dir_name.log 2>&1 || {
+      echo "FAIL" > /tmp/build-$dir_name.status
+      exit 1
+    }
+
+    echo "OK" > /tmp/build-$dir_name.status
+  ) &
+done
+
+# ═════════════════════════════════════════════════════════════════
+# STEP 2b — Move static projects while builds run
+# ═════════════════════════════════════════════════════════════════
+info "Moving static projects..."
+for dir in "${STATIC_DIRS[@]}"; do
+  dir_name=$(basename "$dir")
+  echo -e "  📁 ${BLUE}${dir_name}${NC}"
+  mkdir -p "$STAGING/$dir_name"
+
+  find "$dir" -maxdepth 1 -type f | while read -r file; do
+    fname=$(basename "$file")
+    if matches_include "$fname" "${STATIC_INCLUDES[@]}"; then
+      mv "$file" "$STAGING/$dir_name/" 2>/dev/null || true
+    fi
+  done
+
+  log "Copied static → $dir_name/"
+done
+
+# ═════════════════════════════════════════════════════════════════
+# STEP 2c — Copy root-level files while builds run
 # ═════════════════════════════════════════════════════════════════
 section "Copying Root-Level Files"
 
@@ -171,6 +183,33 @@ while IFS= read -r -d '' file; do
     warn "Skipped : $fname"
   fi
 done < <(find "$REPO_ROOT" -maxdepth 1 -type f -print0)
+
+# ═════════════════════════════════════════════════════════════════
+# STEP 2d — Wait for all dynamic builds to complete
+# ═════════════════════════════════════════════════════════════════
+info "Waiting for builds to complete..."
+wait
+
+# ═════════════════════════════════════════════════════════════════
+# STEP 2e — Process dynamic build outputs
+# ═════════════════════════════════════════════════════════════════
+info "Staging build outputs..."
+for dir in "${DYNAMIC_DIRS[@]}"; do
+  dir_name=$(basename "$dir")
+
+  # Check build status
+  if [ -f "/tmp/build-$dir_name.status" ] && [ "$(cat /tmp/build-$dir_name.status)" == "FAIL" ]; then
+    error "Build failed for $dir_name. Check /tmp/build-$dir_name.log"
+  fi
+
+  mkdir -p "$STAGING/$dir_name"
+  BUILD_OUT=$(find_build_output "$dir") \
+    || error "Build output not found in '$dir_name'! Checked: ${BUILD_OUTPUT_DIRS[*]}"
+
+  mv "$BUILD_OUT"/* "$STAGING/$dir_name/"
+  log "Built & staged → $dir_name/"
+  BUILT_DIRS+=("$dir_name")
+done
 
 # ═════════════════════════════════════════════════════════════════
 # Build Complete
