@@ -5,7 +5,6 @@ set -e
 # CONFIG
 # ─────────────────────────────────────────────────────────────────
 BUILD_CMD="npm run build"
-INSTALL_CMD="npm ci --prefer-offline --no-audit --progress=false || npm install --prefer-offline --no-audit"
 OUTPUT_DIR="dist"  # Final assembled output for wrangler
 
 BUILD_OUTPUT_DIRS=("dist" "build" "out" ".output/public")
@@ -45,10 +44,6 @@ STAGING="$REPO_ROOT/$OUTPUT_DIR"
 # Clean previous output if any
 rm -rf "$STAGING"
 mkdir -p "$STAGING"
-
-# Create a temp file to track files/dirs to delete at the end
-TEMP_DELETE_LIST=$(mktemp)
-trap "rm -f $TEMP_DELETE_LIST" EXIT
 
 # ─────────────────────────────────────────────────────────────────
 find_build_output() {
@@ -98,52 +93,14 @@ EOF
 
 log "Version file generated"
 info "Commit: $COMMIT_HASH"
-info "DateTime: $BUILD_DATETIME"
 
 # ═════════════════════════════════════════════════════════════════
-# STEP 2 — Process each tool directory (in-place)
+# STEP 2 — Process each tool directory
 # ═════════════════════════════════════════════════════════════════
 section "Processing Tool Directories"
 
 BUILT_DIRS=()
 STATIC_DIRS=()
-MAX_JOBS=$(nproc 2>/dev/null || echo 4)
-ACTIVE_JOBS=0
-
-build_frontend() {
-  local dir="$1"
-  local dir_name="$2"
-  local repo_root="$3"
-
-  cd "$dir"
-
-  if [ ! -d "node_modules" ]; then
-    eval "$INSTALL_CMD" >/dev/null 2>&1
-  fi
-
-  eval "$BUILD_CMD" >/dev/null 2>&1 || {
-    echo "❌ Build failed for $dir_name"
-    exit 1
-  }
-
-  BUILD_OUT=""
-  for candidate in "${BUILD_OUTPUT_DIRS[@]}"; do
-    if [ -d "$dir/$candidate" ]; then
-      BUILD_OUT="$dir/$candidate"
-      break
-    fi
-  done
-
-  if [ -z "$BUILD_OUT" ]; then
-    echo "❌ Build output not found in $dir_name"
-    exit 1
-  fi
-
-  mkdir -p "$repo_root/$OUTPUT_DIR"
-  mv "$BUILD_OUT" "$repo_root/$OUTPUT_DIR/$dir_name"
-
-  cd "$repo_root"
-}
 
 for dir in "$REPO_ROOT"/*/; do
   [ -d "$dir" ] || continue
@@ -155,25 +112,39 @@ for dir in "$REPO_ROOT"/*/; do
   [[ "$dir_name" == "node_modules" ]] && continue
   [[ "$dir_name" == "$OUTPUT_DIR" ]]  && continue
 
+  echo ""
   echo -e "  📁 ${BLUE}${dir_name}${NC}"
+
+  mkdir -p "$STAGING/$dir_name"
 
   if [ -f "$dir/package.json" ]; then
     info "Type   : Frontend (package.json found)"
-    info "Queued for parallel build"
 
-    # Run builds in parallel with job limiting
-    while [ $ACTIVE_JOBS -ge $MAX_JOBS ]; do
-      wait -n 2>/dev/null || break
-      ((ACTIVE_JOBS--))
-    done
+    cd "$dir"
 
-    build_frontend "$dir" "$dir_name" "$REPO_ROOT" &
-    ((ACTIVE_JOBS++))
+    if [ ! -d "node_modules" ]; then
+      warn "Installing dependencies..."
+      npm install
+    fi
+
+    info "Running: $BUILD_CMD"
+    eval "$BUILD_CMD"
+
+    BUILD_OUT=$(find_build_output "$dir") \
+      || error "Build output not found in '$dir_name'! Checked: ${BUILD_OUTPUT_DIRS[*]}"
+
+    info "Output : $(basename "$BUILD_OUT")/"
+    mv -r "$BUILD_OUT"/* "$STAGING/$dir_name/"
+
+    log "Built & staged → $dir_name/"
     BUILT_DIRS+=("$dir_name")
+    cd "$REPO_ROOT"
 
   else
+    info "Type   : Static (no package.json)"
+
     mkdir -p "$STAGING/$dir_name"
-    find "$dir" -maxdepth 1 -type f -print0 | while IFS= read -r -d '' file; do
+    find "$dir" -maxdepth 1 -type f | while read -r file; do
       fname=$(basename "$file")
       if ! matches_exclude "$fname" "${STATIC_EXCLUDES[@]}"; then
         mv "$file" "$STAGING/$dir_name/"
@@ -185,21 +156,10 @@ for dir in "$REPO_ROOT"/*/; do
   fi
 done
 
-# Wait for all background jobs to complete
-while [ $ACTIVE_JOBS -gt 0 ]; do
-  wait -n 2>/dev/null || break
-  ((ACTIVE_JOBS--))
-done
-
-# Report completion of parallel builds
-for dir_name in "${BUILT_DIRS[@]}"; do
-  log "Built & staged → $dir_name/"
-done
-
 # ═════════════════════════════════════════════════════════════════
-# STEP 3 — Copy root-level files (only wanted ones)
+# STEP 3 — Copy root-level files
 # ═════════════════════════════════════════════════════════════════
-section "Processing Root-Level Files"
+section "Copying Root-Level Files"
 
 while IFS= read -r -d '' file; do
   fname=$(basename "$file")
