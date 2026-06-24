@@ -7,20 +7,25 @@ set -e
 BUILD_CMD="npm run build"
 OUTPUT_DIR="dist"  # Final assembled output for wrangler
 
-BUILD_OUTPUT_DIRS=("dist" "build" "out" ".output/public")
+BUILD_OUTPUT_DIRS=("dist")
 
-STATIC_EXCLUDES=(
-  ".DS_Store"
-  "*.md"
-  "*.MD"
-  ".gitignore"
-  ".claude/"
-  "agents.md"
-  ".env*"
-  "deploy.sh"
-  "deploy-cloudflare.sh"
-  "wrangler.jsonc"
-  "wrangler.toml"
+STATIC_INCLUDES=(
+  "*.html"
+  "*.css"
+  "*.js"
+  "*.json"
+  "*.txt"
+  "*.xml"
+  "*.svg"
+  "*.png"
+  "*.jpg"
+  "*.jpeg"
+  "*.gif"
+  "*.webp"
+  "*.woff"
+  "*.woff2"
+  "*.ttf"
+  "*.eot"
 )
 # ─────────────────────────────────────────────────────────────────
 
@@ -57,12 +62,11 @@ find_build_output() {
   return 1
 }
 
-matches_exclude() {
+matches_include() {
   local name="$1"; shift
   for pattern in "$@"; do
-    local clean="${pattern%/}"
     # shellcheck disable=SC2254
-    [[ "$name" == $clean ]] && return 0
+    [[ "$name" == $pattern ]] && return 0
   done
   return 1
 }
@@ -145,7 +149,7 @@ for dir in "$REPO_ROOT"/*/; do
     mkdir -p "$STAGING/$dir_name"
     find "$dir" -maxdepth 1 -type f | while read -r file; do
       fname=$(basename "$file")
-      if ! matches_exclude "$fname" "${STATIC_EXCLUDES[@]}"; then
+      if matches_include "$fname" "${STATIC_INCLUDES[@]}"; then
         mv "$file" "$STAGING/$dir_name/"
       fi
     done
@@ -163,11 +167,11 @@ section "Copying Root-Level Files"
 while IFS= read -r -d '' file; do
   fname=$(basename "$file")
 
-  if matches_exclude "$fname" "${STATIC_EXCLUDES[@]}"; then
-    warn "Skipped : $fname"
-  else
+  if matches_include "$fname" "${STATIC_INCLUDES[@]}"; then
     mv "$file" "$STAGING/"
     log "Copied  : $fname"
+  else
+    warn "Skipped : $fname"
   fi
 done < <(find "$REPO_ROOT" -maxdepth 1 -type f -print0)
 
