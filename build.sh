@@ -134,7 +134,7 @@ for dir in "$REPO_ROOT"/*/; do
       || error "Build output not found in '$dir_name'! Checked: ${BUILD_OUTPUT_DIRS[*]}"
 
     info "Output : $(basename "$BUILD_OUT")/"
-    mv -r "$BUILD_OUT"/* "$STAGING/$dir_name/"
+    mv "$BUILD_OUT"/* "$STAGING/$dir_name/"
 
     log "Built & staged → $dir_name/"
     BUILT_DIRS+=("$dir_name")
