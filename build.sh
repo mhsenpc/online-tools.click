@@ -91,12 +91,10 @@ section "Generating Version File"
 COMMIT_HASH=$(git log -1 --format="%H")
 BUILD_DATETIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-cat > "$REPO_ROOT/version" << EOF
+cat > "$STAGING/version" << EOF
 commit: $COMMIT_HASH
 datetime: $BUILD_DATETIME
 EOF
-
-mv "$REPO_ROOT/version" "$STAGING/version"
 
 log "Version file generated"
 info "Commit: $COMMIT_HASH"
@@ -157,7 +155,6 @@ for dir in "$REPO_ROOT"/*/; do
   [[ "$dir_name" == "node_modules" ]] && continue
   [[ "$dir_name" == "$OUTPUT_DIR" ]]  && continue
 
-  echo ""
   echo -e "  📁 ${BLUE}${dir_name}${NC}"
 
   if [ -f "$dir/package.json" ]; then
