@@ -121,8 +121,6 @@ for dir in "$REPO_ROOT"/*/; do
   mkdir -p "$STAGING/$dir_name"
 
   if [ -f "$dir/package.json" ]; then
-    info "Type   : Frontend (package.json found)"
-
     cd "$dir"
 
     if [ ! -d "node_modules" ]; then
