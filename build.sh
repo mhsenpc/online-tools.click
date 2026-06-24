@@ -215,8 +215,3 @@ done
 # Build Complete
 # ═════════════════════════════════════════════════════════════════
 section "Build Complete"
-
-log "Build artifacts staged to: $STAGING"
-echo ""
-echo "  Built apps : ${BUILT_DIRS[*]:-none}"
-echo "  Static dirs: ${STATIC_DIRS[*]:-none}"
