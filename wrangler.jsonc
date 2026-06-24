@@ -1,7 +1,6 @@
 {
   "name": "onlinetoolsclick",
   "compatibility_date": "2025-06-24",
-  "main": "src/index.ts",  // if you have a worker
 
   "env": {
     "production": {
