@@ -112,8 +112,7 @@ for dir in "$REPO_ROOT"/*/; do
   [[ "$dir_name" == "node_modules" ]] && continue
   [[ "$dir_name" == "$OUTPUT_DIR" ]]  && continue
 
-  echo ""
-  echo -e "  📁 ${BLUE}${dir_name}${NC}"
+    echo -e "  📁 ${BLUE}${dir_name}${NC}"
 
   mkdir -p "$STAGING/$dir_name"
 
@@ -124,7 +123,7 @@ for dir in "$REPO_ROOT"/*/; do
 
     if [ ! -d "node_modules" ]; then
       warn "Installing dependencies..."
-      npm install
+      npm ci
     fi
 
     info "Running: $BUILD_CMD"
