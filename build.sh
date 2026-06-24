@@ -97,6 +97,7 @@ EOF
 
 log "Version file generated"
 info "Commit: $COMMIT_HASH"
+info "Datetime: $BUILD_DATETIME"
 
 # ═════════════════════════════════════════════════════════════════
 # STEP 2 — Separate dynamic & static projects
