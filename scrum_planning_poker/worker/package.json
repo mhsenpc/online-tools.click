@@ -1,0 +1,13 @@
+{
+  "name": "scrum_planning_poker_worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "wrangler": "^4.22.0"
+  }
+}

@@ -11,25 +11,27 @@ Real-time browser-based planning poker: create room → share URL → vote on es
 
 | Layer | Tech |
 |-------|------|
-| Frontend | React 18 + TypeScript, Vite, TailwindCSS, shadcn/ui, Zustand, Router v6 |
+| Frontend | React 18 + TypeScript, Vite, TailwindCSS, Zustand, Router v6 |
 | Backend | Cloudflare Workers, Durable Objects (Storage + WebSocket Hibernation) |
 | Deploy | Wrangler CLI, Cloudflare Pages |
-| Package | npm/pnpm/bun (TBD) |
+| Package | npm |
 
-## 📁 Directory Structure (MVP)
+## 📁 Directory Structure
 
 ```
 scrum/
 ├── package.json                  # Frontend (React)
 ├── vite.config.ts
 ├── tsconfig.json
-├── tailwind.config.ts
 ├── index.html
+├── .nvmrc
 ├── public/
+│   ├── _redirects
 │   └── favicon.svg
 ├── src/                          # React app source
 │   ├── main.tsx
 │   ├── App.tsx
+│   ├── vite-env.d.ts
 │   ├── pages/
 │   │   ├── Home.tsx              # Landing: create game
 │   │   └── Game.tsx              # Main game room
@@ -38,7 +40,8 @@ scrum/
 │   │   ├── Table.tsx             # Circular participant layout
 │   │   ├── ParticipantList.tsx
 │   │   ├── HostControls.tsx      # Reveal, Reset, Set Story
-│   │   └── InviteButton.tsx
+│   │   ├── InviteButton.tsx
+│   │   └── Toast.tsx
 │   ├── hooks/
 │   │   ├── useWebSocket.ts       # WS connection + auto-reconnect
 │   │   └── useGameState.ts       # State sync
@@ -53,13 +56,14 @@ scrum/
 │       └── globals.css
 │
 └── worker/                       # Cloudflare Worker backend
-├── package.json
-├── wrangler.toml
-├── tsconfig.json
-└── src/
-├── index.ts              # Main worker entry (router)
-├── game-room.ts          # GameRoom Durable Object
-└── types.ts              # Shared types
+    ├── package.json
+    ├── README.md               # Manual Cloudflare Worker setup
+    ├── tsconfig.json
+    ├── worker-configuration.d.ts
+    └── src/
+        ├── index.ts              # Main worker entry (router)
+        ├── game-room.ts          # GameRoom Durable Object
+        └── types.ts              # Shared types
 ```
 
 ---
@@ -89,12 +93,10 @@ type ClientMsg =
 ```typescript
 type ServerMsg =
   | { type: 'state'; state: GameState }
-  | { type: 'userJoined' | 'userLeft'; user?: User; userId?: string }
-  | { type: 'userVoted'; userId: string }
-  | { type: 'revealed'; votes: Vote[]; average: number }
-  | { type: 'storyChanged'; title: string }
   | { type: 'error'; message: string };
 ```
+
+Current implementation note: the server currently broadcasts canonical `state` snapshots after join/leave/vote/reveal/reset/story updates instead of granular event messages.
 
 ## Data Model
 
@@ -123,6 +125,7 @@ interface User {
 |--------|------|----------|
 | `POST` | `/api/games` | `{ gameId: string }` |
 | `GET` | `/api/games/:id` | `{ exists: boolean }` |
+| `GET` | `/api/games/:id/state` | `{ state: GameState | null }` |
 | `GET` | `/ws/:gameId` | WebSocket upgrade |
 
 ## Persistence & Cleanup
@@ -134,33 +137,38 @@ interface User {
 ## Implementation Phases
 
 **Phase 1: Foundation**
-- [ ] Monorepo setup: React + Vite + Tailwind + shadcn/ui
-- [ ] Workers project + Wrangler config
-- [ ] GameRoom DO skeleton
-- [ ] POST/GET /api/games endpoints
-- [ ] Routes: `/` (home), `/game/:id`
-- [ ] Landing page + "Create Game" button
+- [x] Monorepo setup: React + Vite + Tailwind
+- [x] Workers project + manual setup guide
+- [x] GameRoom DO skeleton
+- [x] POST/GET `/api/games` endpoints
+- [x] Routes: `/` (home), `/game/:id`
+- [x] Landing page + "Create Game" button
 
 **Phase 2: Real-time**
-- [ ] WebSocket handler (Hibernation API)
-- [ ] useWebSocket hook (auto-reconnect, exponential backoff)
-- [ ] Join flow: name entry → connect
-- [ ] Broadcast join/leave/voted events
-- [ ] Persist state on every change
+- [x] WebSocket handler (Hibernation API)
+- [x] useWebSocket hook (auto-reconnect, exponential backoff)
+- [x] Join flow: name entry → connect
+- [x] Broadcast state updates for join/leave/vote/reveal/reset/story changes
+- [x] Persist state on every change
 
 **Phase 3: Voting**
-- [ ] Card deck UI (Fibonacci fixed)
-- [ ] Cast vote → broadcast "hasVoted"
-- [ ] Host reveal action
-- [ ] Display votes + calculate average
-- [ ] Reset round
+- [x] Card deck UI (Fibonacci fixed)
+- [x] Cast vote → broadcast updated room state
+- [x] Host reveal action
+- [x] Display votes + calculate average
+- [x] Reset round
 
 **Phase 4: Polish**
-- [ ] Copy invite link + toast
-- [ ] Mobile responsive layout
-- [ ] 24h auto-cleanup alarm
-- [ ] Error handling
+- [x] Copy invite link + toast
+- [x] Mobile responsive layout
+- [x] 24h auto-cleanup alarm
+- [x] Error handling
 - [ ] Deploy
+
+## Current Status
+
+- Implemented: room creation, room existence/state APIs, WebSocket join flow, host assignment, live voting, reveal/reset, story sync, reconnect handling, mobile layout, invite copy, toast feedback, 24h cleanup alarm, and WS rate limiting.
+- Remaining before launch: deployment wiring, smoke testing in a deployed environment, and any final UX tweaks.
 
 ## Future Implementation (Post-MVP)
 
@@ -171,6 +179,8 @@ interface User {
 **Analytics:** Plausible integration, performance tracking, error tracking (Sentry)
 
 **Advanced:** Host auto-transfer, rate limiting, custom domains, session persistence
+
+Implemented so far: host auto-transfer on disconnect and WebSocket rate limiting.
 
 ## Design Decisions (MVP)
 
@@ -192,11 +202,11 @@ interface User {
 - Expected: ~$0–5/month (low traffic)
 
 **Before start:**
-- [ ] Package manager (npm/pnpm/bun)
-- [ ] Node version (.nvmrc)
+- [x] Package manager: npm
+- [x] Node version (.nvmrc)
 - [ ] Cloudflare account + API tokens
 - [ ] DNS setup
-- [ ] UI color palette
+- [x] UI color palette
 
 ---
 
