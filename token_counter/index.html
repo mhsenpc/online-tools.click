@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Counter | Online Tools</title>
+    <meta name="description" content="Estimate token counts for OpenAI GPT-4o/5 and Anthropic Claude models. Compare o200k_base and Claude tokenization side by side.">
+    <meta property="og:title" content="Token Counter | Online Tools">
+    <meta property="og:description" content="Estimate token counts for OpenAI GPT and Anthropic Claude models.">
+    <meta property="og:url" content="https://online-tools.click/token_counter/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://online-tools.click/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Token Counter | Online Tools">
+    <meta name="twitter:description" content="Estimate token counts for OpenAI GPT and Anthropic Claude models.">
+    <meta name="twitter:image" content="https://online-tools.click/og-image.png">
+    <link rel="canonical" href="https://online-tools.click/token_counter/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --bg-elevated: #1a1a1a;
+            --bg-input: #141414;
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --border: rgba(255, 255, 255, 0.12);
+            --border-focus: rgba(255, 255, 255, 0.4);
+            --accent: #ff3e00;
+            --accent-glow: rgba(255, 62, 0, 0.2);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; overflow-x: hidden; }
+        header { padding: 32px 40px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; color: var(--text); }
+        .logo-sep { color: var(--text-muted); font-weight: 300; }
+        .logo-sub { font-size: 20px; font-weight: 400; color: var(--text-secondary); }
+        .header-right a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: all 0.2s; }
+        .header-right a:hover { color: var(--text); border-color: var(--border-focus); }
+        main { max-width: 960px; margin: 0 auto; padding: 40px 20px; }
+        .hero { text-align: center; margin-bottom: 40px; }
+        .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
+        .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+        .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
+            width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
+            transition: border-color 0.2s;
+        }
+        textarea:focus, input:focus, select:focus { border-color: var(--accent); }
+        textarea { resize: vertical; min-height: 100px; font-family: var(--font-mono); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 12px 28px; border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #ff5522; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px; }
+        .stat-card .val { font-size: 28px; font-weight: 700; font-family: var(--font-mono); }
+        .stat-card .lbl { font-size: 12px; color: var(--text-secondary); margin-top: 4px; font-weight: 600; }
+        .stat-card .note { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+        .stat-card .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 999px; margin-top: 8px; background: rgba(255,255,255,0.06); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-card .badge.exact { background: rgba(34,197,94,0.12); color: var(--success); }
+        .stat-card .badge.approx { background: rgba(245,158,11,0.12); color: var(--warning); }
+        .stat-card.loading .val::after { content: ''; display: inline-block; width: 8px; }
+        .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+        .meta-chip { font-size: 12px; color: var(--text-muted); background: var(--bg-input); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); }
+        .meta-chip strong { color: var(--text-secondary); font-weight: 600; }
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm);
+            padding: 10px 20px; font-size: 13px; color: var(--text); opacity: 0; pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+        .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        .note-block { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .note-block strong { color: var(--text-secondary); }
+        @media (max-width: 768px) {
+            header { padding: 20px 20px; }
+            .hero h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <a href="https://online-tools.click" class="logo">Online Tools</a>
+            <span class="logo-sep">/</span>
+            <span class="logo-sub">Token Counter</span>
+        </div>
+        <div class="header-right">
+            <a href="https://online-tools.click">All Tools</a>
+        </div>
+    </header>
+    <main>
+        <section class="hero">
+            <h1>Token Counter</h1>
+            <p>Paste text to see how many tokens it produces under different LLM tokenizers. GPT-4o/5 counts are exact (BPE); Claude is an estimate.</p>
+        </section>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Input Text</span>
+                <button class="btn btn-sm btn-secondary" onclick="clearInput()">Clear</button>
+            </div>
+            <textarea id="input" placeholder="Paste your text, prompt, code, or document here..." oninput="schedule()" style="min-height:180px"></textarea>
+            <div class="meta-row" id="meta"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Token Counts</div>
+            <div class="stat-grid" id="stats"></div>
+            <hr>
+            <p class="note-block">
+                <strong>Why do counts differ?</strong> Each model uses a different Byte-Pair-Encoding (BPE) vocabulary.
+                <strong>GPT-4o/4.1/5</strong> use <code>o200k_base</code> (~200k tokens),
+                and <strong>Claude</strong> uses Anthropic's own tokenizer (not publicly released) — so its count is approximated.
+                Counts marked <span class="badge exact" style="display:inline-block;vertical-align:middle">Exact</span> are computed in your browser via the official BPE tables;
+                <span class="badge approx" style="display:inline-block;vertical-align:middle">Approx</span> counts are heuristic estimates.
+            </p>
+        </div>
+    </main>
+    <div class="toast" id="toast"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
+    <script>
+    // ponytail: OpenAI exact counts via gpt-tokenizer (lazy-loaded from CDN on first use).
+    // Claude has no public JS tokenizer, so we approximate (chars/3.5).
+    const CDN = 'https://cdn.jsdelivr.net/npm/gpt-tokenizer@2.6.2/dist/';
+    const encoders = {}; // 'cl100k' | 'o200k' -> { encode } or null while loading
+    let pendingTimer = null;
+
+    function toast(msg){
+        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
+        setTimeout(()=>t.classList.remove('visible'),2000);
+    }
+    function clearInput(){
+        document.getElementById('input').value='';
+        schedule();
+    }
+
+    function loadEncoder(kind){
+        if (encoders[kind]) return Promise.resolve(encoders[kind]);
+        if (encoders[kind] === false) return Promise.resolve(null);
+        const file = kind === 'cl100k' ? 'cl100k_base.js' : 'o200k_base.js';
+        encoders[kind] = new Promise((resolve) => {
+            const s = document.createElement('script');
+            s.src = CDN + file;
+            s.onload = () => {
+                const lib = window.gpt_tokenizer || window.gptTokenizer;
+                const enc = (lib && typeof lib.encode === 'function')
+                    ? lib
+                    : (typeof window.encode === 'function' ? { encode: window.encode } : null);
+                encoders[kind] = enc || false;
+                if (!enc) console.warn('Tokenizer', kind, 'failed to expose encode()');
+                resolve(enc || null);
+            };
+            s.onerror = () => { encoders[kind] = false; resolve(null); };
+            document.head.appendChild(s);
+        });
+        return encoders[kind];
+    }
+
+    function approxTokens(text, charsPerToken){
+        // ponytail: crude heuristic; covers English-heavy text. Code/non-Latin scripts undercount.
+        if (!text) return 0;
+        return Math.ceil(text.length / charsPerToken);
+    }
+
+    function buildPlaceholder(label, note, badgeText, badgeClass){
+        return `<div class="stat-card" data-key="${label}">
+            <div class="val" data-val>—</div>
+            <div class="lbl">${label}</div>
+            <div class="note">${note}</div>
+            <div class="badge ${badgeClass}">${badgeText}</div>
+        </div>`;
+    }
+
+    function renderEmpty(){
+        document.getElementById('stats').innerHTML =
+            buildPlaceholder('Approximate', 'chars ÷ 4 (rough)', 'Approx', 'approx') +
+            buildPlaceholder('GPT-4o / 4.1 / 5', 'o200k_base BPE', 'Exact', 'exact') +
+            buildPlaceholder('Claude', 'Anthropic tokenizer (est.)', 'Approx', 'approx');
+        document.getElementById('meta').innerHTML = '';
+    }
+
+    function setVal(key, val){
+        const card = document.querySelector(`.stat-card[data-key="${key}"] [data-val]`);
+        if (card) card.textContent = val;
+    }
+    function setLoading(key, on){
+        const card = document.querySelector(`.stat-card[data-key="${key}"]`);
+        if (card) card.classList.toggle('loading', on);
+    }
+
+    async function count(){
+        const text = document.getElementById('input').value || '';
+
+        // meta
+        const chars = text.length;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        document.getElementById('meta').innerHTML =
+            `<span class="meta-chip"><strong>${chars.toLocaleString()}</strong> chars</span>` +
+            `<span class="meta-chip"><strong>${words.toLocaleString()}</strong> words</span>` +
+            `<span class="meta-chip"><strong>${(chars/4).toFixed(1)}</strong> chars/token (approx)</span>`;
+
+        // Approximations are instant
+        setVal('Approximate', approxTokens(text, 4).toLocaleString());
+        setVal('Claude', approxTokens(text, 3.5).toLocaleString());
+
+        // OpenAI exact counts (lazy-load, then encode)
+        const label = 'GPT-4o / 4.1 / 5';
+        setLoading(label, true);
+        const enc = await loadEncoder('o200k');
+        if (!enc) {
+            setVal(label, approxTokens(text, 4.5).toLocaleString());
+        } else {
+            try {
+                setVal(label, enc.encode(text).length.toLocaleString());
+            } catch (e) {
+                setVal(label, '—');
+            }
+        }
+        setLoading(label, false);
+    }
+
+    function schedule(){
+        // ponytail: debounce so each keystroke doesn't re-encode the full text
+        clearTimeout(pendingTimer);
+        pendingTimer = setTimeout(count, 200);
+    }
+
+    renderEmpty();
+    count();
+    </script>
+</body>
+</html>
