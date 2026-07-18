@@ -144,7 +144,7 @@ function decode(){
         const eq=c.indexOf('=');
         if(eq>0){
             const name=c.substring(0,eq);
-            const val=c.substring(eq+1);
+            let val=c.substring(eq+1);
             try{val=decodeURIComponent(val);}catch(e){}
             html+=`<div class="stat-card" style="text-align:left;margin-bottom:8px">
                 <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">${escapeHTML(name)}</div>
@@ -161,7 +161,7 @@ function loadCookies(){
     decode();
     r.innerHTML='<span style="color:var(--success)">✓ Loaded from browser</span>';
 }
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>{'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m]);}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 
     </script>
 </body>
