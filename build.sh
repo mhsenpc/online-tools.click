@@ -166,6 +166,11 @@ for dir in "${STATIC_DIRS[@]}"; do
     fi
   done
 
+  # Copy subdirectories (e.g. pre-built assets/ folders from Vite-built tools)
+  find "$dir" -maxdepth 1 -type d ! -path "$dir" | while read -r subdir; do
+    mv "$subdir" "$STAGING/$dir_name/" 2>/dev/null || true
+  done
+
   log "Copied static → $dir_name/"
 done
 
