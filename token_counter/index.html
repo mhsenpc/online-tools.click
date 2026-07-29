@@ -93,8 +93,10 @@
             .hero h1 { font-size: 28px; }
         }
     </style>
+    <link rel="stylesheet" href="/a11y.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <div class="header-left">
             <a href="https://online-tools.click" class="logo">Online Tools</a>
@@ -105,7 +107,7 @@
             <a href="https://online-tools.click">All Tools</a>
         </div>
     </header>
-    <main>
+    <main id="main-content">
         <section class="hero">
             <h1>Token Counter</h1>
             <p>Paste text to see how many tokens it produces under different LLM tokenizers. GPT-4o/5 counts are exact (BPE); Claude is an estimate.</p>

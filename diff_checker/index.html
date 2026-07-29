@@ -30,9 +30,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  </head>
+      <link rel="stylesheet" href="/a11y.css">
+</head>
   <body class="bg-zinc-950 text-zinc-200 antialiased font-sans selection:bg-emerald-500/30">
-    <div id="root"></div>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div id="root" role="main" tabindex="-1"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 

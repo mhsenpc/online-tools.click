@@ -1,0 +1,85 @@
+/* ==================== WCAG AA Accessibility (shared) ==================== */
+/* Loaded by all tool pages to enforce accessibility standards. */
+
+/* Skip navigation link */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    z-index: 10000;
+    padding: 0.75rem 1.5rem;
+    background: #c2410c;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 0 0 8px 0;
+    text-decoration: none;
+    transition: top 150ms ease;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 3px solid #f97316;
+    outline-offset: 2px;
+}
+
+/* Keyboard focus indicators — 3:1 minimum contrast */
+:focus-visible {
+    outline: 3px solid #f97316;
+    outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid #f97316;
+    outline-offset: 2px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Fix low-contrast muted text common across tool pages.
+   rgba(255,255,255,0.45) on dark = ~2.3:1 — fail.
+   Bump to 0.65 for >= 4.5:1. */
+@media (prefers-color-scheme: dark) {
+    [class*="text-gray-400"]:not([class*="dark:text-gray-400"]),
+    .text-gray-400 {
+        color: rgba(255, 255, 255, 0.65) !important;
+    }
+    [style*="rgba(255, 255, 255, 0.45)"] {
+        color: rgba(255, 255, 255, 0.65) !important;
+    }
+}
+
+html.dark [class*="text-gray-400"],
+html.dark .text-gray-400 {
+    color: rgba(255, 255, 255, 0.65) !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

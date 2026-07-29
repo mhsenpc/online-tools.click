@@ -67,8 +67,10 @@
         .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; pointer-events: none; }
         .toast.show { opacity: 1; }
     </style>
+    <link rel="stylesheet" href="/a11y.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <header>
         <div class="container">
             <a href="/" class="logo"><span>⚡</span> Online Tools</a>
@@ -76,7 +78,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="main-content">
         <div class="container">
             <div class="tool-header">
                 <h1>JSON to CSV</h1>

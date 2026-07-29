@@ -4,7 +4,7 @@
     --bg-tertiary: #1a1a1f;
     --text-primary: #ffffff;
     --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
+    --text-muted: #82828c;
     --accent-primary: #f97316;
     --accent-secondary: #ea580c;
     --accent-glow: rgba(249, 115, 22, 0.15);
@@ -30,10 +30,10 @@
     --bg-tertiary: #e9ecef;
     --text-primary: #1a1a1a;
     --text-secondary: #52525b;
-    --text-muted: #71717a;
-    --accent-primary: #f97316;
-    --accent-secondary: #ea580c;
-    --accent-glow: rgba(249, 115, 22, 0.1);
+    --text-muted: #65656d;
+    --accent-primary: #b8420e;
+    --accent-secondary: #9a340c;
+    --accent-glow: rgba(184, 66, 14, 0.1);
     --border-color: #e5e7eb;
     --border-light: #d1d5db;
     --success: #16a34a;
@@ -1209,5 +1209,79 @@ body,
 
     .theme-toggle-icon {
         font-size: 1.1rem;
+    }
+}
+
+/* ==================== WCAG AA Accessibility ==================== */
+
+/* Skip navigation link */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    z-index: 10000;
+    padding: 0.75rem 1.5rem;
+    background: var(--accent-primary);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 0 0 8px 0;
+    text-decoration: none;
+    transition: top var(--transition-fast);
+}
+
+.skip-link:focus {
+    top: 0;
+}
+
+/* Keyboard focus indicators (3:1 minimum contrast) */
+:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 2px;
+}
+
+/* Remove default outline only when :focus-visible is supported */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* Keep nav search focus ring but ensure visibility */
+.nav-search-input:focus-visible {
+    outline: 3px solid var(--accent-primary);
+    outline-offset: 2px;
+    border-color: var(--accent-primary);
+}
+
+/* Screen-reader-only utility class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
