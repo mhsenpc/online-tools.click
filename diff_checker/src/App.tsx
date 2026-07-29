@@ -2,15 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { useDiff } from './hooks/useDiff';
 import Toolbar from './components/Toolbar';
 import InputPanel from './components/InputPanel';
-import DiffViewer from './components/DiffViewer';
+import DiffViewerEnhanced from './components/DiffViewerEnhanced';
 import Summary from './components/Summary';
 import { ArrowLeftRight, Github, Code2, Globe } from 'lucide-react';
+import { Language } from './utils/syntaxHighlighter';
 
 const App: React.FC = () => {
   const [original, setOriginal] = useState('');
   const [modified, setModified] = useState('');
   const [viewMode, setViewMode] = useState<'side-by-side' | 'unified'>('side-by-side');
   const [showDiff, setShowDiff] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<Language | undefined>(undefined);
   const [options, setOptions] = useState({
     ignoreWhitespace: false,
     ignoreCase: false,
@@ -70,7 +72,7 @@ const App: React.FC = () => {
         </header>
 
         {/* Action Toolbar */}
-        <Toolbar 
+        <Toolbar
           showDiff={showDiff}
           onReset={handleReset}
           onDiff={handleDiff}
@@ -81,6 +83,8 @@ const App: React.FC = () => {
           options={options}
           setOptions={setOptions}
           summary={summary}
+          selectedLanguage={selectedLanguage}
+          setSelectedLanguage={setSelectedLanguage}
         />
 
         {/* Content Area */}
@@ -95,9 +99,12 @@ const App: React.FC = () => {
           ) : (
             <div className="flex flex-col gap-4">
               <Summary summary={summary} totalLines={diffLines.length} />
-              <DiffViewer 
-                diffLines={diffLines} 
+              <DiffViewerEnhanced
+                diffLines={diffLines}
                 viewMode={viewMode}
+                language={selectedLanguage}
+                originalText={original}
+                modifiedText={modified}
               />
             </div>
           )}
