@@ -99,6 +99,15 @@
             <button class="category-btn" data-category="networking">Networking</button>
         </div>
 
+        <!-- Recently Used Section -->
+        <section class="recent-section" id="recentSection" style="display: none;">
+            <div class="recent-header">
+                <h2 class="recent-title">Recently Used</h2>
+                <button class="recent-clear" id="clearRecentBtn">Clear History</button>
+            </div>
+            <div class="recent-tools" id="recentTools"></div>
+        </section>
+
         <div class="tools-grid" id="toolsGrid">
             <!-- Development Tools -->
             <a href="/dns_lookup_tool/" class="tool-card" data-category="development networking">
@@ -1472,6 +1481,119 @@
 
         // Add placeholder text update for search shortcut hint
         searchInput.placeholder = 'Search tools... (⌘K)';
+
+        // Recently Used Tools functionality
+        const RECENT_TOOLS_KEY = 'online-tools-recent';
+        const MAX_RECENT_TOOLS = 10;
+
+        // Get tool information from card element
+        function getToolInfo(card) {
+            const href = card.getAttribute('href');
+            const title = card.querySelector('.tool-title')?.textContent || '';
+            const description = card.querySelector('.tool-description')?.textContent || '';
+            const icon = card.querySelector('.tool-icon')?.textContent || '🔧';
+            const category = card.dataset.category || '';
+
+            return {
+                href,
+                title,
+                description,
+                icon,
+                category,
+                timestamp: Date.now()
+            };
+        }
+
+        // Format relative time
+        function formatRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (seconds < 60) return 'just now';
+            if (minutes < 60) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+            if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+            if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+            return new Date(timestamp).toLocaleDateString();
+        }
+
+        // Get recent tools from localStorage
+        function getRecentTools() {
+            try {
+                const stored = localStorage.getItem(RECENT_TOOLS_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                console.error('Error reading recent tools:', e);
+                return [];
+            }
+        }
+
+        // Save recent tools to localStorage
+        function saveRecentTools(tools) {
+            try {
+                localStorage.setItem(RECENT_TOOLS_KEY, JSON.stringify(tools));
+            } catch (e) {
+                console.error('Error saving recent tools:', e);
+            }
+        }
+
+        // Display recent tools
+        function displayRecentTools() {
+            const recentSection = document.getElementById('recentSection');
+            const recentToolsContainer = document.getElementById('recentTools');
+            const recentTools = getRecentTools();
+
+            if (recentTools.length === 0) {
+                recentSection.style.display = 'none';
+                return;
+            }
+
+            recentSection.style.display = 'block';
+            recentToolsContainer.innerHTML = recentTools.map(tool => `
+                <a href="${tool.href}" class="recent-tool-card">
+                    <div class="recent-tool-icon">${tool.icon}</div>
+                    <div class="recent-tool-info">
+                        <h3 class="recent-tool-title">${tool.title}</h3>
+                        <p class="recent-tool-time">${formatRelativeTime(tool.timestamp)}</p>
+                    </div>
+                    <span class="recent-tool-arrow">→</span>
+                </a>
+            `).join('');
+        }
+
+        // Track tool click
+        toolCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const toolInfo = getToolInfo(card);
+                let recentTools = getRecentTools();
+
+                // Remove if already exists
+                recentTools = recentTools.filter(t => t.href !== toolInfo.href);
+
+                // Add to front
+                recentTools.unshift(toolInfo);
+
+                // Limit to max items
+                recentTools = recentTools.slice(0, MAX_RECENT_TOOLS);
+
+                saveRecentTools(recentTools);
+            });
+        });
+
+        // Clear recent tools
+        const clearRecentBtn = document.getElementById('clearRecentBtn');
+        clearRecentBtn.addEventListener('click', () => {
+            if (confirm('Clear all recently used tools?')) {
+                localStorage.removeItem(RECENT_TOOLS_KEY);
+                displayRecentTools();
+            }
+        });
+
+        // Display recent tools on page load
+        displayRecentTools();
     </script>
 
     <!-- Google tag (gtag.js) -->
