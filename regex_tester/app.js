@@ -98,12 +98,44 @@ function copyText(text, btn) {
     });
 }
 
+function getRegexErrorHelp(error) {
+    const msg = error.message || error.toString();
+
+    // Parse common regex syntax errors and provide helpful hints
+    if (msg.includes('Unterminated group') || msg.includes('Unmatched')) {
+        return 'Missing closing parenthesis ). Check that all opening ( have matching closing ).';
+    }
+    if (msg.includes('Invalid group') || msg.includes('Invalid capture group name')) {
+        return 'Invalid named group syntax. Use (?<name>pattern) for named groups.';
+    }
+    if (msg.includes('Nothing to repeat') || msg.includes('Invalid repetition')) {
+        return 'Quantifier (*, +, ?, {n}) must follow a valid pattern. Example: a+ not +a';
+    }
+    if (msg.includes('Unterminated character class') || msg.includes('Invalid character class')) {
+        return 'Missing closing bracket ]. Character classes must be like [abc] or [a-z].';
+    }
+    if (msg.includes('Invalid escape')) {
+        return 'Invalid escape sequence. Common escapes: \\d (digit), \\w (word), \\s (space), \\. (literal dot).';
+    }
+    if (msg.includes('Invalid property name')) {
+        return 'Invalid Unicode property. Use \\p{Property} with u flag. Example: \\p{Letter}';
+    }
+    if (msg.includes('lookbehind')) {
+        return 'Lookbehind syntax: (?<=pattern) for positive, (?<!pattern) for negative.';
+    }
+    if (msg.includes('backreference')) {
+        return 'Backreference must refer to a capturing group. Use \\1, \\2, etc. or \\k<name> for named groups.';
+    }
+
+    return 'Check regex syntax. Hover over elements in cheat sheet below for examples.';
+}
+
 function findMatches(pattern, flags, testStr) {
     if (!pattern) return { matches: [], error: null };
 
     try {
         if (pattern.length > 50 && (pattern.includes('(.+)*') || pattern.includes('(.*)*'))) {
-            throw new Error('Pattern contains potential catastrophic backtracking risks.');
+            throw new Error('Pattern contains potential catastrophic backtracking. Simplify nested quantifiers like (.+)* or (.*)*.', 'PERFORMANCE');
         }
 
         const regex = new RegExp(pattern, flags);
@@ -123,7 +155,7 @@ function findMatches(pattern, flags, testStr) {
                     break;
                 }
                 if (performance.now() - startTime > 500) {
-                    throw new Error('Regex matching took too long (potential catastrophic backtracking).');
+                    throw new Error('Regex matching took too long (>500ms). Potential catastrophic backtracking detected.', 'PERFORMANCE');
                 }
 
                 matches.push({
@@ -142,7 +174,7 @@ function findMatches(pattern, flags, testStr) {
             const startTime = performance.now();
             const match = regex.exec(testStr);
             if (performance.now() - startTime > 500) {
-                throw new Error('Regex matching took too long.');
+                throw new Error('Regex matching took too long (>500ms).', 'PERFORMANCE');
             }
 
             if (match) {
@@ -158,7 +190,14 @@ function findMatches(pattern, flags, testStr) {
 
         return { matches, error: null };
     } catch (e) {
-        return { matches: [], error: e.message };
+        const baseError = e.message || e.toString();
+        const errorType = e.name === 'SyntaxError' ? 'Syntax Error' : 'Error';
+        const helpText = getRegexErrorHelp(e);
+        return {
+            matches: [],
+            error: `${errorType}: ${baseError}`,
+            help: helpText
+        };
     }
 }
 
@@ -250,7 +289,11 @@ function runMatch() {
     const result = findMatches(pattern, flags, testStr);
 
     if (result.error) {
-        errorBar.textContent = result.error;
+        let errorHTML = result.error;
+        if (result.help) {
+            errorHTML += '<br><small style="opacity:0.8">💡 ' + result.help + '</small>';
+        }
+        errorBar.innerHTML = errorHTML;
         errorBar.classList.add('visible');
         regexBar.classList.add('has-error');
     } else {

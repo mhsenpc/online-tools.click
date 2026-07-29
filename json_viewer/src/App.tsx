@@ -360,7 +360,29 @@ export default function App() {
         setValidationErrors(errors);
       }
     } catch (err) {
-      setError((err as Error).message);
+      const error = err as Error;
+      let errorMessage = 'JSON is invalid: ';
+
+      // Extract line and column information from SyntaxError
+      const match = error.message.match(/position (\d+)/i);
+      if (match) {
+        const position = parseInt(match[1]);
+        const lines = value.substring(0, position).split('\n');
+        const line = lines.length;
+        const column = lines[lines.length - 1].length + 1;
+        errorMessage += `${error.message.split(' at ')[0]} at line ${line}, column ${column}`;
+      } else {
+        errorMessage += error.message;
+      }
+
+      // Add helpful suggestions
+      if (error.message.includes('Unexpected token')) {
+        errorMessage += '. Check for missing commas, brackets, or quotes.';
+      } else if (error.message.includes('Unexpected end')) {
+        errorMessage += '. Check for missing closing brackets or braces.';
+      }
+
+      setError(errorMessage);
       setParsedData(null);
       setValidationErrors([]);
     }
@@ -564,7 +586,20 @@ export default function App() {
                 {error && (
                   <div className="absolute bottom-4 left-4 right-4 bg-red-500/10 border border-red-500/20 p-3 rounded-lg flex items-start gap-3">
                     <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-xs text-red-500/90 leading-normal">{error}</p>
+                    <div className="flex-1">
+                      <p className="text-xs text-red-500/90 leading-normal">{error}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(error);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 1500);
+                      }}
+                      className="text-[10px] font-bold text-red-500/60 hover:text-red-500 uppercase tracking-wider shrink-0"
+                      title="Copy error message"
+                    >
+                      Copy
+                    </button>
                   </div>
                 )}
               </div>

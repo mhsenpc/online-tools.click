@@ -168,10 +168,35 @@ function switchMode(){
     ['diff','add','weekday'].forEach(m=>document.getElementById(m+'-mode').style.display=m===document.getElementById('mode').value?'block':'none');
     calcDiff();calcAdd();calcInfo();
 }
+function showDateError(message) {
+    toast('⚠️ ' + message);
+}
+
 function calcDiff(){
-    const s=new Date(document.getElementById('start-date').value);
-    const e=new Date(document.getElementById('end-date').value);
-    if(isNaN(s)||isNaN(e)){document.getElementById('diff-days').textContent='--';return;}
+    const startVal = document.getElementById('start-date').value;
+    const endVal = document.getElementById('end-date').value;
+
+    if (!startVal || !endVal) {
+        document.getElementById('diff-days').textContent='--';
+        document.getElementById('diff-weeks').textContent='--';
+        document.getElementById('diff-months').textContent='--';
+        if (!startVal && !endVal) {
+            showDateError('Please select both start and end dates. Expected format: YYYY-MM-DD');
+        }
+        return;
+    }
+
+    const s=new Date(startVal);
+    const e=new Date(endVal);
+
+    if(isNaN(s)||isNaN(e)){
+        document.getElementById('diff-days').textContent='--';
+        document.getElementById('diff-weeks').textContent='--';
+        document.getElementById('diff-months').textContent='--';
+        showDateError('Invalid date format. Expected: YYYY-MM-DD (e.g., 2024-01-15)');
+        return;
+    }
+
     const diff=Math.abs(e-s);
     const days=Math.floor(diff/86400000);
     const weeks=Math.floor(days/7);
@@ -180,16 +205,49 @@ function calcDiff(){
     document.getElementById('diff-weeks').textContent=weeks.toLocaleString()+'w';
     document.getElementById('diff-months').textContent=months+'mo';
 }
+
 function calcAdd(){
-    const s=new Date(document.getElementById('add-date').value);
+    const dateVal = document.getElementById('add-date').value;
     const d=parseInt(document.getElementById('add-days').value)||0;
-    if(isNaN(s)){document.getElementById('add-result').textContent='--';return;}
+
+    if (!dateVal) {
+        document.getElementById('add-result').textContent='--';
+        return;
+    }
+
+    const s=new Date(dateVal);
+
+    if(isNaN(s)){
+        document.getElementById('add-result').textContent='--';
+        showDateError('Invalid date format. Expected: YYYY-MM-DD (e.g., 2024-01-15)');
+        return;
+    }
+
+    if (Math.abs(d) > 36500) {
+        showDateError('Days value too large. Maximum: ±36,500 days (±100 years)');
+        return;
+    }
+
     const r=new Date(s.getTime()+d*86400000);
     document.getElementById('add-result').textContent=r.toDateString();
 }
+
 function calcInfo(){
-    const d=new Date(document.getElementById('info-date').value);
-    if(isNaN(d)){document.getElementById('info-grid').innerHTML='';return;}
+    const dateVal = document.getElementById('info-date').value;
+
+    if (!dateVal) {
+        document.getElementById('info-grid').innerHTML='';
+        return;
+    }
+
+    const d=new Date(dateVal);
+
+    if(isNaN(d)){
+        document.getElementById('info-grid').innerHTML='';
+        showDateError('Invalid date format. Expected: YYYY-MM-DD (e.g., 2024-01-15)');
+        return;
+    }
+
     const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const start=new Date(d.getFullYear(),0,0);
