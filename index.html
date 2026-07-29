@@ -58,8 +58,35 @@
                     <span>Forever</span>
                 </div>
             </div>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle category menu">
+                <span class="mobile-menu-line"></span>
+                <span class="mobile-menu-line"></span>
+                <span class="mobile-menu-line"></span>
+            </button>
         </div>
     </nav>
+
+    <!-- Mobile Category Drawer -->
+    <div class="mobile-category-drawer" id="mobileCategoryDrawer">
+        <div class="mobile-category-backdrop" id="mobileCategoryBackdrop"></div>
+        <div class="mobile-category-content">
+            <div class="mobile-category-header">
+                <h2 class="mobile-category-title">Categories</h2>
+                <button class="mobile-category-close" id="mobileCategoryClose" aria-label="Close menu">×</button>
+            </div>
+            <div class="mobile-category-list" id="mobileCategoryList">
+                <button class="mobile-category-item active" data-category="all">All Tools</button>
+                <button class="mobile-category-item" data-category="development">Development</button>
+                <button class="mobile-category-item" data-category="text">Text</button>
+                <button class="mobile-category-item" data-category="converters">Converters</button>
+                <button class="mobile-category-item" data-category="security">Security</button>
+                <button class="mobile-category-item" data-category="design">Design</button>
+                <button class="mobile-category-item" data-category="calculators">Calculators</button>
+                <button class="mobile-category-item" data-category="networking">Networking</button>
+            </div>
+        </div>
+    </div>
 
     <main class="main-content">
         <section class="hero">
@@ -1355,6 +1382,24 @@
         </div>
     </footer>
 
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <div class="mobile-nav-container">
+            <a href="/" class="mobile-nav-item active">
+                <span class="mobile-nav-icon">🏠</span>
+                <span>Home</span>
+            </a>
+            <button class="mobile-nav-item" id="mobileSearchBtn">
+                <span class="mobile-nav-icon">🔍</span>
+                <span>Search</span>
+            </button>
+            <button class="mobile-nav-item" id="mobileCategoryBtn">
+                <span class="mobile-nav-icon">📁</span>
+                <span>Categories</span>
+            </button>
+        </div>
+    </nav>
+
     <script>
         // Navigation scroll effect
         const nav = document.querySelector('.nav');
@@ -1594,6 +1639,114 @@
 
         // Display recent tools on page load
         displayRecentTools();
+
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileCategoryDrawer = document.getElementById('mobileCategoryDrawer');
+        const mobileCategoryBackdrop = document.getElementById('mobileCategoryBackdrop');
+        const mobileCategoryClose = document.getElementById('mobileCategoryClose');
+        const mobileCategoryBtn = document.getElementById('mobileCategoryBtn');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileCategoryItems = document.querySelectorAll('.mobile-category-item');
+
+        function openMobileDrawer() {
+            mobileCategoryDrawer.classList.add('open');
+            mobileMenuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileDrawer() {
+            mobileCategoryDrawer.classList.remove('open');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', () => {
+            if (mobileCategoryDrawer.classList.contains('open')) {
+                closeMobileDrawer();
+            } else {
+                openMobileDrawer();
+            }
+        });
+
+        mobileCategoryBtn.addEventListener('click', openMobileDrawer);
+        mobileCategoryClose.addEventListener('click', closeMobileDrawer);
+        mobileCategoryBackdrop.addEventListener('click', closeMobileDrawer);
+
+        // Mobile category filter
+        mobileCategoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Update active state
+                mobileCategoryItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const category = item.dataset.category;
+
+                // Filter cards
+                toolCards.forEach(card => {
+                    const cardCategories = card.dataset.category;
+                    if (category === 'all' || cardCategories.includes(category)) {
+                        card.style.display = '';
+                        setTimeout(() => card.classList.add('visible'), 50);
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('visible');
+                    }
+                });
+
+                // Close drawer after selection
+                closeMobileDrawer();
+
+                // Scroll to tools grid
+                document.querySelector('.tools-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Mobile search button
+        mobileSearchBtn.addEventListener('click', () => {
+            searchInput.focus();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        // Swipe gesture support for tool cards (optional enhancement)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        toolCards.forEach((card, index) => {
+            card.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            card.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe(card);
+            }, { passive: true });
+        });
+
+        function handleSwipe(card) {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+
+            // Swipe left to navigate
+            if (swipeDistance < -swipeThreshold) {
+                card.click();
+            }
+        }
+
+        // Prevent horizontal scroll on body
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Update mobile nav active state on scroll
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+        const sections = {
+            home: 0,
+            search: document.querySelector('.nav-search')?.offsetTop || 0,
+            tools: document.querySelector('.tools-grid')?.offsetTop || 0
+        };
     </script>
 
     <!-- Google tag (gtag.js) -->
