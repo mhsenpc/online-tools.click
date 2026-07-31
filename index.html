@@ -28,24 +28,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="theme.js"></script>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="bg-effects">
         <div class="gradient-mesh"></div>
         <div class="noise-texture"></div>
         <div class="grid-pattern"></div>
     </div>
 
-    <nav class="nav">
+    <nav class="nav" role="navigation" aria-label="Main navigation">
         <div class="nav-container">
-            <a href="/" class="nav-logo">
-                <div class="nav-logo-icon">⚡</div>
+            <a href="/" class="nav-logo" aria-label="Online Tools home">
+                <div class="nav-logo-icon" aria-hidden="true">⚡</div>
                 Online Tools
             </a>
 
-            <div class="nav-search">
-                <span class="nav-search-icon">🔍</span>
-                <input type="text" class="nav-search-input" placeholder="Search tools..." id="searchInput">
+            <div class="nav-search" role="search">
+                <span class="nav-search-icon" aria-hidden="true">🔍</span>
+                <input type="text" class="nav-search-input" placeholder="Search tools..." id="searchInput" aria-label="Search tools">
             </div>
 
             <div class="nav-stats">
@@ -58,13 +60,45 @@
                     <span>Forever</span>
                 </div>
             </div>
+
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <span class="theme-toggle-icon moon" aria-hidden="true">🌙</span>
+                <span class="theme-toggle-icon sun" aria-hidden="true">☀️</span>
+            </button>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle category menu">
+                <span class="mobile-menu-line"></span>
+                <span class="mobile-menu-line"></span>
+                <span class="mobile-menu-line"></span>
+            </button>
         </div>
     </nav>
 
-    <main class="main-content">
+    <!-- Mobile Category Drawer -->
+    <div class="mobile-category-drawer" id="mobileCategoryDrawer">
+        <div class="mobile-category-backdrop" id="mobileCategoryBackdrop"></div>
+        <div class="mobile-category-content">
+            <div class="mobile-category-header">
+                <h2 class="mobile-category-title">Categories</h2>
+                <button class="mobile-category-close" id="mobileCategoryClose" aria-label="Close menu">×</button>
+            </div>
+            <div class="mobile-category-list" id="mobileCategoryList">
+                <button class="mobile-category-item active" data-category="all">All Tools</button>
+                <button class="mobile-category-item" data-category="development">Development</button>
+                <button class="mobile-category-item" data-category="text">Text</button>
+                <button class="mobile-category-item" data-category="converters">Converters</button>
+                <button class="mobile-category-item" data-category="security">Security</button>
+                <button class="mobile-category-item" data-category="design">Design</button>
+                <button class="mobile-category-item" data-category="calculators">Calculators</button>
+                <button class="mobile-category-item" data-category="networking">Networking</button>
+            </div>
+        </div>
+    </div>
+
+    <main class="main-content" id="main-content">
         <section class="hero">
             <div class="hero-badge">
-                <span class="hero-badge-dot"></span>
+                <span class="hero-badge-dot" aria-hidden="true"></span>
                 All tools are free & client-side
             </div>
             <h1 class="hero-title">Build Faster with<br>Developer Tools</h1>
@@ -74,15 +108,15 @@
             </p>
             <div class="hero-features">
                 <div class="hero-feature">
-                    <span class="hero-feature-icon">🔒</span>
+                    <span class="hero-feature-icon" aria-hidden="true">🔒</span>
                     <span>100% Private</span>
                 </div>
                 <div class="hero-feature">
-                    <span class="hero-feature-icon">⚡</span>
+                    <span class="hero-feature-icon" aria-hidden="true">⚡</span>
                     <span>Lightning Fast</span>
                 </div>
                 <div class="hero-feature">
-                    <span class="hero-feature-icon">📱</span>
+                    <span class="hero-feature-icon" aria-hidden="true">📱</span>
                     <span>Works Offline</span>
                 </div>
             </div>
@@ -99,12 +133,21 @@
             <button class="category-btn" data-category="networking">Networking</button>
         </div>
 
+        <!-- Recently Used Section -->
+        <section class="recent-section" id="recentSection" style="display: none;">
+            <div class="recent-header">
+                <h2 class="recent-title">Recently Used</h2>
+                <button class="recent-clear" id="clearRecentBtn">Clear History</button>
+            </div>
+            <div class="recent-tools" id="recentTools"></div>
+        </section>
+
         <div class="tools-grid" id="toolsGrid">
             <!-- Development Tools -->
             <a href="/dns_lookup_tool/" class="tool-card" data-category="development networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🌐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">DNS Lookup Tool</h3>
                 <p class="tool-description">Lookup DNS records for any domain with ease.</p>
@@ -115,8 +158,8 @@
 
             <a href="/url_parser/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔗</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔗</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">URL Parser</h3>
                 <p class="tool-description">Decompose URLs and edit query parameters easily.</p>
@@ -127,8 +170,8 @@
 
             <a href="/cron_expression_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🕒</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🕒</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Cron Generator</h3>
                 <p class="tool-description">Human-readable cron expressions without the headache.</p>
@@ -139,8 +182,8 @@
 
             <a href="/diff_checker/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🌓</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌓</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Diff Checker</h3>
                 <p class="tool-description">Compare text, JSON, or code with side-by-side highlighting.</p>
@@ -151,8 +194,8 @@
 
             <a href="/regex_tester/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔍</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔍</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Regex Tester</h3>
                 <p class="tool-description">Real-time regular expression testing and explanation.</p>
@@ -163,8 +206,8 @@
 
             <a href="/xml_formatter/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📦</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📦</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">XML Formatter</h3>
                 <p class="tool-description">Clean, pretty-print, and validate messy XML data.</p>
@@ -175,8 +218,8 @@
 
             <a href="/json_viewer/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📜</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📜</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JSON Viewer</h3>
                 <p class="tool-description">The best way to visualize, format, and explore nested JSON.</p>
@@ -187,8 +230,8 @@
 
             <a href="/markdown_editor/" class="tool-card" data-category="development text">
                 <div class="tool-header">
-                    <div class="tool-icon">📝</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📝</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Markdown Editor</h3>
                 <p class="tool-description">Real-time GFM editor with side-by-side preview and export.</p>
@@ -199,8 +242,8 @@
 
             <a href="/json_validator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">✅</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">✅</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JSON Validator</h3>
                 <p class="tool-description">Validate, format, and beautify JSON with error messages.</p>
@@ -211,8 +254,8 @@
 
             <a href="/yaml_converter/" class="tool-card" data-category="development converters">
                 <div class="tool-header">
-                    <div class="tool-icon">🔄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">YAML Converter</h3>
                 <p class="tool-description">Convert between YAML and JSON formats bidirectionally.</p>
@@ -223,8 +266,8 @@
 
             <a href="/sql_formatter/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🗄️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🗄️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">SQL Formatter</h3>
                 <p class="tool-description">Format and beautify SQL queries for readability.</p>
@@ -235,8 +278,8 @@
 
             <a href="/graphql_formatter/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">⚡</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⚡</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">GraphQL Formatter</h3>
                 <p class="tool-description">Format and beautify GraphQL queries and mutations.</p>
@@ -248,8 +291,8 @@
             <!-- Security Tools -->
             <a href="/password_generator/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🔑</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔑</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Password Generator</h3>
                 <p class="tool-description">Secure, client-side generation of random passwords and passphrases.</p>
@@ -260,8 +303,8 @@
 
             <a href="/jwt_decoder/" class="tool-card" data-category="security development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JWT Decoder</h3>
                 <p class="tool-description">Decode and verify JSON Web Tokens with full UTF-8 support.</p>
@@ -272,8 +315,8 @@
 
             <a href="/aes_encryption/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🔒</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔒</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">AES Encryption</h3>
                 <p class="tool-description">Encrypt and decrypt text using AES with a password.</p>
@@ -284,8 +327,8 @@
 
             <a href="/otp_generator/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🔑</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔑</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">OTP Generator</h3>
                 <p class="tool-description">Generate time-based one-time passwords for 2FA.</p>
@@ -296,8 +339,8 @@
 
             <a href="/hmac_generator/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🔐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">HMAC Generator</h3>
                 <p class="tool-description">Generate HMAC signatures with SHA-256, SHA-384, SHA-512.</p>
@@ -308,8 +351,8 @@
 
             <a href="/token_generator/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🎟️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎟️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Token Generator</h3>
                 <p class="tool-description">Generate cryptographically secure random tokens and API keys.</p>
@@ -320,8 +363,8 @@
 
             <a href="/password_strength/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">💪</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">💪</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Password Strength Checker</h3>
                 <p class="tool-description">Analyze password strength, entropy, and character types.</p>
@@ -332,8 +375,8 @@
 
             <a href="/hash_generator/" class="tool-card" data-category="security">
                 <div class="tool-header">
-                    <div class="tool-icon">🧱</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🧱</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Hash Generator</h3>
                 <p class="tool-description">Securely compute SHA-256, SHA-512, and SHA-1 hashes.</p>
@@ -345,8 +388,8 @@
             <!-- Converter Tools -->
             <a href="/base64/" class="tool-card" data-category="converters development">
                 <div class="tool-header">
-                    <div class="tool-icon">📦</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📦</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Base64 Tool</h3>
                 <p class="tool-description">Fast text and file encoding with URL-safe support.</p>
@@ -357,8 +400,8 @@
 
             <a href="/url_encoder/" class="tool-card" data-category="converters development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔗</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔗</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">URL Encoder/Decoder</h3>
                 <p class="tool-description">Encode and decode URL components and full URLs.</p>
@@ -369,8 +412,8 @@
 
             <a href="/unicode_converter/" class="tool-card" data-category="converters">
                 <div class="tool-header">
-                    <div class="tool-icon">🌍</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌍</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Unicode Converter</h3>
                 <p class="tool-description">Convert text to Unicode code points, escapes, and hex bytes.</p>
@@ -381,8 +424,8 @@
 
             <a href="/number_base_converter/" class="tool-card" data-category="converters calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🔢</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔢</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Number Base Converter</h3>
                 <p class="tool-description">Convert numbers between binary, octal, decimal, and hex.</p>
@@ -393,8 +436,8 @@
 
             <a href="/roman_numeral_converter/" class="tool-card" data-category="converters">
                 <div class="tool-header">
-                    <div class="tool-icon">🏛️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🏛️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Roman Numeral Converter</h3>
                 <p class="tool-description">Convert between Roman numerals and Arabic numbers.</p>
@@ -405,8 +448,8 @@
 
             <a href="/unit_converter/" class="tool-card" data-category="converters calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Unit Converter</h3>
                 <p class="tool-description">Convert length, weight, temperature, volume, and more.</p>
@@ -417,8 +460,8 @@
 
             <a href="/epoch_converter/" class="tool-card" data-category="converters development">
                 <div class="tool-header">
-                    <div class="tool-icon">🕰️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🕰️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Epoch Converter</h3>
                 <p class="tool-description">Bidirectional Unix timestamp to human-readable time conversion.</p>
@@ -429,8 +472,8 @@
 
             <a href="/color_converter/" class="tool-card" data-category="converters design">
                 <div class="tool-header">
-                    <div class="tool-icon">🔄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Color Converter</h3>
                 <p class="tool-description">Convert colors between HEX, RGB, HSL, and HSV formats.</p>
@@ -441,8 +484,8 @@
 
             <a href="/json_to_csv/" class="tool-card" data-category="converters development">
                 <div class="tool-header">
-                    <div class="tool-icon">📊</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📊</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JSON to CSV</h3>
                 <p class="tool-description">Convert JSON data to CSV format with customizable delimiters.</p>
@@ -453,8 +496,8 @@
 
             <a href="/md5_tools/" class="tool-card" data-category="converters security">
                 <div class="tool-header">
-                    <div class="tool-icon">⚡</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⚡</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">MD5 Tools</h3>
                 <p class="tool-description">Fast MD5 generation and integrity verification.</p>
@@ -466,8 +509,8 @@
             <!-- Text Tools -->
             <a href="/case_converter/" class="tool-card" data-category="text converters">
                 <div class="tool-header">
-                    <div class="tool-icon">🔤</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔤</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Case Converter</h3>
                 <p class="tool-description">Convert text between uppercase, lowercase, camelCase, snake_case, and more.</p>
@@ -478,8 +521,8 @@
 
             <a href="/text_reverser/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">↩️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">↩️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Text Reverser</h3>
                 <p class="tool-description">Reverse text, word order, lines, or characters instantly.</p>
@@ -490,8 +533,8 @@
 
             <a href="/word_counter/" class="tool-card" data-category="text calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🔢</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔢</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Word Counter</h3>
                 <p class="tool-description">Count characters, words, lines, and estimate reading time.</p>
@@ -502,8 +545,8 @@
 
             <a href="/token_counter/" class="tool-card" data-category="text calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🪙</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🪙</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Token Counter</h3>
                 <p class="tool-description">Estimate token counts for GPT and Claude models — exact BPE for OpenAI, heuristic for Claude.</p>
@@ -515,8 +558,8 @@
 
             <a href="/text_sorter/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">↕️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">↕️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Text Sorter</h3>
                 <p class="tool-description">Sort lines alphabetically, by length, reverse, or shuffle.</p>
@@ -527,8 +570,8 @@
 
             <a href="/duplicate_line_remover/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">🧹</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🧹</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Duplicate Line Remover</h3>
                 <p class="tool-description">Remove duplicate lines from text with smart filtering.</p>
@@ -539,8 +582,8 @@
 
             <a href="/slug_generator/" class="tool-card" data-category="text development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔗</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔗</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Slug Generator</h3>
                 <p class="tool-description">Convert text to URL-friendly slugs for SEO and permalinks.</p>
@@ -551,8 +594,8 @@
 
             <a href="/find_replace/" class="tool-card" data-category="text development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔍</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔍</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Find & Replace</h3>
                 <p class="tool-description">Find and replace text in any string with regex support.</p>
@@ -563,8 +606,8 @@
 
             <a href="/palindrome_checker/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">🔄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Palindrome Checker</h3>
                 <p class="tool-description">Check if text is a palindrome with configurable rules.</p>
@@ -575,8 +618,8 @@
 
             <a href="/line_counter/" class="tool-card" data-category="text calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📏</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📏</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Line Counter</h3>
                 <p class="tool-description">Count total, empty, and code lines in text or source code.</p>
@@ -587,8 +630,8 @@
 
             <a href="/lorem_ipsum/" class="tool-card" data-category="text development">
                 <div class="tool-header">
-                    <div class="tool-icon">🖋️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🖋️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Lorem Ipsum</h3>
                 <p class="tool-description">Generate clean placeholder text for your design and development projects.</p>
@@ -599,8 +642,8 @@
 
             <a href="/morse_code/" class="tool-card" data-category="text converters">
                 <div class="tool-header">
-                    <div class="tool-icon">📡</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📡</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Morse Code Converter</h3>
                 <p class="tool-description">Convert text to Morse code and back, with audio playback.</p>
@@ -612,8 +655,8 @@
             <!-- Design Tools -->
             <a href="/color_picker/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🌈</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌈</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Color Picker</h3>
                 <p class="tool-description">Visual color selection and multi-format conversion with contrast checking.</p>
@@ -624,8 +667,8 @@
 
             <a href="/css_gradient_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🌈</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌈</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Gradient Generator</h3>
                 <p class="tool-description">Create beautiful CSS gradients visually with multiple stops.</p>
@@ -636,8 +679,8 @@
 
             <a href="/css_box_shadow/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">📦</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📦</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Box Shadow Generator</h3>
                 <p class="tool-description">Interactive box-shadow generator with live preview.</p>
@@ -648,8 +691,8 @@
 
             <a href="/color_palette_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🎨</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎨</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Color Palette Generator</h3>
                 <p class="tool-description">Generate harmonious color palettes from any base color.</p>
@@ -660,8 +703,8 @@
 
             <a href="/contrast_checker/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">👁️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">👁️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Contrast Checker</h3>
                 <p class="tool-description">Check WCAG contrast ratios for accessibility compliance.</p>
@@ -672,8 +715,8 @@
 
             <a href="/border_radius_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">⬜</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⬜</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Border Radius Generator</h3>
                 <p class="tool-description">Create custom border-radius styles visually.</p>
@@ -684,8 +727,8 @@
 
             <a href="/text_shadow_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">✏️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">✏️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Text Shadow Generator</h3>
                 <p class="tool-description">Create CSS text-shadow effects interactively.</p>
@@ -696,8 +739,8 @@
 
             <a href="/css_animation_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🎬</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎬</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Animation Generator</h3>
                 <p class="tool-description">Generate CSS @keyframes animations with a visual builder.</p>
@@ -708,8 +751,8 @@
 
             <a href="/css_media_query_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">📱</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📱</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Media Query Generator</h3>
                 <p class="tool-description">Generate responsive CSS media queries for breakpoints.</p>
@@ -720,8 +763,8 @@
 
             <a href="/css_transform_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🔄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Transform Generator</h3>
                 <p class="tool-description">Create CSS transform combinations: translate, rotate, scale, skew.</p>
@@ -732,8 +775,8 @@
 
             <a href="/ascii_art_generator/" class="tool-card" data-category="design text">
                 <div class="tool-header">
-                    <div class="tool-icon">🎨</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎨</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">ASCII Art Generator</h3>
                 <p class="tool-description">Convert text into stylized ASCII art banners instantly.</p>
@@ -745,8 +788,8 @@
             <!-- Calculator Tools -->
             <a href="/percentage_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📊</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📊</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Percentage Calculator</h3>
                 <p class="tool-description">Calculate percentages: X% of Y, what percent, and percent change.</p>
@@ -757,8 +800,8 @@
 
             <a href="/bmi_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">⚕️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⚕️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">BMI Calculator</h3>
                 <p class="tool-description">Calculate Body Mass Index and healthy weight range.</p>
@@ -769,8 +812,8 @@
 
             <a href="/tip_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">💵</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">💵</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Tip Calculator</h3>
                 <p class="tool-description">Calculate tips, split bills, and each person's share.</p>
@@ -781,8 +824,8 @@
 
             <a href="/mortgage_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🏠</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🏠</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Mortgage Calculator</h3>
                 <p class="tool-description">Calculate monthly payments, interest, and amortization.</p>
@@ -793,8 +836,8 @@
 
             <a href="/age_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🎂</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎂</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Age Calculator</h3>
                 <p class="tool-description">Calculate exact age in years, months, and days.</p>
@@ -805,8 +848,8 @@
 
             <a href="/seconds_converter/" class="tool-card" data-category="calculators converters">
                 <div class="tool-header">
-                    <div class="tool-icon">⏱️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⏱️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Seconds Converter</h3>
                 <p class="tool-description">Convert seconds to days/hours/minutes and back.</p>
@@ -817,8 +860,8 @@
 
             <a href="/discount_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🏷️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🏷️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Discount Calculator</h3>
                 <p class="tool-description">Calculate final price after discount with tax support.</p>
@@ -829,8 +872,8 @@
 
             <a href="/file_size_converter/" class="tool-card" data-category="calculators converters">
                 <div class="tool-header">
-                    <div class="tool-icon">💾</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">💾</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">File Size Converter</h3>
                 <p class="tool-description">Convert between bytes, KB, MB, GB, TB, and PB.</p>
@@ -841,8 +884,8 @@
 
             <a href="/working_hours_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">💼</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">💼</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Working Hours Calculator</h3>
                 <p class="tool-description">Calculate work hours, break time, and earnings.</p>
@@ -853,8 +896,8 @@
 
             <a href="/time_card_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🕒</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🕒</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Time Card Calculator</h3>
                 <p class="tool-description">Calculate total hours from clock-in/out times for multiple days.</p>
@@ -866,8 +909,8 @@
             <!-- Networking Tools -->
             <a href="/ip_lookup/" class="tool-card" data-category="networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🌐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">IP Lookup</h3>
                 <p class="tool-description">Display your public IP address and network location info.</p>
@@ -878,8 +921,8 @@
 
             <a href="/http_status_codes/" class="tool-card" data-category="networking development">
                 <div class="tool-header">
-                    <div class="tool-icon">📋</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📋</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">HTTP Status Codes</h3>
                 <p class="tool-description">Browse HTTP response status codes with descriptions.</p>
@@ -890,8 +933,8 @@
 
             <a href="/user_agent_parser/" class="tool-card" data-category="networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🖥️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🖥️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">User Agent Parser</h3>
                 <p class="tool-description">Parse and analyze browser User-Agent strings.</p>
@@ -902,8 +945,8 @@
 
             <a href="/mac_address_lookup/" class="tool-card" data-category="networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🔌</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔌</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">MAC Address Lookup</h3>
                 <p class="tool-description">Look up manufacturer / vendor from a MAC address OUI.</p>
@@ -914,8 +957,8 @@
 
             <a href="/subnet_calculator/" class="tool-card" data-category="networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🌐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Subnet Calculator</h3>
                 <p class="tool-description">Calculate subnet masks, network ranges, and usable hosts.</p>
@@ -926,8 +969,8 @@
 
             <a href="/port_reference/" class="tool-card" data-category="networking">
                 <div class="tool-header">
-                    <div class="tool-icon">🔌</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔌</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Port Reference</h3>
                 <p class="tool-description">Browse common TCP/UDP port numbers and their services.</p>
@@ -939,8 +982,8 @@
             <!-- Utility Tools -->
             <a href="/uuid_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🆔</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🆔</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">UUID Generator</h3>
                 <p class="tool-description">Generate RFC-compliant UUID v1, v4, and v7 identifiers.</p>
@@ -951,8 +994,8 @@
 
             <a href="/image_compressor/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">🖼️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🖼️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Image Optimizer</h3>
                 <p class="tool-description">Client-side image compression and resizing without data leaks.</p>
@@ -963,8 +1006,8 @@
 
             <a href="/qr_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">📱</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📱</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">QR Generator</h3>
                 <p class="tool-description">Create custom QR codes for URLs, WiFi, and vCards instantly.</p>
@@ -975,8 +1018,8 @@
 
             <a href="/html_entities/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔣</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔣</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">HTML Entities</h3>
                 <p class="tool-description">Encode and decode HTML entities for web development.</p>
@@ -987,8 +1030,8 @@
 
             <a href="/css_minifier/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🎨</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🎨</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">CSS Minifier</h3>
                 <p class="tool-description">Optimize and beautify CSS code for production.</p>
@@ -999,8 +1042,8 @@
 
             <a href="/cookie_decoder/" class="tool-card" data-category="development security">
                 <div class="tool-header">
-                    <div class="tool-icon">🍪</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🍪</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Cookie Decoder</h3>
                 <p class="tool-description">Decode and inspect browser cookie strings.</p>
@@ -1011,8 +1054,8 @@
 
             <a href="/mock_api_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🛠️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🛠️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Mock API Generator</h3>
                 <p class="tool-description">Build and export mock JSON structures instantly.</p>
@@ -1023,8 +1066,8 @@
 
             <a href="/json_escape/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔣</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔣</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JSON Escape/Unescape</h3>
                 <p class="tool-description">Escape or unescape JSON string special characters.</p>
@@ -1035,8 +1078,8 @@
 
             <a href="/json_sorter/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📋</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📋</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JSON Sorter</h3>
                 <p class="tool-description">Sort JSON object keys alphabetically, deeply.</p>
@@ -1047,8 +1090,8 @@
 
             <a href="/html_preview/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">👁️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">👁️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">HTML Preview</h3>
                 <p class="tool-description">Write HTML and see live rendered preview instantly.</p>
@@ -1059,8 +1102,8 @@
 
             <a href="/markdown_to_html/" class="tool-card" data-category="development converters">
                 <div class="tool-header">
-                    <div class="tool-icon">📄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Markdown to HTML</h3>
                 <p class="tool-description">Convert Markdown to HTML with live preview.</p>
@@ -1071,8 +1114,8 @@
 
             <a href="/jwt_generator/" class="tool-card" data-category="security development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔑</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔑</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">JWT Generator</h3>
                 <p class="tool-description">Generate signed JSON Web Tokens with custom payloads.</p>
@@ -1083,8 +1126,8 @@
 
             <a href="/regex_visualizer/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔍</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔍</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Regex Visualizer</h3>
                 <p class="tool-description">Visualize regex pattern explanations and test matches.</p>
@@ -1096,8 +1139,8 @@
             <!-- Time & Date Tools -->
             <a href="/world_clock/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">🕐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🕐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">World Clock</h3>
                 <p class="tool-description">Display current time across multiple timezones simultaneously.</p>
@@ -1108,8 +1151,8 @@
 
             <a href="/timezone_converter/" class="tool-card" data-category="calculators converters">
                 <div class="tool-header">
-                    <div class="tool-icon">🌍</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🌍</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Timezone Converter</h3>
                 <p class="tool-description">Convert date/time between timezones instantly.</p>
@@ -1120,8 +1163,8 @@
 
             <a href="/countdown_timer/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">⏰</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⏰</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Countdown Timer</h3>
                 <p class="tool-description">Set a countdown to any date with live display.</p>
@@ -1132,8 +1175,8 @@
 
             <a href="/stopwatch/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">⏱️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">⏱️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Stopwatch</h3>
                 <p class="tool-description">Simple, accurate stopwatch with lap timing functionality.</p>
@@ -1144,8 +1187,8 @@
 
             <a href="/date_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📅</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📅</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Date Calculator</h3>
                 <p class="tool-description">Calculate days between dates and add/subtract days.</p>
@@ -1156,8 +1199,8 @@
 
             <a href="/calendar_generator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📅</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📅</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Calendar Generator</h3>
                 <p class="tool-description">Generate a printable calendar for any month or year.</p>
@@ -1168,8 +1211,8 @@
 
             <a href="/business_days_calculator/" class="tool-card" data-category="calculators">
                 <div class="tool-header">
-                    <div class="tool-icon">📆</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📆</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Business Days Calculator</h3>
                 <p class="tool-description">Count business days or add business days to a date.</p>
@@ -1181,8 +1224,8 @@
             <!-- Generator Tools -->
             <a href="/barcode_generator/" class="tool-card" data-category="design">
                 <div class="tool-header">
-                    <div class="tool-icon">📊</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📊</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Barcode Generator</h3>
                 <p class="tool-description">Generate EAN-13 and Code-128 barcodes, downloadable as PNG.</p>
@@ -1193,8 +1236,8 @@
 
             <a href="/name_generator/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">👤</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">👤</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Name Generator</h3>
                 <p class="tool-description">Generate random names styled by culture or genre.</p>
@@ -1205,8 +1248,8 @@
 
             <a href="/fake_data_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📇</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📇</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Fake Data Generator</h3>
                 <p class="tool-description">Generate realistic fake personal data for testing.</p>
@@ -1217,8 +1260,8 @@
 
             <a href="/username_generator/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">👥</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">👥</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Username Generator</h3>
                 <p class="tool-description">Generate unique usernames for social media and gaming.</p>
@@ -1229,8 +1272,8 @@
 
             <a href="/emoji_search/" class="tool-card" data-category="text">
                 <div class="tool-header">
-                    <div class="tool-icon">😄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">😄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Emoji Search</h3>
                 <p class="tool-description">Search, browse, and copy emojis by keyword.</p>
@@ -1241,8 +1284,8 @@
 
             <a href="/credit_card_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">💳</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">💳</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Credit Card Generator</h3>
                 <p class="tool-description">Generate test credit card numbers for development.</p>
@@ -1254,8 +1297,8 @@
             <!-- Developer Utilities -->
             <a href="/gitignore_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📁</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📁</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">.gitignore Generator</h3>
                 <p class="tool-description">Generate .gitignore files for languages and frameworks.</p>
@@ -1266,8 +1309,8 @@
 
             <a href="/license_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📜</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📜</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">License Generator</h3>
                 <p class="tool-description">Generate open source license texts for your projects.</p>
@@ -1278,8 +1321,8 @@
 
             <a href="/docker_compose_generator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🐳</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🐳</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Docker Compose Generator</h3>
                 <p class="tool-description">Generate docker-compose.yml for common dev stacks.</p>
@@ -1290,8 +1333,8 @@
 
             <a href="/mime_type_lookup/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">📎</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📎</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">MIME Type Lookup</h3>
                 <p class="tool-description">Look up MIME types for file extensions and vice versa.</p>
@@ -1302,8 +1345,8 @@
 
             <a href="/chmod_calculator/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">🔐</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">🔐</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">Chmod Calculator</h3>
                 <p class="tool-description">Convert Unix file permissions between numeric and symbolic.</p>
@@ -1315,8 +1358,8 @@
             <!-- PDF Tools -->
             <a href="/pdf_merger/" class="tool-card" data-category="development text">
                 <div class="tool-header">
-                    <div class="tool-icon">📄</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">📄</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">PDF Merger</h3>
                 <p class="tool-description">Combine multiple PDF files into one document with drag-to-reorder.</p>
@@ -1327,8 +1370,8 @@
 
             <a href="/pdf_page_extractor/" class="tool-card" data-category="development">
                 <div class="tool-header">
-                    <div class="tool-icon">✂️</div>
-                    <span class="tool-arrow">→</span>
+                    <div class="tool-icon" aria-hidden="true">✂️</div>
+                    <span class="tool-arrow" aria-hidden="true">→</span>
                 </div>
                 <h3 class="tool-title">PDF Page Extractor</h3>
                 <p class="tool-description">Extract specific pages from PDFs by range, odd/even, or custom selection.</p>
@@ -1345,6 +1388,24 @@
             <p class="footer-text">© 2026 Online-Tools.Click • Built for precision • Free forever</p>
         </div>
     </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+        <div class="mobile-nav-container">
+            <a href="/" class="mobile-nav-item active" aria-label="Home">
+                <span class="mobile-nav-icon" aria-hidden="true">🏠</span>
+                <span>Home</span>
+            </a>
+            <button class="mobile-nav-item" id="mobileSearchBtn" aria-label="Search tools">
+                <span class="mobile-nav-icon" aria-hidden="true">🔍</span>
+                <span>Search</span>
+            </button>
+            <button class="mobile-nav-item" id="mobileCategoryBtn" aria-label="Browse categories">
+                <span class="mobile-nav-icon" aria-hidden="true">📁</span>
+                <span>Categories</span>
+            </button>
+        </div>
+    </nav>
 
     <script>
         // Navigation scroll effect
@@ -1472,6 +1533,227 @@
 
         // Add placeholder text update for search shortcut hint
         searchInput.placeholder = 'Search tools... (⌘K)';
+
+        // Recently Used Tools functionality
+        const RECENT_TOOLS_KEY = 'online-tools-recent';
+        const MAX_RECENT_TOOLS = 10;
+
+        // Get tool information from card element
+        function getToolInfo(card) {
+            const href = card.getAttribute('href');
+            const title = card.querySelector('.tool-title')?.textContent || '';
+            const description = card.querySelector('.tool-description')?.textContent || '';
+            const icon = card.querySelector('.tool-icon')?.textContent || '🔧';
+            const category = card.dataset.category || '';
+
+            return {
+                href,
+                title,
+                description,
+                icon,
+                category,
+                timestamp: Date.now()
+            };
+        }
+
+        // Format relative time
+        function formatRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            if (seconds < 60) return 'just now';
+            if (minutes < 60) return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+            if (hours < 24) return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+            if (days < 7) return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+            return new Date(timestamp).toLocaleDateString();
+        }
+
+        // Get recent tools from localStorage
+        function getRecentTools() {
+            try {
+                const stored = localStorage.getItem(RECENT_TOOLS_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                console.error('Error reading recent tools:', e);
+                return [];
+            }
+        }
+
+        // Save recent tools to localStorage
+        function saveRecentTools(tools) {
+            try {
+                localStorage.setItem(RECENT_TOOLS_KEY, JSON.stringify(tools));
+            } catch (e) {
+                console.error('Error saving recent tools:', e);
+            }
+        }
+
+        // Display recent tools
+        function displayRecentTools() {
+            const recentSection = document.getElementById('recentSection');
+            const recentToolsContainer = document.getElementById('recentTools');
+            const recentTools = getRecentTools();
+
+            if (recentTools.length === 0) {
+                recentSection.style.display = 'none';
+                return;
+            }
+
+            recentSection.style.display = 'block';
+            recentToolsContainer.innerHTML = recentTools.map(tool => `
+                <a href="${tool.href}" class="recent-tool-card">
+                    <div class="recent-tool-icon">${tool.icon}</div>
+                    <div class="recent-tool-info">
+                        <h3 class="recent-tool-title">${tool.title}</h3>
+                        <p class="recent-tool-time">${formatRelativeTime(tool.timestamp)}</p>
+                    </div>
+                    <span class="recent-tool-arrow">→</span>
+                </a>
+            `).join('');
+        }
+
+        // Track tool click
+        toolCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const toolInfo = getToolInfo(card);
+                let recentTools = getRecentTools();
+
+                // Remove if already exists
+                recentTools = recentTools.filter(t => t.href !== toolInfo.href);
+
+                // Add to front
+                recentTools.unshift(toolInfo);
+
+                // Limit to max items
+                recentTools = recentTools.slice(0, MAX_RECENT_TOOLS);
+
+                saveRecentTools(recentTools);
+            });
+        });
+
+        // Clear recent tools
+        const clearRecentBtn = document.getElementById('clearRecentBtn');
+        clearRecentBtn.addEventListener('click', () => {
+            if (confirm('Clear all recently used tools?')) {
+                localStorage.removeItem(RECENT_TOOLS_KEY);
+                displayRecentTools();
+            }
+        });
+
+        // Display recent tools on page load
+        displayRecentTools();
+
+        // Mobile menu functionality
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileCategoryDrawer = document.getElementById('mobileCategoryDrawer');
+        const mobileCategoryBackdrop = document.getElementById('mobileCategoryBackdrop');
+        const mobileCategoryClose = document.getElementById('mobileCategoryClose');
+        const mobileCategoryBtn = document.getElementById('mobileCategoryBtn');
+        const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+        const mobileCategoryItems = document.querySelectorAll('.mobile-category-item');
+
+        function openMobileDrawer() {
+            mobileCategoryDrawer.classList.add('open');
+            mobileMenuToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileDrawer() {
+            mobileCategoryDrawer.classList.remove('open');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuToggle.addEventListener('click', () => {
+            if (mobileCategoryDrawer.classList.contains('open')) {
+                closeMobileDrawer();
+            } else {
+                openMobileDrawer();
+            }
+        });
+
+        mobileCategoryBtn.addEventListener('click', openMobileDrawer);
+        mobileCategoryClose.addEventListener('click', closeMobileDrawer);
+        mobileCategoryBackdrop.addEventListener('click', closeMobileDrawer);
+
+        // Mobile category filter
+        mobileCategoryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                // Update active state
+                mobileCategoryItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                const category = item.dataset.category;
+
+                // Filter cards
+                toolCards.forEach(card => {
+                    const cardCategories = card.dataset.category;
+                    if (category === 'all' || cardCategories.includes(category)) {
+                        card.style.display = '';
+                        setTimeout(() => card.classList.add('visible'), 50);
+                    } else {
+                        card.style.display = 'none';
+                        card.classList.remove('visible');
+                    }
+                });
+
+                // Close drawer after selection
+                closeMobileDrawer();
+
+                // Scroll to tools grid
+                document.querySelector('.tools-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Mobile search button
+        mobileSearchBtn.addEventListener('click', () => {
+            searchInput.focus();
+            searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        // Swipe gesture support for tool cards (optional enhancement)
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        toolCards.forEach((card, index) => {
+            card.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            card.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe(card);
+            }, { passive: true });
+        });
+
+        function handleSwipe(card) {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+
+            // Swipe left to navigate
+            if (swipeDistance < -swipeThreshold) {
+                card.click();
+            }
+        }
+
+        // Prevent horizontal scroll on body
+        document.body.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Update mobile nav active state on scroll
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+        const sections = {
+            home: 0,
+            search: document.querySelector('.nav-search')?.offsetTop || 0,
+            tools: document.querySelector('.tools-grid')?.offsetTop || 0
+        };
     </script>
 
     <!-- Google tag (gtag.js) -->

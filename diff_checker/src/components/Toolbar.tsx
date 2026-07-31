@@ -1,16 +1,18 @@
 import React from 'react';
-import { 
-  ArrowLeftRight, 
-  Eraser, 
-  Play, 
-  ChevronLeft, 
-  Split, 
-  LayoutList, 
+import {
+  ArrowLeftRight,
+  Eraser,
+  Play,
+  ChevronLeft,
+  Split,
+  LayoutList,
   Settings2,
-  Check
+  Check,
+  Code
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { Language } from '../utils/syntaxHighlighter';
 
 interface ToolbarProps {
   showDiff: boolean;
@@ -29,7 +31,33 @@ interface ToolbarProps {
     ignoreCase: boolean;
   }>>;
   summary: { additions: number; deletions: number };
+  selectedLanguage?: Language;
+  setSelectedLanguage: (lang: Language | undefined) => void;
 }
+
+const LANGUAGES: Array<{ value: Language | 'auto'; label: string }> = [
+  { value: 'auto', label: 'Auto-detect' },
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'typescript', label: 'TypeScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+  { value: 'c', label: 'C' },
+  { value: 'cpp', label: 'C++' },
+  { value: 'csharp', label: 'C#' },
+  { value: 'php', label: 'PHP' },
+  { value: 'ruby', label: 'Ruby' },
+  { value: 'go', label: 'Go' },
+  { value: 'rust', label: 'Rust' },
+  { value: 'sql', label: 'SQL' },
+  { value: 'json', label: 'JSON' },
+  { value: 'yaml', label: 'YAML' },
+  { value: 'xml', label: 'XML' },
+  { value: 'html', label: 'HTML' },
+  { value: 'css', label: 'CSS' },
+  { value: 'markdown', label: 'Markdown' },
+  { value: 'bash', label: 'Bash' },
+  { value: 'plaintext', label: 'Plain Text' },
+];
 
 const Toolbar: React.FC<ToolbarProps> = ({
   showDiff,
@@ -41,6 +69,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setViewMode,
   options,
   setOptions,
+  selectedLanguage,
+  setSelectedLanguage,
 }) => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-zinc-900/50 border border-zinc-800/50 backdrop-blur-sm sticky top-20 z-40">
@@ -81,8 +111,26 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-6 divide-x divide-zinc-800">
+        {/* Language Selector */}
+        {showDiff && (
+          <div className="flex items-center gap-2">
+            <Code className="w-4 h-4 text-zinc-500" />
+            <select
+              value={selectedLanguage || 'auto'}
+              onChange={(e) => setSelectedLanguage(e.target.value === 'auto' ? undefined : e.target.value as Language)}
+              className="bg-zinc-800 text-zinc-300 text-xs font-medium px-3 py-1.5 rounded-lg border border-zinc-700 hover:border-zinc-600 focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer"
+            >
+              {LANGUAGES.map(lang => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Settings Toggle */}
-        <div className="flex items-center gap-3">
+        <div className={clsx("flex items-center gap-3", showDiff && "pl-6")}>
           <label className="flex items-center gap-2 text-xs font-medium text-zinc-500 cursor-pointer hover:text-zinc-300 select-none">
             <input
               type="checkbox"

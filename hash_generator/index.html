@@ -40,8 +40,10 @@
     gtag('js', new Date());
     gtag('config', 'G-GHGXLWQR4V');
   </script>
+    <link rel="stylesheet" href="/a11y.css">
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans overflow-y-auto">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <div class="max-w-5xl mx-auto px-6 py-12">
         <header class="text-center mb-10">
@@ -54,7 +56,7 @@
             <p class="text-gray-500 dark:text-gray-400 text-lg">Securely hash text and files using MD5, SHA-1, SHA-256, or SHA-512.</p>
         </header>
 
-        <main class="space-y-8">
+        <main class="space-y-8" id="main-content">
             <!-- Input Selection -->
             <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-1 flex gap-1 shadow-sm max-w-sm mx-auto">
                 <button id="tab-text" class="tab-btn flex-1 py-2 text-xs font-bold rounded-xl bg-blue-600 text-white shadow-sm transition-all">Text</button>
@@ -197,20 +199,68 @@
 
         function handleFile(file) {
             if (!file) return;
-            document.getElementById('file-name').textContent = `${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-            
+
+            // File size validation with helpful error messages
+            const MAX_SIZE = 100 * 1024 * 1024; // 100 MB
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+            if (file.size > MAX_SIZE) {
+                showError(`File size limit exceeded: ${fileSizeMB} MB (maximum: 100 MB). Try a smaller file or use command-line tools for large files.`);
+                document.getElementById('file-name').textContent = 'Click or drag & drop a file';
+                return;
+            }
+
+            // Show file info
+            let sizeText;
+            if (file.size < 1024) {
+                sizeText = `${file.size} bytes`;
+            } else if (file.size < 1024 * 1024) {
+                sizeText = `${(file.size / 1024).toFixed(1)} KB`;
+            } else {
+                sizeText = `${fileSizeMB} MB`;
+            }
+
+            document.getElementById('file-name').textContent = `${file.name} (${sizeText})`;
+            clearError();
+
             const reader = new FileReader();
+            reader.onerror = function() {
+                showError('Failed to read file. The file may be corrupted or inaccessible.');
+            };
             reader.onload = function(e) {
-                const arrayBuffer = e.target.result;
-                const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
-                
-                hashes.md5 = CryptoJS.MD5(wordArray).toString();
-                hashes.sha1 = CryptoJS.SHA1(wordArray).toString();
-                hashes.sha256 = CryptoJS.SHA256(wordArray).toString();
-                hashes.sha512 = CryptoJS.SHA512(wordArray).toString();
-                displayHashes();
+                try {
+                    const arrayBuffer = e.target.result;
+                    const wordArray = CryptoJS.lib.WordArray.create(arrayBuffer);
+
+                    hashes.md5 = CryptoJS.MD5(wordArray).toString();
+                    hashes.sha1 = CryptoJS.SHA1(wordArray).toString();
+                    hashes.sha256 = CryptoJS.SHA256(wordArray).toString();
+                    hashes.sha512 = CryptoJS.SHA512(wordArray).toString();
+                    displayHashes();
+                } catch (err) {
+                    showError('Failed to generate hash: ' + err.message);
+                }
             };
             reader.readAsArrayBuffer(file);
+        }
+
+        function showError(message) {
+            let errorDiv = document.getElementById('error-message');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.id = 'error-message';
+                errorDiv.className = 'fixed top-20 left-1/2 -translate-x-1/2 bg-red-100 dark:bg-red-900/30 border-2 border-red-500 text-red-700 dark:text-red-300 px-6 py-3 rounded-xl shadow-2xl max-w-2xl z-50 text-sm font-medium';
+                document.body.appendChild(errorDiv);
+            }
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+            errorDiv.style.display = 'block';
+        }
+
+        function clearError() {
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
         }
 
         function checkComparison() {

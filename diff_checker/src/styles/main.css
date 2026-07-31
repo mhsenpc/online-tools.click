@@ -38,3 +38,32 @@
 .diff-word-deletion {
   @apply bg-rose-500/30 text-rose-300 rounded px-0.5 line-through;
 }
+
+/* Syntax highlighting styles */
+.syntax-keyword {
+  @apply text-purple-400 font-semibold;
+}
+
+.syntax-string {
+  @apply text-green-400;
+}
+
+.syntax-comment {
+  @apply text-zinc-500 italic;
+}
+
+.syntax-number {
+  @apply text-orange-400;
+}
+
+.syntax-function {
+  @apply text-blue-400;
+}
+
+.syntax-operator {
+  @apply text-zinc-300;
+}
+
+.syntax-punctuation {
+  @apply text-zinc-400;
+}
