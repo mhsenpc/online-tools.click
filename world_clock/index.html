@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>World Clock | Online Tools</title>
-    <meta name="description" content="Display current time across multiple timezones simultaneously. Perfect for remote teams.">
+    <meta name="description" content="Display current time across multiple timezones simultaneously. Pin favorite cities, see time differences, and plan meetings across zones.">
     <meta property="og:title" content="World Clock | Online Tools">
-    <meta property="og:description" content="Display current time across multiple timezones simultaneously. Perfect for remote teams.">
+    <meta property="og:description" content="Display current time across multiple timezones simultaneously. Pin favorite cities, see time differences, and plan meetings across zones.">
     <meta property="og:url" content="https://online-tools.click/world_clock/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://online-tools.click/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="World Clock | Online Tools">
-    <meta name="twitter:description" content="Display current time across multiple timezones simultaneously. Perfect for remote teams.">
+    <meta name="twitter:description" content="Display current time across multiple timezones simultaneously. Pin favorite cities, see time differences, and plan meetings across zones.">
     <meta name="twitter:image" content="https://online-tools.click/og-image.png">
     <link rel="canonical" href="https://online-tools.click/world_clock/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +53,7 @@
         .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 12px; }
         .hero p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
         .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; margin-bottom: 24px; }
-        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; }
+        .card-header { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
         textarea, input[type="text"], input[type="number"], input[type="url"], input[type="password"], input[type="date"], input[type="time"], select {
             width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm);
             padding: 12px 16px; color: var(--text); font-family: var(--font-mono); font-size: 14px; outline: none;
@@ -68,6 +68,8 @@
         .btn-sm { padding: 8px 16px; font-size: 12px; }
         .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
         .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
+        .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 14px; line-height: 1; transition: all 0.2s; }
+        .btn-icon:hover { color: var(--text); border-color: var(--border-focus); background: var(--bg-input); }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
         .flex-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
@@ -86,10 +88,77 @@
             transition: opacity 0.2s, transform 0.2s; z-index: 100; }
         .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
         hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+        /* === World Clock specific === */
+
+        /* Searchable picker */
+        .tz-picker { position: relative; }
+        .tz-picker .dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; max-height: 280px;
+            overflow-y: auto; background: var(--bg-input); border: 1px solid var(--border-focus); border-radius: var(--radius-sm);
+            z-index: 50; display: none; }
+        .tz-picker .dropdown.open { display: block; }
+        .tz-picker .dropdown-item { padding: 10px 16px; cursor: pointer; font-size: 13px; font-family: var(--font-mono); }
+        .tz-picker .dropdown-item:hover, .tz-picker .dropdown-item.active { background: var(--accent); color: #fff; }
+        .tz-picker .dropdown-item .tz-region { color: var(--text-muted); margin-left: 8px; }
+
+        /* Pinned timezone cards */
+        .tz-cards { display: flex; flex-direction: column; gap: 12px; }
+        .tz-card { display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px 20px; }
+        .tz-card.local { border-color: var(--accent); }
+        .tz-card .tz-info { display: flex; flex-direction: column; gap: 4px; }
+        .tz-card .tz-name { font-size: 16px; font-weight: 600; }
+        .tz-card .tz-diff { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+        .tz-card .tz-time { font-size: 28px; font-weight: 700; font-family: var(--font-mono); text-align: right; }
+        .tz-card .tz-date { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); text-align: right; }
+        .tz-card .tz-actions { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+        .tz-card .tz-status { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 3px 8px; border-radius: 4px; }
+        .tz-card .tz-status.business { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+        .tz-card .tz-status.off { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+
+        /* Analog clock SVG */
+        .analog-clock { width: 64px; height: 64px; }
+        .analog-clock circle.face { fill: var(--bg); stroke: var(--border-focus); stroke-width: 2; }
+        .analog-clock line.hand-h, .analog-clock line.hand-m { stroke: var(--text); stroke-width: 2.5; stroke-linecap: round; }
+        .analog-clock line.hand-s { stroke: var(--accent); stroke-width: 1.5; stroke-linecap: round; }
+        .analog-clock line.tick { stroke: var(--text-muted); stroke-width: 1; }
+
+        /* Meeting planner */
+        .planner-row { display: grid; grid-template-columns: 200px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .planner-row:last-child { border-bottom: none; }
+        .planner-row .planner-label { font-size: 13px; font-weight: 600; font-family: var(--font-mono); }
+        .planner-bar { display: grid; grid-template-columns: repeat(24, 1fr); height: 28px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+        .planner-cell { display: flex; align-items: center; justify-content: center; font-size: 9px; color: var(--text-muted); border-right: 1px solid rgba(255,255,255,0.04); }
+        .planner-cell:last-child { border-right: none; }
+        .planner-cell.business { background: rgba(34, 197, 94, 0.25); }
+        .planner-cell.off { background: rgba(255,255,255,0.03); }
+        .planner-cell.current { background: var(--accent); color: #fff; font-weight: 700; }
+        .planner-cell.overlap { background: rgba(34, 197, 94, 0.6); color: #fff; }
+        .planner-legend { display: flex; gap: 20px; margin-top: 16px; font-size: 12px; color: var(--text-secondary); }
+        .planner-legend .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 6px; }
+
+        .toggle-group { display: flex; gap: 8px; align-items: center; }
+        .toggle-group label { font-size: 12px; color: var(--text-secondary); }
+        .toggle-switch { position: relative; width: 40px; height: 22px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-input); border: 1px solid var(--border); border-radius: 22px; transition: 0.2s; }
+        .toggle-switch .slider:before { content: ""; position: absolute; height: 16px; width: 16px; left: 2px; top: 2px;
+            background: var(--text-muted); border-radius: 50%; transition: 0.2s; }
+        .toggle-switch input:checked + .slider { background: var(--accent); border-color: var(--accent); }
+        .toggle-switch input:checked + .slider:before { transform: translateX(18px); background: #fff; }
+
+        .hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
         @media (max-width: 768px) {
             header { padding: 20px 20px; }
             .hero h1 { font-size: 28px; }
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .tz-card { grid-template-columns: 1fr auto; }
+            .tz-card .tz-time { font-size: 22px; }
+            .tz-card .analog-clock { grid-column: 1 / -1; width: 48px; height: 48px; }
+            .planner-row { grid-template-columns: 1fr; }
+            .planner-bar { grid-template-columns: repeat(24, minmax(14px, 1fr)); overflow-x: auto; }
         }
     </style>
     <link rel="stylesheet" href="/a11y.css">
@@ -109,61 +178,544 @@
     <main id="main-content">
         <section class="hero">
             <h1>World Clock</h1>
-            <p>Display current time across multiple timezones simultaneously. Perfect for remote teams.</p>
+            <p>Pin your favorite timezones, see time differences, and find meeting overlaps across zones.</p>
         </section>
-        
-<div class="card">
-    <div class="card-header">Select Timezones</div>
-    <div class="grid-3">
-        <div class="field-group"><label>Zone 1</label><select id="tz1" onchange="updateClocks()"><option value="UTC">UTC</option>
-<option value="America/New_York">America/New York</option>
-<option value="America/Chicago">America/Chicago</option>
-<option value="America/Denver">America/Denver</option>
-<option value="America/Los_Angeles">America/Los Angeles</option>
-<option value="Europe/London">Europe/London</option>
-<option value="Europe/Paris">Europe/Paris</option>
-<option value="Europe/Berlin">Europe/Berlin</option>
-<option value="Europe/Moscow">Europe/Moscow</option>
-<option value="Asia/Dubai">Asia/Dubai</option>
-<option value="Asia/Shanghai">Asia/Shanghai</option>
-<option value="Asia/Tokyo">Asia/Tokyo</option>
-<option value="Asia/Seoul">Asia/Seoul</option>
-<option value="Asia/Kolkata">Asia/Kolkata</option>
-<option value="Australia/Sydney">Australia/Sydney</option>
-<option value="Pacific/Auckland">Pacific/Auckland</option></select></div>
-        <div class="field-group"><label>Zone 2</label><select id="tz2" onchange="updateClocks()"><option value="America/New_York">New York</option><option value="Europe/London">London</option><option value="Europe/Paris" selected>Paris</option><option value="Asia/Dubai">Dubai</option><option value="Asia/Shanghai">Shanghai</option><option value="Asia/Tokyo">Tokyo</option></select></div>
-        <div class="field-group"><label>Zone 3</label><select id="tz3" onchange="updateClocks()"><option value="America/Los_Angeles">Los Angeles</option><option value="America/Chicago">Chicago</option><option value="Asia/Tokyo" selected>Tokyo</option><option value="Australia/Sydney">Sydney</option><option value="Asia/Kolkata">Kolkata</option><option value="Pacific/Auckland">Auckland</option></select></div>
-    </div>
-</div>
-<div class="card">
-    <div class="card-header">Current Times</div>
-    <div class="stat-grid" id="clocks"></div>
-</div>
 
+        <!-- Add Timezone -->
+        <div class="card">
+            <div class="card-header">Add Timezone</div>
+            <div class="tz-picker">
+                <input type="text" id="tzSearch" placeholder="Search IANA timezones (e.g. Tokyo, Berlin, EST)..." autocomplete="off" aria-label="Search timezones">
+                <div class="dropdown" id="tzDropdown" role="listbox"></div>
+            </div>
+            <p class="hint">Search by city or timezone name. Click a result to pin it.</p>
+        </div>
+
+        <!-- Display Options -->
+        <div class="card">
+            <div class="card-header">Display Options</div>
+            <div class="flex-row">
+                <div class="toggle-group">
+                    <span class="toggle-switch">
+                        <input type="checkbox" id="optAnalog" aria-label="Show analog clocks">
+                        <span class="slider"></span>
+                    </span>
+                    <label for="optAnalog">Analog Clocks</label>
+                </div>
+                <div class="toggle-group">
+                    <span class="toggle-switch">
+                        <input type="checkbox" id="opt24h" checked aria-label="24-hour format">
+                        <span class="slider"></span>
+                    </span>
+                    <label for="opt24h">24-hour</label>
+                </div>
+                <div class="toggle-group">
+                    <label for="bizStart" style="margin-bottom:0">Business hours</label>
+                    <input type="number" id="bizStart" value="9" min="0" max="23" style="width:60px" aria-label="Business hours start">
+                    <span style="color:var(--text-muted)">–</span>
+                    <input type="number" id="bizEnd" value="17" min="0" max="23" style="width:60px" aria-label="Business hours end">
+                </div>
+            </div>
+        </div>
+
+        <!-- Pinned Clocks -->
+        <div class="card">
+            <div class="card-header">
+                <span>Pinned Timezones</span>
+                <button class="btn-secondary btn-sm" id="resetBtn" type="button">Reset to Defaults</button>
+            </div>
+            <div class="tz-cards" id="tzCards"></div>
+        </div>
+
+        <!-- Meeting Planner -->
+        <div class="card" id="plannerCard">
+            <div class="card-header">Meeting Planner — 24h Overview</div>
+            <div id="plannerBody"></div>
+            <div class="planner-legend">
+                <span><span class="swatch" style="background:rgba(34,197,94,0.25)"></span>Working hours</span>
+                <span><span class="swatch" style="background:rgba(34,197,94,0.6)"></span>Overlap (all zones)</span>
+                <span><span class="swatch" style="background:var(--accent)"></span>Current hour</span>
+            </div>
+        </div>
     </main>
     <div class="toast" id="toast"></div>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
     <script>
+    /* ============================================================
+       World Clock — feature-complete implementation
+       ============================================================ */
+
     function toast(msg){
         const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
         setTimeout(()=>t.classList.remove('visible'),2000);
     }
-    
-function updateClocks(){
-    const tzs=[document.getElementById('tz1').value,document.getElementById('tz2').value,document.getElementById('tz3').value];
-    const now=new Date();
-    document.getElementById('clocks').innerHTML=tzs.map(tz=>{
-        try{
-            const time=now.toLocaleString('en-US',{timeZone:tz,timeStyle:'full',hour12:false});
-            const date=now.toLocaleString('en-US',{timeZone:tz,dateStyle:'full'});
-            return `<div class="stat-card"><div class="val" style="font-size:18px">${time}</div><div class="lbl" style="font-size:11px">${date}<br>${tz.replace(/_/g,' ')}</div></div>`;
-        }catch(e){return `<div class="stat-card"><div class="val">Invalid TZ</div><div class="lbl">${tz}</div></div>`;}
-    }).join('');
-}
-updateClocks();
-setInterval(updateClocks,1000);
 
+    // --- Local timezone detection ---
+    const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+
+    // --- IANA timezone list ---
+    // Use the runtime's known timezones. Intl.supportedValuesOf('timeZone') is
+    // available in modern browsers; fall back to a curated list for older engines.
+    const FALLBACK_TZ = [
+        'Africa/Cairo','Africa/Johannesburg','Africa/Lagos','Africa/Nairobi',
+        'America/Anchorage','America/Argentina/Buenos_Aires','America/Chicago',
+        'America/Denver','America/Halifax','America/Los_Angeles','America/Mexico_City',
+        'America/New_York','America/Phoenix','America/Sao_Paulo','America/Toronto',
+        'America/Vancouver','Asia/Bangkok','Asia/Dubai','Asia/Hong_Kong','Asia/Jerusalem',
+        'Asia/Karachi','Asia/Kolkata','Asia/Seoul','Asia/Shanghai','Asia/Singapore',
+        'Asia/Tehran','Asia/Tokyo','Australia/Adelaide','Australia/Brisbane',
+        'Australia/Melbourne','Australia/Perth','Australia/Sydney','Europe/Amsterdam',
+        'Europe/Berlin','Europe/Istanbul','Europe/Kiev','Europe/Lisbon','Europe/London',
+        'Europe/Madrid','Europe/Moscow','Europe/Paris','Europe/Rome','Pacific/Auckland',
+        'Pacific/Honolulu','UTC'
+    ];
+    const ALL_TZ = (typeof Intl !== 'undefined' && Intl.supportedValuesOf)
+        ? Intl.supportedValuesOf('timeZone')
+        : FALLBACK_TZ;
+
+    // --- Persistence ---
+    const STORAGE_KEY = 'worldclock_pinned_v1';
+    const OPTS_KEY = 'worldclock_opts_v1';
+
+    const DEFAULT_PINS = [LOCAL_TZ, 'America/New_York', 'Europe/London', 'Asia/Tokyo'];
+
+    function loadPins(){
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (raw) {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr) && arr.every(t => typeof t === 'string')) return arr;
+            }
+        } catch(e) { /* ignore corrupt data, fall through to default */ }
+        return [...DEFAULT_PINS];
+    }
+    function savePins(pins){
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(pins)); } catch(e) {}
+    }
+    function loadOpts(){
+        try {
+            const raw = localStorage.getItem(OPTS_KEY);
+            if (raw) return Object.assign({analog:false, use24h:true, bizStart:9, bizEnd:17}, JSON.parse(raw));
+        } catch(e) {}
+        return {analog:false, use24h:true, bizStart:9, bizEnd:17};
+    }
+    function saveOpts(o){
+        try { localStorage.setItem(OPTS_KEY, JSON.stringify(o)); } catch(e) {}
+    }
+
+    let pinned = loadPins();
+    let opts = loadOpts();
+
+    // Apply saved opts to UI
+    document.getElementById('optAnalog').checked = opts.analog;
+    document.getElementById('opt24h').checked = opts.use24h;
+    document.getElementById('bizStart').value = opts.bizStart;
+    document.getElementById('bizEnd').value = opts.bizEnd;
+
+    // --- Timezone utilities ---
+
+    function getOffsetMinutes(tz, date){
+        // Returns offset in minutes for tz at given date.
+        // Uses the wall-clock trick: format hour with explicit tz and compare to UTC.
+        const dtf = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz,
+            year:'numeric', month:'2-digit', day:'2-digit',
+            hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
+        });
+        const parts = dtf.formatToParts(date);
+        const m = {};
+        for (const p of parts) m[p.type] = p.value;
+        // AsIfUTC = the wall-clock time of tz, interpreted as UTC.
+        const asIfUTC = Date.UTC(+m.year, +m.month - 1, +m.day, +m.hour % 24, +m.minute, +m.second);
+        const diff = (asIfUTC - date.getTime()) / 60000;
+        return Math.round(diff);
+    }
+
+    function formatOffset(minutes){
+        const sign = minutes >= 0 ? '+' : '-';
+        const abs = Math.abs(minutes);
+        const h = Math.floor(abs / 60);
+        const m = abs % 60;
+        return `UTC${sign}${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    }
+
+    function offsetDiff(tzMinutes, localMinutes){
+        let diff = tzMinutes - localMinutes;
+        const sign = diff >= 0 ? '+' : '-';
+        diff = Math.abs(diff);
+        const h = Math.floor(diff / 60);
+        const m = diff % 60;
+        let s = m === 0 ? `${h}h` : `${h}h${m}m`;
+        return sign === '-' ? `-${s}` : `+${s}`;
+    }
+
+    function getHourInTZ(tz, date){
+        const dtf = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', hour12: false });
+        return parseInt(dtf.format(date), 10) % 24;
+    }
+
+    function isBusinessHour(hour, bizStart, bizEnd){
+        if (bizStart <= bizEnd) return hour >= bizStart && hour < bizEnd;
+        // wrap-around (e.g. 22–6)
+        return hour >= bizStart || hour < bizEnd;
+    }
+
+    function tzDisplay(tz){
+        return tz.replace(/_/g, ' ');
+    }
+
+    function tzRegion(tz){
+        const idx = tz.indexOf('/');
+        return idx > 0 ? tz.substring(0, idx) : '';
+    }
+
+    function tzCity(tz){
+        const parts = tz.split('/');
+        return parts[parts.length - 1].replace(/_/g, ' ');
+    }
+
+    // --- Analog clock SVG ---
+    function analogClockSVG(tz, date){
+        const parts = new Intl.DateTimeFormat('en-US', {
+            timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        }).formatToParts(date);
+        const m = {};
+        parts.forEach(p => m[p.type] = p.value);
+        const h = (+m.hour) % 12;
+        const min = +m.minute;
+        const sec = +m.second;
+        const hourAngle = (h + min / 60) * 30;
+        const minAngle = (min + sec / 60) * 6;
+        const secAngle = sec * 6;
+        // SVG coords: center 32,32
+        function hand(angle, len, cls){
+            const rad = (angle - 90) * Math.PI / 180;
+            return `<line class="${cls}" x1="32" y1="32" x2="${32 + Math.cos(rad)*len}" y2="${32 + Math.sin(rad)*len}"/>`;
+        }
+        let ticks = '';
+        for (let i = 0; i < 12; i++){
+            const ang = (i * 30 - 90) * Math.PI / 180;
+            ticks += `<line class="tick" x1="${32 + Math.cos(ang)*28}" y1="${32 + Math.sin(ang)*28}" x2="${32 + Math.cos(ang)*30}" y2="${32 + Math.sin(ang)*30}"/>`;
+        }
+        return `<svg class="analog-clock" viewBox="0 0 64 64" aria-hidden="true">
+            <circle class="face" cx="32" cy="32" r="30"/>
+            ${ticks}
+            ${hand(hourAngle, 18, 'hand-h')}
+            ${hand(minAngle, 24, 'hand-m')}
+            ${hand(secAngle, 26, 'hand-s')}
+            <circle cx="32" cy="32" r="2" fill="var(--accent)"/>
+        </svg>`;
+    }
+
+    // --- Render pinned clocks ---
+    function renderClocks(){
+        const container = document.getElementById('tzCards');
+        const now = new Date();
+        const localMinutes = getOffsetMinutes(LOCAL_TZ, now);
+
+        if (pinned.length === 0){
+            container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:24px">No pinned timezones. Search and add one above.</div>';
+            return;
+        }
+
+        container.innerHTML = pinned.map((tz, idx) => {
+            const offMin = getOffsetMinutes(tz, now);
+            const offStr = formatOffset(offMin);
+            const diffStr = offsetDiff(offMin, localMinutes);
+            const hour = getHourInTZ(tz, now);
+            const biz = isBusinessHour(hour, opts.bizStart, opts.bizEnd);
+            const isLocal = tz === LOCAL_TZ;
+
+            const timeStr = new Intl.DateTimeFormat('en-US', {
+                timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: !opts.use24h
+            }).format(now);
+            const dateStr = new Intl.DateTimeFormat('en-US', {
+                timeZone: tz, weekday: 'short', month: 'short', day: 'numeric'
+            }).format(now);
+
+            const analog = opts.analog ? analogClockSVG(tz, now) : '';
+            const statusLabel = biz
+                ? '<span class="tz-status business">Open</span>'
+                : '<span class="tz-status off">Closed</span>';
+
+            const pinBtn = isLocal
+                ? ''
+                : `<button class="btn-icon" data-remove="${idx}" title="Remove" aria-label="Remove ${tzDisplay(tz)}">✕</button>`;
+
+            return `<div class="tz-card${isLocal ? ' local' : ''}">
+                ${analog}
+                <div class="tz-info">
+                    <div class="tz-name">${tzDisplay(tz)}${isLocal ? ' <span style="font-size:11px;color:var(--accent)">(Local)</span>' : ''}</div>
+                    <div class="tz-diff">${offStr} · ${diffStr} vs local</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px">
+                    ${statusLabel}
+                    <div style="text-align:right">
+                        <div class="tz-time">${timeStr}</div>
+                        <div class="tz-date">${dateStr}</div>
+                    </div>
+                    ${pinBtn}
+                </div>
+            </div>`;
+        }).join('');
+
+        // Wire remove buttons
+        container.querySelectorAll('[data-remove]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = +btn.getAttribute('data-remove');
+                const removed = pinned[idx];
+                pinned.splice(idx, 1);
+                savePins(pinned);
+                renderClocks();
+                renderPlanner();
+                toast(`Removed ${tzDisplay(removed)}`);
+            });
+        });
+    }
+
+    // --- Meeting planner ---
+    function renderPlanner(){
+        const body = document.getElementById('plannerBody');
+        const now = new Date();
+        const currentLocalHour = getHourInTZ(LOCAL_TZ, now);
+
+        // For overlap: a UTC hour is an overlap if ALL pinned zones are in business hours
+        // We compute each zone's local hour for each UTC hour slot.
+        // Build a base date for "today at 00:00 UTC" then iterate hours.
+        const baseUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0));
+
+        // Precompute business-hour mask per timezone for each UTC hour (0-23)
+        const masks = pinned.map(tz => {
+            const mask = [];
+            for (let utcH = 0; utcH < 24; utcH++){
+                const d = new Date(baseUTC.getTime() + utcH * 3600000);
+                const localH = getHourInTZ(tz, d);
+                mask.push(isBusinessHour(localH, opts.bizStart, opts.bizEnd));
+            }
+            return mask;
+        });
+
+        // Overlap: all zones in business hours
+        const overlapMask = [];
+        for (let h = 0; h < 24; h++){
+            overlapMask.push(masks.every(m => m[h]));
+        }
+
+        // Hour labels header row
+        let html = '<div class="planner-row" style="margin-bottom:8px;border-bottom:1px solid var(--border)"><div></div>';
+        html += '<div class="planner-bar">';
+        for (let h = 0; h < 24; h++){
+            html += `<div class="planner-cell" title="${h}:00 UTC">${h}</div>`;
+        }
+        html += '</div></div>';
+
+        // One row per pinned timezone
+        pinned.forEach((tz, i) => {
+            const mask = masks[i];
+            let row = '<div class="planner-row">';
+            row += `<div class="planner-label">${tzDisplay(tz)}</div>`;
+            row += '<div class="planner-bar">';
+            for (let h = 0; h < 24; h++){
+                const utcHour = h;
+                // Get the zone's local hour for display
+                const d = new Date(baseUTC.getTime() + h * 3600000);
+                const localH = getHourInTZ(tz, d);
+                let cls = 'planner-cell';
+                if (mask[h]) cls += ' business';
+                if (utcHour === now.getUTCHours() && overlapMask[h]) cls += ' overlap';
+                else if (utcHour === now.getUTCHours()) cls += ' current';
+                row += `<div class="${cls}" title="${localH}:00 local (${tz})">${localH}</div>`;
+            }
+            row += '</div></div>';
+            html += row;
+        });
+
+        // Overlap summary row
+        let sumRow = '<div class="planner-row" style="margin-top:8px;border-top:1px solid var(--border);padding-top:12px">';
+        sumRow += '<div class="planner-label" style="color:var(--success)">Overlap</div>';
+        sumRow += '<div class="planner-bar">';
+        for (let h = 0; h < 24; h++){
+            const d = new Date(baseUTC.getTime() + h * 3600000);
+            const localH = getHourInTZ(LOCAL_TZ, d);
+            let cls = 'planner-cell';
+            if (overlapMask[h]) cls += ' overlap';
+            else if (h === now.getUTCHours()) cls += ' current';
+            else cls += ' off';
+            sumRow += `<div class="${cls}">${localH}</div>`;
+        }
+        sumRow += '</div></div>';
+
+        // Find overlap windows
+        const windows = [];
+        let start = -1;
+        for (let h = 0; h < 24; h++){
+            if (overlapMask[h]){
+                if (start === -1) start = h;
+            } else {
+                if (start !== -1){ windows.push([start, h]); start = -1; }
+            }
+        }
+        if (start !== -1) windows.push([start, 24]);
+
+        let summary = '<div style="margin-top:16px;font-size:13px;color:var(--text-secondary)">';
+        if (windows.length === 0){
+            summary += '<strong style="color:var(--error)">No common working hours found.</strong> ';
+            summary += 'Adjust your business hours range or add overlapping zones.';
+        } else {
+            summary += '<strong style="color:var(--success)">Common working hours (UTC):</strong> ';
+            summary += windows.map(([s, e]) => `${s}:00–${e === 24 ? '24:00' : e + ':00'}`).join(', ');
+        }
+        summary += '</div>';
+
+        body.innerHTML = html + sumRow + summary;
+    }
+
+    // --- Searchable timezone picker ---
+    const searchInput = document.getElementById('tzSearch');
+    const dropdown = document.getElementById('tzDropdown');
+
+    let filteredTZ = [];
+    let activeIdx = -1;
+
+    function buildSearchIndex(){
+        return ALL_TZ.map(tz => ({
+            tz,
+            city: tzCity(tz).toLowerCase(),
+            full: tz.toLowerCase(),
+            display: `${tzCity(tz)} <span class="tz-region">${tzRegion(tz)}</span>`
+        }));
+    }
+    const searchIndex = buildSearchIndex();
+
+    function filterTZ(query){
+        const q = query.trim().toLowerCase();
+        if (!q) return searchIndex.slice(0, 50);
+        return searchIndex
+            .filter(item => item.city.includes(q) || item.full.includes(q))
+            .slice(0, 50);
+    }
+
+    function renderDropdown(){
+        if (filteredTZ.length === 0){
+            dropdown.innerHTML = '<div class="dropdown-item">No matching timezones</div>';
+            dropdown.classList.add('open');
+            return;
+        }
+        dropdown.innerHTML = filteredTZ.map((item, i) => {
+            const already = pinned.includes(item.tz) ? ' <span style="color:var(--success)">✓ pinned</span>' : '';
+            return `<div class="dropdown-item${i === activeIdx ? ' active' : ''}" data-tz="${item.tz}">${item.display}${already}</div>`;
+        }).join('');
+        dropdown.classList.add('open');
+    }
+
+    searchInput.addEventListener('input', () => {
+        filteredTZ = filterTZ(searchInput.value);
+        activeIdx = -1;
+        renderDropdown();
+    });
+
+    searchInput.addEventListener('focus', () => {
+        filteredTZ = filterTZ(searchInput.value);
+        activeIdx = -1;
+        renderDropdown();
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown'){
+            e.preventDefault();
+            activeIdx = Math.min(activeIdx + 1, filteredTZ.length - 1);
+            renderDropdown();
+        } else if (e.key === 'ArrowUp'){
+            e.preventDefault();
+            activeIdx = Math.max(activeIdx - 1, 0);
+            renderDropdown();
+        } else if (e.key === 'Enter'){
+            e.preventDefault();
+            if (activeIdx >= 0 && activeIdx < filteredTZ.length){
+                addTimezone(filteredTZ[activeIdx].tz);
+            }
+        } else if (e.key === 'Escape'){
+            dropdown.classList.remove('open');
+            searchInput.blur();
+        }
+    });
+
+    dropdown.addEventListener('click', (e) => {
+        const item = e.target.closest('.dropdown-item');
+        if (item && item.dataset.tz){
+            addTimezone(item.dataset.tz);
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.tz-picker')){
+            dropdown.classList.remove('open');
+        }
+    });
+
+    function addTimezone(tz){
+        if (pinned.includes(tz)){
+            toast(`${tzDisplay(tz)} already pinned`);
+            return;
+        }
+        // Validate timezone is real
+        try {
+            new Intl.DateTimeFormat('en-US', { timeZone: tz }).format(new Date());
+        } catch(e){
+            toast(`Invalid timezone: ${tz}`);
+            return;
+        }
+        pinned.push(tz);
+        savePins(pinned);
+        searchInput.value = '';
+        dropdown.classList.remove('open');
+        renderClocks();
+        renderPlanner();
+        toast(`Pinned ${tzDisplay(tz)}`);
+    }
+
+    // --- Option toggles ---
+    document.getElementById('optAnalog').addEventListener('change', (e) => {
+        opts.analog = e.target.checked;
+        saveOpts(opts);
+        renderClocks();
+    });
+    document.getElementById('opt24h').addEventListener('change', (e) => {
+        opts.use24h = e.target.checked;
+        saveOpts(opts);
+        renderClocks();
+    });
+    document.getElementById('bizStart').addEventListener('change', (e) => {
+        const sv = parseInt(e.target.value, 10);
+        opts.bizStart = isNaN(sv) ? 9 : Math.max(0, Math.min(23, sv));
+        saveOpts(opts);
+        renderClocks();
+        renderPlanner();
+    });
+    document.getElementById('bizEnd').addEventListener('change', (e) => {
+        const ev = parseInt(e.target.value, 10);
+        opts.bizEnd = isNaN(ev) ? 17 : Math.max(0, Math.min(23, ev));
+        saveOpts(opts);
+        renderClocks();
+        renderPlanner();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        pinned = [...DEFAULT_PINS];
+        savePins(pinned);
+        renderClocks();
+        renderPlanner();
+        toast('Reset to default timezones');
+    });
+
+    // --- Init ---
+    renderClocks();
+    renderPlanner();
+    // Update every second
+    setInterval(() => { renderClocks(); }, 1000);
+    // Planner updates every minute (hours rarely change, but keeps current-hour highlight fresh)
+    setInterval(renderPlanner, 60000);
     </script>
 </body>
 </html>
