@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AES Encryption | Online Tools</title>
-    <meta name="description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta name="description" content="Encrypt and decrypt text and files using AES-256-GCM with a password. Client-side only, nothing uploaded.">
     <meta property="og:title" content="AES Encryption | Online Tools">
-    <meta property="og:description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta property="og:description" content="Encrypt and decrypt text and files using AES-256-GCM with a password. Client-side only, nothing uploaded.">
     <meta property="og:url" content="https://online-tools.click/aes_encryption/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://online-tools.click/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="AES Encryption | Online Tools">
-    <meta name="twitter:description" content="Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.">
+    <meta name="twitter:description" content="Encrypt and decrypt text and files using AES-256-GCM with a password. Client-side only, nothing uploaded.">
     <meta name="twitter:image" content="https://online-tools.click/og-image.png">
     <link rel="canonical" href="https://online-tools.click/aes_encryption/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,6 +65,7 @@
             font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
             display: inline-flex; align-items: center; gap: 8px; }
         .btn:hover { background: #ff5522; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-sm { padding: 8px 16px; font-size: 12px; }
         .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
         .btn-secondary:hover { background: var(--bg-elevated); color: var(--text); }
@@ -86,6 +87,50 @@
             transition: opacity 0.2s, transform 0.2s; z-index: 100; }
         .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
         hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+        /* Mode tabs */
+        .mode-tabs { display: flex; gap: 4px; margin-bottom: 24px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px; }
+        .mode-tab { flex: 1; padding: 10px 20px; border: none; background: transparent; color: var(--text-muted); font-family: var(--font-sans); font-size: 14px; font-weight: 600; cursor: pointer; border-radius: var(--radius-sm); transition: all 0.2s; }
+        .mode-tab.active { background: var(--accent); color: #fff; }
+        .mode-tab:not(.active):hover { color: var(--text-secondary); }
+        .mode-panel { display: none; }
+        .mode-panel.active { display: block; }
+
+        /* Drag-and-drop zone */
+        .dropzone { border: 2px dashed var(--border); border-radius: var(--radius-md); padding: 48px 24px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-input); position: relative; }
+        .dropzone:hover { border-color: var(--border-focus); }
+        .dropzone.drag-over { border-color: var(--accent); background: var(--accent-glow); transform: scale(1.01); }
+        .dropzone.drag-over .dz-icon { transform: scale(1.15); }
+        .dz-icon { font-size: 48px; margin-bottom: 12px; display: block; transition: transform 0.2s; }
+        .dz-text { color: var(--text-secondary); font-size: 15px; }
+        .dz-text strong { color: var(--text); }
+        .dz-hint { color: var(--text-muted); font-size: 12px; margin-top: 6px; }
+
+        /* File info display */
+        .file-info { display: none; align-items: center; gap: 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; margin-top: 12px; }
+        .file-info.visible { display: flex; }
+        .file-info .fi-icon { font-size: 28px; }
+        .file-info .fi-details { flex: 1; min-width: 0; }
+        .file-info .fi-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-info .fi-meta { font-size: 12px; color: var(--text-muted); }
+        .file-info .fi-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 20px; padding: 4px 8px; border-radius: var(--radius-sm); transition: all 0.2s; }
+        .file-info .fi-remove:hover { color: var(--error); background: rgba(239,68,68,0.1); }
+
+        /* Salt display */
+        .salt-display { display: none; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .salt-display.visible { display: flex; }
+        .salt-display .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 600; }
+        .salt-display code { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); background: var(--bg-input); padding: 3px 8px; border-radius: 4px; word-break: break-all; }
+
+        /* Size limit bar */
+        .size-limit { margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted); }
+        .size-limit-bar { flex: 1; height: 4px; background: var(--bg-input); border-radius: 2px; overflow: hidden; }
+        .size-limit-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
+
+        /* Iterations selector */
+        .iter-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+        select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff80' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+
         @media (max-width: 768px) {
             header { padding: 20px 20px; }
             .hero h1 { font-size: 28px; }
@@ -109,74 +154,493 @@
     <main id="main-content">
         <section class="hero">
             <h1>AES Encryption</h1>
-            <p>Encrypt and decrypt text using AES (Advanced Encryption Standard) with a password. Client-side only.</p>
+            <p>Encrypt and decrypt text and files using AES-256-GCM with a password. Everything runs in your browser — nothing is uploaded.</p>
         </section>
-        
-<div class="card">
-    <div class="card-header">Encryption Settings</div>
-    <div class="field-group"><label>Password / Key</label><input type="password" id="password" value="mysecretkey" oninput="checkReady()"></div>
-</div>
-<div class="card">
-    <div class="card-header">Text to Encrypt / Decrypt</div>
-    <textarea id="input" placeholder="Enter text to encrypt, or paste ciphertext to decrypt..." oninput="checkReady()" style="min-height:100px"></textarea>
-</div>
-<div class="flex-row">
-    <button class="btn" onclick="encrypt()">🔒 Encrypt</button>
-    <button class="btn btn-secondary" onclick="decrypt()">🔓 Decrypt</button>
-    <button class="btn btn-sm btn-secondary" onclick="clearBoth()">Clear</button>
-</div>
-<div class="card" style="margin-top:16px">
-    <div class="card-header">Output</div>
-    <div class="result-box" id="output" style="min-height:60px;word-break:break-all"></div>
-    <div class="flex-row" style="margin-top:12px"><button class="btn btn-sm" onclick="copyResult()">Copy</button></div>
-</div>
 
+        <!-- Mode selector -->
+        <div class="mode-tabs" role="tablist" aria-label="Encryption mode">
+            <button class="mode-tab active" role="tab" aria-selected="true" id="tab-text" onclick="switchMode('text')">📝 Text</button>
+            <button class="mode-tab" role="tab" aria-selected="false" id="tab-file" onclick="switchMode('file')">📁 File</button>
+        </div>
+
+        <!-- Settings card (shared) -->
+        <div class="card">
+            <div class="card-header">Encryption Settings</div>
+            <div class="grid-2">
+                <div class="field-group" style="margin-bottom:0">
+                    <label for="password">Password / Key</label>
+                    <input type="password" id="password" value="mysecretkey" oninput="checkReady()" aria-label="Encryption password">
+                </div>
+                <div class="field-group" style="margin-bottom:0">
+                    <label for="iterations">PBKDF2 Iterations</label>
+                    <select id="iterations" aria-label="PBKDF2 iteration count">
+                        <option value="50000">50,000 (faster)</option>
+                        <option value="100000" selected>100,000 (recommended)</option>
+                        <option value="250000">250,000 (stronger)</option>
+                        <option value="500000">500,000 (paranoid)</option>
+                        <option value="1000000">1,000,000 (maximum)</option>
+                    </select>
+                    <div class="iter-hint">Higher = slower but more resistant to brute-force</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== TEXT MODE ===== -->
+        <div class="mode-panel active" id="panel-text" role="tabpanel" aria-labelledby="tab-text">
+            <!-- Dropzone for text -->
+            <div class="card" style="padding:24px">
+                <div class="dropzone" id="dz-text" onclick="document.getElementById('text-file-input').click()" role="button" tabindex="0" aria-label="Drop a text file to load into textarea">
+                    <span class="dz-icon">📄</span>
+                    <div class="dz-text"><strong>Drop a text file here</strong> or click to browse</div>
+                    <div class="dz-hint">Loads file contents into the text area below</div>
+                    <input type="file" id="text-file-input" accept=".txt,.md,.json,.csv,.xml,.html,.js,.css,.log,text/*" style="display:none" onchange="handleTextFileDrop(this.files[0])">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">Text to Encrypt / Decrypt</div>
+                <textarea id="input" placeholder="Enter text to encrypt, or paste ciphertext to decrypt..." oninput="checkReady()" style="min-height:120px"></textarea>
+            </div>
+            <div class="flex-row">
+                <button class="btn" onclick="encryptText()" id="btn-encrypt-text">🔒 Encrypt</button>
+                <button class="btn btn-secondary" onclick="decryptText()">🔓 Decrypt</button>
+                <button class="btn btn-sm btn-secondary" onclick="clearText()">Clear</button>
+            </div>
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">Output</div>
+                <div class="result-box" id="output" style="min-height:60px;word-break:break-all"></div>
+                <div class="salt-display" id="salt-display">
+                    <span class="label">Salt (hex):</span>
+                    <code id="salt-value"></code>
+                    <button class="btn btn-sm btn-secondary" onclick="copySalt()">Copy Salt</button>
+                </div>
+                <div class="flex-row" style="margin-top:12px">
+                    <button class="btn btn-sm" onclick="copyResult()">Copy</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== FILE MODE ===== -->
+        <div class="mode-panel" id="panel-file" role="tabpanel" aria-labelledby="tab-file">
+            <!-- Dropzone for files -->
+            <div class="card" style="padding:24px">
+                <div class="dropzone" id="dz-file" onclick="document.getElementById('file-input').click()" role="button" tabindex="0" aria-label="Drop a file to encrypt, or a .enc file to decrypt">
+                    <span class="dz-icon">📁</span>
+                    <div class="dz-text"><strong>Drop a file here</strong> or click to browse</div>
+                    <div class="dz-hint">Any file type for encryption · .enc files for decryption</div>
+                    <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(this.files[0])">
+                </div>
+                <div class="file-info" id="file-info">
+                    <span class="fi-icon" id="fi-icon">📄</span>
+                    <div class="fi-details">
+                        <div class="fi-name" id="fi-name"></div>
+                        <div class="fi-meta" id="fi-meta"></div>
+                    </div>
+                    <button class="fi-remove" onclick="clearFile()" aria-label="Remove file">✕</button>
+                </div>
+                <div class="size-limit">
+                    <span id="size-limit-text">0 MB / 100 MB</span>
+                    <div class="size-limit-bar"><div class="size-limit-fill" id="size-limit-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="flex-row">
+                <button class="btn" onclick="encryptFile()" id="btn-encrypt-file" disabled>🔒 Encrypt &amp; Download</button>
+                <button class="btn btn-secondary" onclick="decryptFile()" id="btn-decrypt-file" disabled>🔓 Decrypt &amp; Download</button>
+                <button class="btn btn-sm btn-secondary" onclick="clearFile()">Clear</button>
+            </div>
+            <div class="salt-display" id="salt-display-file" style="margin-top:16px">
+                <span class="label">Salt (hex):</span>
+                <code id="salt-value-file"></code>
+                <button class="btn btn-sm btn-secondary" onclick="copySaltFile()">Copy Salt</button>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:24px">
+            <div class="card-header">How It Works</div>
+            <p style="color:var(--text-secondary);font-size:14px;line-height:1.8">
+                • <strong style="color:var(--text)">Algorithm:</strong> AES-256-GCM (authenticated encryption)<br>
+                • <strong style="color:var(--text)">Key derivation:</strong> PBKDF2 with SHA-256, configurable iterations<br>
+                • <strong style="color:var(--text)">Salt:</strong> 16 random bytes, unique per encryption<br>
+                • <strong style="color:var(--text)">IV:</strong> 12 random bytes per encryption<br>
+                • <strong style="color:var(--text)">File format:</strong> Encrypted files use a self-contained <code style="font-size:12px">.enc</code> binary format that embeds salt, IV, iterations, and original filename<br>
+                • <strong style="color:var(--text)">Privacy:</strong> All operations happen locally in your browser. No data is sent anywhere.
+            </p>
+        </div>
     </main>
-    <div class="toast" id="toast"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
     <script>
-    function toast(msg){
-        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
-        setTimeout(()=>t.classList.remove('visible'),2000);
-    }
-    
-async function encrypt(){
-    const pass=document.getElementById('password').value;
-    const text=document.getElementById('input').value;
-    if(!pass||!text){toast('Enter password and text');return;}
-    try{
-        const enc=new TextEncoder();
-        const keyMaterial=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
-        const salt=crypto.getRandomValues(new Uint8Array(16));
-        const iv=crypto.getRandomValues(new Uint8Array(12));
-        const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['encrypt']);
-        const encrypted=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,enc.encode(text));
-        const combined=new Uint8Array(salt.length+iv.length+encrypted.byteLength);
-        combined.set(salt);combined.set(iv,salt.length);combined.set(new Uint8Array(encrypted),salt.length+iv.length);
-        document.getElementById('output').textContent=btoa(String.fromCharCode(...combined));
-        toast('Encrypted!');
-    }catch(e){document.getElementById('output').textContent='Error: '+e.message;}
-}
-async function decrypt(){
-    const pass=document.getElementById('password').value;
-    const text=document.getElementById('input').value.trim();
-    if(!pass||!text){toast('Enter password and ciphertext');return;}
-    try{
-        const raw=Uint8Array.from(atob(text),c=>c.charCodeAt(0));
-        const salt=raw.slice(0,16);const iv=raw.slice(16,28);const data=raw.slice(28);
-        const enc=new TextEncoder();
-        const keyMaterial=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
-        const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},keyMaterial,{name:'AES-GCM',length:256},false,['decrypt']);
-        const decrypted=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);
-        document.getElementById('output').textContent=new TextDecoder().decode(decrypted);
-        toast('Decrypted!');
-    }catch(e){document.getElementById('output').textContent='Error: Wrong password or corrupted data';}
-}
-function clearBoth(){document.getElementById('input').value='';document.getElementById('output').textContent='';}
-function checkReady(){}
-function copyResult(){navigator.clipboard.writeText(document.getElementById('output').textContent).then(()=>toast('Copied!'));}
+    /* ===== Constants ===== */
+    const MAGIC = new Uint8Array([0x41, 0x45, 0x53, 0x31]); // "AES1"
+    const SALT_LEN = 16;
+    const IV_LEN = 12;
+    const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
 
+    /* ===== State ===== */
+    let currentMode = 'text';
+    let selectedFile = null;
+    let lastSaltHex = '';
+
+    /* ===== Utility ===== */
+    function toast(msg, isError) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.style.borderColor = isError ? 'var(--error)' : 'var(--border)';
+        t.classList.add('visible');
+        setTimeout(() => t.classList.remove('visible'), 2500);
+    }
+
+    function bytesToHex(bytes) {
+        return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    function getIterations() {
+        return parseInt(document.getElementById('iterations').value);
+    }
+
+    async function deriveKey(password, salt, iterations, usage) {
+        const enc = new TextEncoder();
+        const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+        return crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+            keyMaterial,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            [usage]
+        );
+    }
+
+    function showSalt(saltBytes) {
+        lastSaltHex = bytesToHex(saltBytes);
+        const display = document.getElementById('salt-display');
+        const value = document.getElementById('salt-value');
+        const displayFile = document.getElementById('salt-display-file');
+        const valueFile = document.getElementById('salt-value-file');
+        value.textContent = lastSaltHex;
+        valueFile.textContent = lastSaltHex;
+        display.classList.add('visible');
+        displayFile.classList.add('visible');
+    }
+
+    function hideSalt() {
+        document.getElementById('salt-display').classList.remove('visible');
+        document.getElementById('salt-display-file').classList.remove('visible');
+        lastSaltHex = '';
+    }
+
+    /* ===== Mode switching ===== */
+    function switchMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.mode-tab').forEach(t => {
+            t.classList.remove('active');
+            t.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.mode-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('tab-' + mode).classList.add('active');
+        document.getElementById('tab-' + mode).setAttribute('aria-selected', 'true');
+        document.getElementById('panel-' + mode).classList.add('active');
+    }
+
+    /* ===== Text encryption/decryption ===== */
+    // Format: MAGIC(4) | iterations(4 LE) | salt(16) | iv(12) | ciphertext+tag
+    // Legacy format (no magic): salt(16) | iv(12) | ciphertext+tag (iterations from selector)
+
+    async function encryptText() {
+        const pass = document.getElementById('password').value;
+        const text = document.getElementById('input').value;
+        if (!pass || !text) { toast('Enter password and text', true); return; }
+        try {
+            const salt = crypto.getRandomValues(new Uint8Array(SALT_LEN));
+            const iv = crypto.getRandomValues(new Uint8Array(IV_LEN));
+            const iterations = getIterations();
+            const key = await deriveKey(pass, salt, iterations, 'encrypt');
+            const enc = new TextEncoder();
+            const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text)));
+
+            const iterBytes = new Uint8Array(4);
+            new DataView(iterBytes.buffer).setUint32(0, iterations, true);
+
+            const combined = new Uint8Array(MAGIC.length + iterBytes.length + salt.length + iv.length + encrypted.length);
+            combined.set(MAGIC, 0);
+            combined.set(iterBytes, MAGIC.length);
+            combined.set(salt, MAGIC.length + iterBytes.length);
+            combined.set(iv, MAGIC.length + iterBytes.length + salt.length);
+            combined.set(encrypted, MAGIC.length + iterBytes.length + salt.length + iv.length);
+
+            document.getElementById('output').textContent = btoa(String.fromCharCode(...combined));
+            showSalt(salt);
+            toast('Encrypted!');
+        } catch (e) {
+            document.getElementById('output').textContent = 'Error: ' + e.message;
+            toast('Encryption failed', true);
+        }
+    }
+
+    async function decryptText() {
+        const pass = document.getElementById('password').value;
+        const text = document.getElementById('input').value.trim();
+        if (!pass || !text) { toast('Enter password and ciphertext', true); return; }
+        try {
+            const raw = Uint8Array.from(atob(text), c => c.charCodeAt(0));
+            let salt, iv, data, iterations;
+
+            // Check for new format magic
+            if (raw.length > MAGIC.length && MAGIC.every((b, i) => raw[i] === b)) {
+                iterations = new DataView(raw.buffer).getUint32(MAGIC.length, true);
+                const headerLen = MAGIC.length + 4;
+                salt = raw.slice(headerLen, headerLen + SALT_LEN);
+                iv = raw.slice(headerLen + SALT_LEN, headerLen + SALT_LEN + IV_LEN);
+                data = raw.slice(headerLen + SALT_LEN + IV_LEN);
+            } else {
+                // Legacy format — use selector iterations
+                iterations = getIterations();
+                salt = raw.slice(0, SALT_LEN);
+                iv = raw.slice(SALT_LEN, SALT_LEN + IV_LEN);
+                data = raw.slice(SALT_LEN + IV_LEN);
+            }
+
+            const key = await deriveKey(pass, salt, iterations, 'decrypt');
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+            document.getElementById('output').textContent = new TextDecoder().decode(decrypted);
+            showSalt(salt);
+            toast('Decrypted!');
+        } catch (e) {
+            document.getElementById('output').textContent = 'Error: Wrong password or corrupted data';
+            hideSalt();
+            toast('Decryption failed', true);
+        }
+    }
+
+    function clearText() {
+        document.getElementById('input').value = '';
+        document.getElementById('output').textContent = '';
+        hideSalt();
+    }
+
+    function checkReady() {}
+
+    function copyResult() {
+        const text = document.getElementById('output').textContent;
+        if (!text) { toast('Nothing to copy', true); return; }
+        navigator.clipboard.writeText(text).then(() => toast('Copied!'));
+    }
+
+    function copySalt() {
+        if (!lastSaltHex) { toast('No salt available', true); return; }
+        navigator.clipboard.writeText(lastSaltHex).then(() => toast('Salt copied!'));
+    }
+    function copySaltFile() { copySalt(); }
+
+    /* ===== Text file drop ===== */
+    function handleTextFileDrop(file) {
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) { toast('Text file too large (max 5 MB)', true); return; }
+        const reader = new FileReader();
+        reader.onload = e => {
+            document.getElementById('input').value = e.target.result;
+            toast('Loaded: ' + file.name);
+        };
+        reader.onerror = () => toast('Failed to read file', true);
+        reader.readAsText(file);
+    }
+
+    /* ===== File encryption/decryption ===== */
+    // .enc binary format:
+    // MAGIC(4) | iterations(4 LE) | salt(16) | iv(12) | filenameLen(2 LE) | filename(UTF-8) | ciphertext+tag
+
+    function handleFileSelect(file) {
+        if (!file) return;
+        selectedFile = file;
+
+        const info = document.getElementById('file-info');
+        info.classList.add('visible');
+        document.getElementById('fi-name').textContent = file.name;
+        document.getElementById('fi-meta').textContent = formatBytes(file.size);
+
+        // Size limit indicator
+        const pct = Math.min(100, (file.size / MAX_FILE_SIZE) * 100);
+        const fill = document.getElementById('size-limit-fill');
+        fill.style.width = pct + '%';
+        fill.style.background = pct >= 100 ? 'var(--error)' : pct > 80 ? 'var(--warning)' : 'var(--success)';
+        document.getElementById('size-limit-text').textContent = formatBytes(file.size) + ' / ' + formatBytes(MAX_FILE_SIZE);
+
+        // Enable buttons
+        const isEnc = file.name.endsWith('.enc');
+        document.getElementById('btn-encrypt-file').disabled = file.size > MAX_FILE_SIZE;
+        document.getElementById('btn-decrypt-file').disabled = !isEnc;
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast('File exceeds ' + formatBytes(MAX_FILE_SIZE) + ' limit', true);
+        } else if (isEnc) {
+            toast('.enc file — ready to decrypt');
+        } else {
+            toast('File ready — ready to encrypt');
+        }
+    }
+
+    function clearFile() {
+        selectedFile = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-info').classList.remove('visible');
+        document.getElementById('btn-encrypt-file').disabled = true;
+        document.getElementById('btn-decrypt-file').disabled = true;
+        document.getElementById('size-limit-fill').style.width = '0%';
+        document.getElementById('size-limit-text').textContent = '0 B / ' + formatBytes(MAX_FILE_SIZE);
+    }
+
+    function downloadBlob(data, filename, mime) {
+        const blob = new Blob([data], { type: mime || 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async function encryptFile() {
+        if (!selectedFile) { toast('Select a file first', true); return; }
+        if (selectedFile.size > MAX_FILE_SIZE) { toast('File too large (max ' + formatBytes(MAX_FILE_SIZE) + ')', true); return; }
+
+        const pass = document.getElementById('password').value;
+        if (!pass) { toast('Enter a password', true); return; }
+
+        try {
+            document.getElementById('btn-encrypt-file').disabled = true;
+            document.getElementById('btn-encrypt-file').textContent = '⏳ Encrypting...';
+
+            const fileData = new Uint8Array(await selectedFile.arrayBuffer());
+            const salt = crypto.getRandomValues(new Uint8Array(SALT_LEN));
+            const iv = crypto.getRandomValues(new Uint8Array(IV_LEN));
+            const iterations = getIterations();
+            const key = await deriveKey(pass, salt, iterations, 'encrypt');
+
+            const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, fileData));
+
+            const nameBytes = new TextEncoder().encode(selectedFile.name);
+            const nameLen = new Uint8Array(2);
+            new DataView(nameLen.buffer).setUint16(0, nameBytes.length, true);
+
+            const iterBytes = new Uint8Array(4);
+            new DataView(iterBytes.buffer).setUint32(0, iterations, true);
+
+            const output = new Uint8Array(MAGIC.length + iterBytes.length + salt.length + iv.length + nameLen.length + nameBytes.length + encrypted.length);
+            let off = 0;
+            output.set(MAGIC, off); off += MAGIC.length;
+            output.set(iterBytes, off); off += iterBytes.length;
+            output.set(salt, off); off += salt.length;
+            output.set(iv, off); off += iv.length;
+            output.set(nameLen, off); off += nameLen.length;
+            output.set(nameBytes, off); off += nameBytes.length;
+            output.set(encrypted, off);
+
+            const outName = selectedFile.name + '.enc';
+            downloadBlob(output, outName, 'application/octet-stream');
+            showSalt(salt);
+            toast('Encrypted! Downloaded: ' + outName);
+        } catch (e) {
+            toast('Encryption error: ' + e.message, true);
+        } finally {
+            document.getElementById('btn-encrypt-file').disabled = false;
+            document.getElementById('btn-encrypt-file').textContent = '🔒 Encrypt & Download';
+        }
+    }
+
+    async function decryptFile() {
+        if (!selectedFile) { toast('Select a .enc file first', true); return; }
+
+        const pass = document.getElementById('password').value;
+        if (!pass) { toast('Enter a password', true); return; }
+
+        try {
+            document.getElementById('btn-decrypt-file').disabled = true;
+            document.getElementById('btn-decrypt-file').textContent = '⏳ Decrypting...';
+
+            const raw = new Uint8Array(await selectedFile.arrayBuffer());
+            let off = 0;
+
+            // Magic
+            if (raw.length < MAGIC.length || !MAGIC.every((b, i) => raw[i] === b)) {
+                throw new Error('Not a valid .enc file (missing AES1 header)');
+            }
+            off += MAGIC.length;
+
+            const dv = new DataView(raw.buffer);
+            const iterations = dv.getUint32(off, true); off += 4;
+            const salt = raw.slice(off, off + SALT_LEN); off += SALT_LEN;
+            const iv = raw.slice(off, off + IV_LEN); off += IV_LEN;
+            const nameLen = dv.getUint16(off, true); off += 2;
+            const fileName = new TextDecoder().decode(raw.slice(off, off + nameLen)); off += nameLen;
+            const data = raw.slice(off);
+
+            const key = await deriveKey(pass, salt, iterations, 'decrypt');
+            const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+
+            const outName = fileName.replace(/\.enc$/, '');
+            downloadBlob(decrypted, outName, 'application/octet-stream');
+            showSalt(salt);
+            toast('Decrypted! Downloaded: ' + outName);
+        } catch (e) {
+            if (e.name === 'OperationError') {
+                toast('Wrong password or corrupted file', true);
+            } else {
+                toast('Decryption error: ' + e.message, true);
+            }
+        } finally {
+            document.getElementById('btn-decrypt-file').disabled = false;
+            document.getElementById('btn-decrypt-file').textContent = '🔓 Decrypt & Download';
+        }
+    }
+
+    /* ===== Drag-and-drop wiring ===== */
+    function setupDropzone(elId, handler) {
+        const dz = document.getElementById(elId);
+        ['dragenter', 'dragover'].forEach(ev => {
+            dz.addEventListener(ev, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                dz.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'dragend'].forEach(ev => {
+            dz.addEventListener(ev, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (e.target === dz) dz.classList.remove('drag-over');
+            });
+        });
+        dz.addEventListener('drop', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            dz.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files && files.length > 0) handler(files[0]);
+        });
+        // Keyboard
+        dz.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); dz.click(); }
+        });
+    }
+
+    setupDropzone('dz-text', handleTextFileDrop);
+    setupDropzone('dz-file', handleFileSelect);
+
+    // Prevent browser from opening file when dropped outside zones
+    ['dragover', 'drop'].forEach(ev => {
+        window.addEventListener(ev, e => { if (e.target.id !== 'dz-text' && e.target.id !== 'dz-file' && !e.target.closest('.dropzone')) e.preventDefault(); });
+    });
     </script>
 </body>
 </html>
