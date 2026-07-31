@@ -1086,12 +1086,12 @@
             return `${dayName}, ${monthName} ${run.day}, ${run.year} at ${formatTime12(run.hour, run.minute)}`;
         }
 
+        function toEpochMin(c) {
+            return Date.UTC(c.year, c.month - 1, c.day, c.hour, c.minute) / 60000;
+        }
+
         function timeAgo(run, now) {
-            const diffMins = (run.year - now.year) * 525600 +
-                (run.month - now.month) * 43800 +
-                (run.day - now.day) * 1440 +
-                (run.hour - now.hour) * 60 +
-                (run.minute - now.minute);
+            const diffMins = toEpochMin(run) - toEpochMin(now);
             if (diffMins < 60) return `in ${diffMins}m`;
             if (diffMins < 1440) return `in ${Math.floor(diffMins / 60)}h ${diffMins % 60}m`;
             if (diffMins < 10080) return `in ${Math.floor(diffMins / 1440)}d`;
