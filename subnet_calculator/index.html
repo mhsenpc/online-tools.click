@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subnet Calculator | Online Tools</title>
-    <meta name="description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta name="description" content="Calculate IPv4 and IPv6 subnet masks, CIDR visualization, network/broadcast addresses, usable host range, and split subnets into smaller blocks.">
     <meta property="og:title" content="Subnet Calculator | Online Tools">
-    <meta property="og:description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta property="og:description" content="Calculate IPv4 and IPv6 subnet masks, CIDR visualization, network/broadcast addresses, usable host range, and split subnets into smaller blocks.">
     <meta property="og:url" content="https://online-tools.click/subnet_calculator/">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://online-tools.click/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Subnet Calculator | Online Tools">
-    <meta name="twitter:description" content="Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.">
+    <meta name="twitter:description" content="Calculate IPv4 and IPv6 subnet masks, CIDR visualization, network/broadcast addresses, usable host range, and split subnets into smaller blocks.">
     <meta name="twitter:image" content="https://online-tools.click/og-image.png">
     <link rel="canonical" href="https://online-tools.click/subnet_calculator/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,10 +86,58 @@
             transition: opacity 0.2s, transform 0.2s; z-index: 100; }
         .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
         hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+        /* Mode toggle tabs */
+        .tab-group { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+        .tab { background: transparent; border: none; padding: 10px 32px; color: var(--text-secondary); font-family: var(--font-sans);
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .tab:hover { color: var(--text); }
+        .tab.active { background: var(--accent); color: #fff; }
+        .tab + .tab { border-left: 1px solid var(--border); }
+
+        /* Notation toggle */
+        .toggle-row { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+        .toggle-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .toggle-btn { background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 16px;
+            font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; }
+        .toggle-btn:hover { border-color: var(--border-focus); color: var(--text); }
+        .toggle-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* CIDR visualization */
+        .cidr-bar { display: flex; height: 40px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; }
+        .cidr-net { background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff;
+            font-size: 12px; font-weight: 700; overflow: hidden; white-space: nowrap; }
+        .cidr-host { background: var(--bg-input); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 12px; font-weight: 700; overflow: hidden; white-space: nowrap; }
+        .bit-groups { display: flex; gap: 6px; }
+        .bit-group { display: flex; gap: 1px; flex: 1; }
+        .bit { flex: 1; height: 28px; border-radius: 2px; display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-family: var(--font-mono); font-weight: 600; }
+        .bit.net { background: var(--accent); color: #fff; }
+        .bit.host { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-muted); }
+        .group-sep { width: 6px; flex-shrink: 0; }
+        .legend { display: flex; gap: 20px; font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+        .legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+        .viz-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+        /* Subnet division table */
+        .subnet-list { margin-top: 16px; max-height: 420px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); }
+        .subnet-row { display: grid; grid-template-columns: 50px 1fr 1fr 80px; gap: 8px; padding: 8px 16px; font-family: var(--font-mono);
+            font-size: 12px; border-bottom: 1px solid var(--border); align-items: center; }
+        .subnet-row:last-child { border-bottom: none; }
+        .subnet-row.header { font-family: var(--font-sans); font-weight: 700; font-size: 11px; text-transform: uppercase;
+            letter-spacing: 0.05em; color: var(--text-muted); position: sticky; top: 0; background: var(--bg-elevated); z-index: 1; }
+        .subnet-row:not(.header):nth-child(odd) { background: rgba(255,255,255,0.02); }
+        .subnet-note { padding: 12px 16px; font-size: 12px; color: var(--text-muted); text-align: center; }
+        .cidr-input-group { display: flex; align-items: center; gap: 4px; }
+        .cidr-prefix { font-family: var(--font-mono); font-size: 18px; color: var(--text-muted); }
+
         @media (max-width: 768px) {
             header { padding: 20px 20px; }
             .hero h1 { font-size: 28px; }
             .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .card { padding: 20px; }
+            .bit { height: 22px; font-size: 8px; }
         }
     </style>
     <link rel="stylesheet" href="/a11y.css">
@@ -109,23 +157,66 @@
     <main id="main-content">
         <section class="hero">
             <h1>Subnet Calculator</h1>
-            <p>Calculate subnet mask, network address, broadcast address, and usable host range for IPv4 CIDR blocks.</p>
+            <p>Calculate subnet details for IPv4 and IPv6. Visualize CIDR notation, find usable host ranges, and divide networks into smaller subnets.</p>
         </section>
-        
+
+<!-- Mode Toggle -->
+<div class="card">
+    <div class="flex-row" style="justify-content:center">
+        <div class="tab-group" role="tablist">
+            <button class="tab active" id="tab-v4" onclick="setMode('v4')">IPv4</button>
+            <button class="tab" id="tab-v6" onclick="setMode('v6')">IPv6</button>
+        </div>
+    </div>
+</div>
+
+<!-- Input -->
 <div class="card">
     <div class="card-header">IP Address / CIDR</div>
     <div class="flex-row">
-        <input type="text" id="input" value="192.168.1.0/24" oninput="calc()" style="font-family:var(--font-mono);font-size:18px;flex:1">
+        <input type="text" id="input" value="192.168.1.0/24" oninput="calc()" style="font-family:var(--font-mono);font-size:18px;flex:1;min-width:200px">
         <button class="btn btn-sm btn-secondary" onclick="setExample()">Example</button>
     </div>
+    <div class="toggle-row" id="v6-toggle-row" style="display:none">
+        <span class="toggle-label">Notation:</span>
+        <button class="toggle-btn active" id="btn-compressed" onclick="setNotation(true)">Compressed</button>
+        <button class="toggle-btn" id="btn-expanded" onclick="setNotation(false)">Expanded</button>
+    </div>
 </div>
+
+<!-- Network Information -->
 <div class="card">
     <div class="card-header">Network Information</div>
     <div id="net-info" class="stat-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))"></div>
 </div>
+
+<!-- CIDR Visualization -->
 <div class="card">
-    <div class="card-header">Binary Representation</div>
+    <div class="card-header">CIDR Visualization</div>
+    <div id="cidr-viz"></div>
+</div>
+
+<!-- Binary Representation -->
+<div class="card">
+    <div class="card-header" id="binary-header">Binary Representation</div>
     <div id="binary" style="font-family:var(--font-mono);font-size:12px;word-break:break-all"></div>
+</div>
+
+<!-- Subnet Division -->
+<div class="card">
+    <div class="card-header">Subnet Division</div>
+    <div class="flex-row">
+        <div class="field-group" style="flex:1;min-width:200px;margin-bottom:0">
+            <label>Divide network into smaller subnets</label>
+            <div class="cidr-input-group">
+                <input type="number" id="target-cidr" value="26" min="0" max="32" oninput="divideSubnets()" style="font-size:16px">
+                <span class="cidr-prefix">/prefix</span>
+            </div>
+        </div>
+        <button class="btn btn-sm btn-secondary" onclick="quickDivide(2)">+2</button>
+        <button class="btn btn-sm btn-secondary" onclick="quickDivide(4)">+4</button>
+    </div>
+    <div id="subnet-list"></div>
 </div>
 
     </main>
@@ -133,49 +224,451 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-GHGXLWQR4V"></script>
     <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-GHGXLWQR4V');</script>
     <script>
-    function toast(msg){
-        const t=document.getElementById('toast');t.textContent=msg;t.classList.add('visible');
-        setTimeout(()=>t.classList.remove('visible'),2000);
-    }
-    
-function setExample(){const exps=['192.168.1.0/24','10.0.0.0/8','172.16.0.0/16','10.0.0.0/23','192.168.0.0/28'];document.getElementById('input').value=exps[Math.floor(Math.random()*exps.length)];calc();}
-function calc(){
-    const t=document.getElementById('input').value.trim();
-    const n=document.getElementById('net-info');
-    const b=document.getElementById('binary');
-    try{
-        const [ipStr,cidr]=t.split('/');
-        const cidrInt=parseInt(cidr)||24;
-        if(cidrInt<0||cidrInt>32) throw new Error('Invalid CIDR');
-        const octets=ipStr.split('.').map(Number);
-        if(octets.length!==4||octets.some(o=>isNaN(o)||o<0||o>255)) throw new Error('Invalid IP');
-        const ipBin=((octets[0]<<24)+(octets[1]<<16)+(octets[2]<<8)+octets[3])>>>0;
-        const mask=~0<<(32-cidrInt);
-        const net=ipBin&mask;
-        const bcast=net|~mask;
-        const hosts=Math.pow(2,32-cidrInt)-2;
-        const toOct=(n)=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
-        const binStr=(n)=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255].map(o=>o.toString(2).padStart(8,'0')).join('.');
-        n.innerHTML=
-            `<div class="stat-card"><div class="val" style="font-size:14px">/${cidrInt}</div><div class="lbl">CIDR</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">255.255.255.${[0,128,192,224,240,248,252,254,255][cidrInt%8]}</div><div class="lbl">Subnet Mask</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">0x${mask>>>0?mask.toString(16):'00000000'}</div><div class="lbl">Mask (Hex)</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">${toOct(net)}</div><div class="lbl">Network</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">${toOct(bcast>>>0)}</div><div class="lbl">Broadcast</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">${hosts>0?hosts:0}</div><div class="lbl">Usable Hosts</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">${cidrInt<32?toOct((net|1)>>>0):'N/A'}</div><div class="lbl">First Host</div></div>
-             <div class="stat-card"><div class="val" style="font-size:14px">${cidrInt<32?toOct((bcast-1)>>>0):'N/A'}</div><div class="lbl">Last Host</div></div>`;
-        b.innerHTML=
-            `<div><strong>IP:</strong> ${binStr(ipBin)}</div>
-             <div><strong>Net:</strong> ${binStr(net)}</div>
-             <div><strong>BCast:</strong> ${binStr(bcast>>>0)}</div>`;
-    }catch(e){
-        n.innerHTML=`<div style="color:var(--error);text-align:center">${e.message}</div>`;
-        b.innerHTML='';
-    }
-}
-calc();
+    /* ============================================================
+       Subnet Calculator — IPv4 + IPv6
+       ============================================================ */
 
+    let currentMode = 'v4';   /* 'v4' | 'v6' */
+    let v6Compressed = true;  /* notation preference for IPv6 output */
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('visible');
+        setTimeout(() => t.classList.remove('visible'), 2000);
+    }
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('tab-v4').classList.toggle('active', mode === 'v4');
+        document.getElementById('tab-v6').classList.toggle('active', mode === 'v6');
+        const input = document.getElementById('input');
+        input.value = (mode === 'v4') ? '192.168.1.0/24' : '2001:db8::/32';
+        /* update target CIDR limits */
+        const tc = document.getElementById('target-cidr');
+        tc.max = (mode === 'v4') ? 32 : 128;
+        tc.value = (mode === 'v4') ? '26' : '48';
+        document.getElementById('v6-toggle-row').style.display = (mode === 'v6') ? 'flex' : 'none';
+        document.getElementById('binary-header').textContent = (mode === 'v6') ? 'Hex / Binary Representation' : 'Binary Representation';
+        calc();
+    }
+
+    function setNotation(compressed) {
+        v6Compressed = compressed;
+        document.getElementById('btn-compressed').classList.toggle('active', compressed);
+        document.getElementById('btn-expanded').classList.toggle('active', !compressed);
+        calc();
+    }
+
+    function setExample() {
+        const v4Exps = ['192.168.1.0/24', '10.0.0.0/8', '172.16.0.0/16', '10.0.0.0/23', '192.168.0.0/28', '172.16.5.10/22'];
+        const v6Exps = ['2001:db8::/32', '::1/128', 'fe80::1/10', '2001:db8:abcd:0012::0/48', 'fd00::/8', '2001:db8::/64'];
+        const pool = (currentMode === 'v4') ? v4Exps : v6Exps;
+        document.getElementById('input').value = pool[Math.floor(Math.random() * pool.length)];
+        calc();
+    }
+
+    /* ---- IPv6 helpers ---- */
+
+    function parseIPv6(str) {
+        /* Handle embedded IPv4 in last group e.g. ::ffff:192.168.1.1 */
+        function expandV4Tail(groups) {
+            if (groups.length > 0 && groups[groups.length - 1].indexOf('.') !== -1) {
+                const last = groups.pop();
+                const octets = last.split('.').map(Number);
+                if (octets.length !== 4 || octets.some(o => isNaN(o) || o < 0 || o > 255))
+                    throw new Error('Invalid embedded IPv4');
+                groups.push(((octets[0] << 8) | octets[1]).toString(16));
+                groups.push(((octets[2] << 8) | octets[3]).toString(16));
+            }
+            return groups;
+        }
+
+        const halves = str.split('::');
+        if (halves.length > 2) throw new Error('Multiple :: in address');
+
+        let left, right;
+        if (halves.length === 2) {
+            left  = halves[0] ? halves[0].split(':') : [];
+            right = halves[1] ? halves[1].split(':') : [];
+        } else {
+            left  = str.split(':');
+            right = [];
+        }
+
+        left  = expandV4Tail(left);
+        right = expandV4Tail(right);
+
+        const total = left.length + right.length;
+        let groups;
+        if (halves.length === 2) {
+            if (total > 8) throw new Error('Too many groups');
+            const fill = 8 - total;
+            groups = left.concat(new Array(fill).fill('0'), right);
+        } else {
+            if (total !== 8) throw new Error('Expected 8 groups');
+            groups = left;
+        }
+
+        let result = 0n;
+        for (const g of groups) {
+            if (!/^[0-9a-fA-F]{1,4}$/.test(g)) throw new Error('Invalid group: ' + g);
+            result = (result << 16n) | BigInt(parseInt(g, 16));
+        }
+        return result;
+    }
+
+    function formatIPv6(val, compressed) {
+        const groups = [];
+        let v = val;
+        for (let i = 0; i < 8; i++) {
+            groups.unshift(Number(v & 0xFFFFn).toString(16));
+            v >>= 16n;
+        }
+        if (compressed) {
+            /* Find longest run of consecutive zero groups (>= 2) */
+            let bestStart = -1, bestLen = 0, curStart = -1, curLen = 0;
+            for (let i = 0; i < groups.length; i++) {
+                if (groups[i] === '0') {
+                    if (curStart === -1) curStart = i;
+                    curLen++;
+                    if (curLen > bestLen) { bestLen = curLen; bestStart = curStart; }
+                } else {
+                    curStart = -1; curLen = 0;
+                }
+            }
+            if (bestLen >= 2) {
+                const before = groups.slice(0, bestStart);
+                const after = groups.slice(bestStart + bestLen);
+                if (before.length === 0 && after.length === 0) return '::';
+                if (before.length === 0) return '::' + after.join(':');
+                if (after.length === 0) return before.join(':') + '::';
+                return before.join(':') + '::' + after.join(':');
+            }
+        } else {
+            /* expanded: 4 hex digits per group */
+            return groups.map(g => g.padStart(4, '0')).join(':');
+        }
+        return groups.join(':');
+    }
+
+    function makeMaskV6(cidr) {
+        cidr = BigInt(cidr);
+        if (cidr === 0n) return 0n;
+        return ((1n << cidr) - 1n) << (128n - cidr);
+    }
+
+    /* ---- main calc ---- */
+
+    function calc() {
+        const t = document.getElementById('input').value.trim();
+        if (currentMode === 'v4') calcV4(t);
+        else calcV6(t);
+    }
+
+    function calcV4(t) {
+        const n = document.getElementById('net-info');
+        const b = document.getElementById('binary');
+        const viz = document.getElementById('cidr-viz');
+        try {
+            const [ipStr, cidrStr] = t.split('/');
+            if (!ipStr) throw new Error('Enter an IP address');
+            const cidr = cidrStr !== undefined ? parseInt(cidrStr, 10) : 24;
+            if (isNaN(cidr) || cidr < 0 || cidr > 32) throw new Error('CIDR must be 0-32');
+            const octets = ipStr.split('.').map(s => parseInt(s, 10));
+            if (octets.length !== 4 || octets.some(o => isNaN(o) || o < 0 || o > 255))
+                throw new Error('Invalid IPv4 address');
+
+            const ipBin = ((octets[0] << 24) + (octets[1] << 16) + (octets[2] << 8) + octets[3]) >>> 0;
+            const mask = cidr === 0 ? 0 : (~0 << (32 - cidr)) >>> 0;
+            const wildcard = (~mask) >>> 0;
+            const net = (ipBin & mask) >>> 0;
+            const bcast = (net | wildcard) >>> 0;
+            const hostBits = 32 - cidr;
+
+            const toOct = (v) => [(v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255].join('.');
+            const binStr = (v) => [(v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255]
+                .map(o => o.toString(2).padStart(8, '0')).join('.');
+
+            let usableHosts, firstHost, lastHost;
+            if (cidr >= 31) {
+                /* /31 = 2 usable (RFC 3021), /32 = 1 address */
+                usableHosts = cidr === 32 ? 1 : 2;
+                firstHost = net;
+                lastHost = cidr === 32 ? net : bcast;
+            } else {
+                usableHosts = Math.pow(2, hostBits) - 2;
+                firstHost = (net + 1) >>> 0;
+                lastHost = (bcast - 1) >>> 0;
+            }
+
+            n.innerHTML =
+                statCard('/' + cidr, 'CIDR') +
+                statCard(toOct(mask >>> 0), 'Subnet Mask') +
+                statCard(toOct(wildcard), 'Wildcard Mask') +
+                statCard(toOct(net), 'Network Address') +
+                statCard(toOct(bcast), 'Broadcast Address') +
+                statCard(usableHosts.toLocaleString(), 'Usable Hosts') +
+                statCard(cidr <= 30 ? toOct(firstHost) : '—', 'First Usable') +
+                statCard(cidr <= 30 ? toOct(lastHost) : toOct(net), 'Last Usable') +
+                statCard('0x' + (mask >>> 0).toString(16).padStart(8, '0'), 'Mask (Hex)') +
+                statCard(hostBits.toString(), 'Host Bits');
+
+            /* CIDR visualization */
+            let bitsHtml = '<div class="cidr-bar">';
+            if (cidr > 0) bitsHtml += '<div class="cidr-net" style="flex:' + cidr + '">' + cidr + ' network bits</div>';
+            if (hostBits > 0) bitsHtml += '<div class="cidr-host" style="flex:' + hostBits + '">' + hostBits + ' host bits</div>';
+            bitsHtml += '</div>';
+
+            /* bit-by-bit cells (4 octets) */
+            const ipBits = ipBin.toString(2).padStart(32, '0');
+            bitsHtml += '<div class="bit-groups" style="margin-top:12px">';
+            for (let octet = 0; octet < 4; octet++) {
+                bitsHtml += '<div class="bit-group">';
+                for (let bit = 0; bit < 8; bit++) {
+                    const idx = octet * 8 + bit;
+                    const isNet = idx < cidr;
+                    bitsHtml += '<div class="bit ' + (isNet ? 'net' : 'host') + '">' + ipBits[idx] + '</div>';
+                }
+                bitsHtml += '</div>';
+                if (octet < 3) bitsHtml += '<div class="group-sep"></div>';
+            }
+            bitsHtml += '</div>';
+
+            bitsHtml += '<div class="legend">' +
+                '<span><span class="legend-dot" style="background:var(--accent)"></span>Network bits (' + cidr + ')</span>' +
+                '<span><span class="legend-dot" style="background:var(--bg-input);border:1px solid var(--border)"></span>Host bits (' + hostBits + ')</span>' +
+                '</div>';
+            viz.innerHTML = bitsHtml;
+
+            /* Binary representation */
+            b.innerHTML =
+                '<div style="margin-bottom:8px"><strong style="color:var(--text-muted)">Address&nbsp;&nbsp;</strong> ' + binStr(ipBin) + '</div>' +
+                '<div style="margin-bottom:8px"><strong style="color:var(--text-muted)">Mask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> ' + binStr(mask >>> 0) + '</div>' +
+                '<div style="margin-bottom:8px"><strong style="color:var(--text-muted)">Network&nbsp;&nbsp;</strong> ' + binStr(net) + '</div>' +
+                '<div><strong style="color:var(--text-muted)">Broadcast&nbsp;</strong> ' + binStr(bcast) + '</div>';
+
+            divideSubnets();
+        } catch (e) {
+            n.innerHTML = '<div style="color:var(--error);text-align:center;grid-column:1/-1">' + e.message + '</div>';
+            viz.innerHTML = '';
+            b.innerHTML = '';
+            document.getElementById('subnet-list').innerHTML = '';
+        }
+    }
+
+    function calcV6(t) {
+        const n = document.getElementById('net-info');
+        const b = document.getElementById('binary');
+        const viz = document.getElementById('cidr-viz');
+        try {
+            const [ipStr, cidrStr] = t.split('/');
+            if (!ipStr) throw new Error('Enter an IPv6 address');
+            const cidr = cidrStr !== undefined ? parseInt(cidrStr, 10) : 64;
+            if (isNaN(cidr) || cidr < 0 || cidr > 128) throw new Error('CIDR must be 0-128');
+
+            const ipVal = parseIPv6(ipStr);
+            const mask = makeMaskV6(cidr);
+            const net = ipVal & mask;
+            const hostBits = 128n - BigInt(cidr);
+            const totalAddrs = cidr === 128 ? 1n : (1n << hostBits);
+            const lastAddr = net + totalAddrs - 1n;
+
+            const fmt = (v) => formatIPv6(v, v6Compressed);
+            const fmtExp = (v) => formatIPv6(v, false);
+
+            n.innerHTML =
+                statCard('/' + cidr, 'CIDR') +
+                statCard(fmt(mask), 'Prefix Mask') +
+                statCard(fmt(net), 'Network Address') +
+                statCard(fmt(lastAddr), 'Last Address') +
+                statCard(totalAddrs.toString(), 'Total Addresses') +
+                statCard(fmt(net), 'First Address') +
+                statCard(hostBits.toString(), 'Host Bits') +
+                statCard(fmtExp(net), 'Network (Expanded)') +
+                statCard(fmtExp(lastAddr), 'Last (Expanded)');
+
+            /* CIDR visualization */
+            let bitsHtml = '<div class="cidr-bar">';
+            if (cidr > 0) bitsHtml += '<div class="cidr-net" style="flex:' + cidr + '">' + cidr + ' network bits</div>';
+            if (hostBits > 0n) bitsHtml += '<div class="cidr-host" style="flex:' + Number(hostBits) + '">' + Number(hostBits) + ' host bits</div>';
+            bitsHtml += '</div>';
+
+            /* hextet groups (8 groups × 16 bits, proportional) */
+            bitsHtml += '<div class="bit-groups" style="margin-top:12px">';
+            const groups = [];
+            let tmp = net;
+            for (let i = 0; i < 8; i++) {
+                groups.unshift(Number(tmp & 0xFFFFn));
+                tmp >>= 16n;
+            }
+            for (let g = 0; g < 8; g++) {
+                bitsHtml += '<div class="bit-group">';
+                const groupCidr = cidr - g * 16;
+                for (let bit = 0; bit < 16; bit++) {
+                    const isNet = (g * 16 + bit) < cidr;
+                    const bitVal = (groups[g] >> (15 - bit)) & 1;
+                    bitsHtml += '<div class="bit ' + (isNet ? 'net' : 'host') + '">' + bitVal + '</div>';
+                }
+                bitsHtml += '</div>';
+                if (g < 7) bitsHtml += '<div class="group-sep"></div>';
+            }
+            bitsHtml += '</div>';
+            bitsHtml += '<div class="legend">' +
+                '<span><span class="legend-dot" style="background:var(--accent)"></span>Network bits (' + cidr + ')</span>' +
+                '<span><span class="legend-dot" style="background:var(--bg-input);border:1px solid var(--border)"></span>Host bits (' + Number(hostBits) + ')</span>' +
+                '</div>';
+            viz.innerHTML = bitsHtml;
+
+            /* Hex / binary representation */
+            let binHtml = '';
+            for (let g = 0; g < 8; g++) {
+                const gv = groups[g];
+                binHtml += '<div style="margin-bottom:6px"><strong style="color:var(--text-muted)">Group ' + (g + 1) + '&nbsp;</strong> ' +
+                    gv.toString(16).padStart(4, '0') + ' &nbsp; ' + gv.toString(2).padStart(16, '0') + '</div>';
+            }
+            b.innerHTML = binHtml;
+
+            divideSubnets();
+        } catch (e) {
+            n.innerHTML = '<div style="color:var(--error);text-align:center;grid-column:1/-1">' + e.message + '</div>';
+            viz.innerHTML = '';
+            b.innerHTML = '';
+            document.getElementById('subnet-list').innerHTML = '';
+        }
+    }
+
+    function statCard(val, lbl) {
+        return '<div class="stat-card"><div class="val" style="font-size:14px">' + val + '</div><div class="lbl">' + lbl + '</div></div>';
+    }
+
+    /* ---- Subnet Division ---- */
+
+    function quickDivide(factor) {
+        const tc = document.getElementById('target-cidr');
+        const cur = calcCurrentCidr();
+        /* next cidr that gives `factor` subnets: cidr + log2(factor) */
+        const add = Math.log2(factor);
+        let target = cur + add;
+        const maxCidr = (currentMode === 'v4') ? 32 : 128;
+        if (target > maxCidr) target = maxCidr;
+        tc.value = target;
+        divideSubnets();
+    }
+
+    function calcCurrentCidr() {
+        const t = document.getElementById('input').value.trim();
+        const parts = t.split('/');
+        const cidr = parts[1] !== undefined ? parseInt(parts[1], 10) : (currentMode === 'v4' ? 24 : 64);
+        return cidr;
+    }
+
+    function divideSubnets() {
+        const list = document.getElementById('subnet-list');
+        const targetCidr = parseInt(document.getElementById('target-cidr').value, 10);
+        const currentCidr = calcCurrentCidr();
+
+        if (isNaN(targetCidr)) { list.innerHTML = ''; return; }
+
+        const maxCidr = (currentMode === 'v4') ? 32 : 128;
+        if (targetCidr < currentCidr) {
+            list.innerHTML = '<div class="subnet-note">Target prefix must be larger than current /' + currentCidr + '</div>';
+            return;
+        }
+        if (targetCidr === currentCidr) {
+            list.innerHTML = '<div class="subnet-note">Target prefix equals current prefix — no division needed</div>';
+            return;
+        }
+        if (targetCidr > maxCidr) {
+            list.innerHTML = '<div class="subnet-note">Maximum prefix is /' + maxCidr + '</div>';
+            return;
+        }
+
+        const diff = targetCidr - currentCidr;
+        const subnetCount = Math.pow(2, diff);
+        const MAX_DISPLAY = 256;
+
+        if (currentMode === 'v4') {
+            divideV4(currentCidr, targetCidr, subnetCount, MAX_DISPLAY);
+        } else {
+            divideV6(currentCidr, targetCidr, subnetCount, MAX_DISPLAY);
+        }
+    }
+
+    function divideV4(curCidr, tgtCidr, count, maxDisplay) {
+        const list = document.getElementById('subnet-list');
+        const input = document.getElementById('input').value.trim().split('/')[0];
+        const octets = input.split('.').map(Number);
+        const baseIp = ((octets[0] << 24) + (octets[1] << 16) + (octets[2] << 8) + octets[3]) >>> 0;
+        const curMask = curCidr === 0 ? 0 : (~0 << (32 - curCidr)) >>> 0;
+        const netBase = (baseIp & curMask) >>> 0;
+        const step = Math.pow(2, 32 - tgtCidr);
+        const tgtMask = tgtCidr === 0 ? 0 : (~0 << (32 - tgtCidr)) >>> 0;
+
+        const toOct = (v) => [(v >>> 24) & 255, (v >>> 16) & 255, (v >>> 8) & 255, v & 255].join('.');
+
+        let html = '<div class="subnet-list">';
+        html += '<div class="subnet-row header"><div>#</div><div>Network</div><div>Range</div><div>Hosts</div></div>';
+        const show = Math.min(count, maxDisplay);
+        for (let i = 0; i < show; i++) {
+            const snet = (netBase + i * step) >>> 0;
+            const sbcast = (snet | (~tgtMask >>> 0)) >>> 0;
+            let hosts;
+            if (tgtCidr >= 31) hosts = tgtCidr === 32 ? 1 : 2;
+            else hosts = Math.pow(2, 32 - tgtCidr) - 2;
+            html += '<div class="subnet-row">' +
+                '<div>' + (i + 1) + '</div>' +
+                '<div>' + toOct(snet) + '/' + tgtCidr + '</div>' +
+                '<div>' + toOct(snet) + ' – ' + toOct(sbcast) + '</div>' +
+                '<div>' + hosts.toLocaleString() + '</div>' +
+                '</div>';
+        }
+        if (count > maxDisplay) {
+            html += '<div class="subnet-note">Showing ' + maxDisplay + ' of ' + count.toLocaleString() + ' subnets</div>';
+        }
+        html += '</div>';
+        if (count <= maxDisplay) {
+            html = '<div style="font-size:12px;color:var(--text-muted);margin-top:8px">' +
+                count + ' subnets (/' + curCidr + ' → /' + tgtCidr + ')</div>' + html;
+        }
+        list.innerHTML = html;
+    }
+
+    function divideV6(curCidr, tgtCidr, count, maxDisplay) {
+        const list = document.getElementById('subnet-list');
+        const input = document.getElementById('input').value.trim().split('/')[0];
+        const baseIp = parseIPv6(input);
+        const curMask = makeMaskV6(curCidr);
+        const netBase = baseIp & curMask;
+        const step = 1n << (128n - BigInt(tgtCidr));
+
+        const fmt = (v) => formatIPv6(v, v6Compressed);
+
+        let html = '<div class="subnet-list">';
+        html += '<div class="subnet-row header"><div>#</div><div>Network</div><div>Range</div><div>Hosts</div></div>';
+        const show = Math.min(count, maxDisplay);
+        for (let i = 0; i < show; i++) {
+            const snet = netBase + BigInt(i) * step;
+            const slast = snet + step - 1n;
+            html += '<div class="subnet-row">' +
+                '<div>' + (i + 1) + '</div>' +
+                '<div>' + fmt(snet) + '/' + tgtCidr + '</div>' +
+                '<div>' + fmt(snet) + ' – ' + fmt(slast) + '</div>' +
+                '<div>' + step.toString() + '</div>' +
+                '</div>';
+        }
+        if (count > maxDisplay) {
+            html += '<div class="subnet-note">Showing ' + maxDisplay + ' of ' + count.toLocaleString() + ' subnets</div>';
+        }
+        html += '</div>';
+        if (count <= maxDisplay) {
+            html = '<div style="font-size:12px;color:var(--text-muted);margin-top:8px">' +
+                count + ' subnets (/' + curCidr + ' → /' + tgtCidr + ')</div>' + html;
+        }
+        list.innerHTML = html;
+    }
+
+    calc();
     </script>
 </body>
 </html>
