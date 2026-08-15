@@ -163,7 +163,7 @@ function loadCookies(){
     decode();
     r.innerHTML='<span style="color:var(--success)">✓ Loaded from browser</span>';
 }
-function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>{'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m]);}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,m=>({'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 
     </script>
 </body>
